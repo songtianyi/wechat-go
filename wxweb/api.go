@@ -8,6 +8,13 @@ import (
 	"io/ioutil"
 	"strings"
 	"fmt"
+	"encoding/xml"
+	"encoding/json"
+	"bytes"
+	"net/http/cookiejar"
+	"regexp"
+	"github.com/songtianyi/rrframework/config"
+	"github.com/songtianyi/rrframework/logs"
 )
 
 
@@ -46,9 +53,9 @@ func QrCode(common *Common, uuid string) ([]byte, error) {
 }
 
 
-func Login(common *Common, uuid string, tip int) (string, error){
+func Login(common *Common, uuid, tip string) (string, error){
 	km := url.Values{}
-	km.Add("tip", strconv.FormatInt(tip, 10))
+	km.Add("tip", tip)
 	km.Add("uuid", uuid)
 	km.Add("_", strconv.FormatInt(time.Now().Unix(), 10))
 	uri := common.LoginUrl + "/cgi-bin/mmwebwx-bin/login?" + km.Encode()
@@ -59,8 +66,9 @@ func Login(common *Common, uuid string, tip int) (string, error){
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 	strb := string(body)
-	if strings.Contains(strb, "windows.code=200") &&
-		strings.Contains(strb, "windows.redirect_uri") {
+	logs.Debug(strb)
+	if strings.Contains(strb, "window.code=200") &&
+		strings.Contains(strb, "window.redirect_uri") {
 		ss := strings.Split(strb, "\"")
 		if len(ss) < 2 {
 			return "", fmt.Errorf("parse redirect_uri fail, %s", strb)
@@ -82,13 +90,13 @@ func WebNewLoginPage(xc *XmlConfig, ce []*http.Cookie, uri string) error {
 		return err
 	}
 	if xc.Ret != 0 {
-		return fmt.Error("xc.Ret != 0, %s", xc)
+		return fmt.Errorf("xc.Ret != 0, %s", xc)
 	}
 	ce = resp.Cookies()
 	return nil
 }
 
-func WebWxInit(ce *XmlConfig) ([]byte, error){
+func WebWxInit(common *Common, ce *XmlConfig) ([]byte, error){
 	km := url.Values{}
 	km.Add("pass_ticket", ce.PassTicket)
 	km.Add("skey", ce.Skey)
@@ -117,17 +125,18 @@ func WebWxInit(ce *XmlConfig) ([]byte, error){
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
-	return body
+	return body, nil
 }
 
-func SyncCheck(ce *XmlConfig, server, synckey string, cookies []*http.Cookie) (int, int, error) {
+func SyncCheck(common *Common, ce *XmlConfig,
+	server string, skl *SyncKeyList, cookies []*http.Cookie) (int, int, error) {
 	km := url.Values{}
 	km.Add("r", strconv.FormatInt(time.Now().Unix()*1000, 10))
 	km.Add("sid", ce.Wxsid)
 	km.Add("uin", ce.Wxuin)
 	km.Add("skey", ce.Skey)
 	km.Add("deviceid", common.DeviceID)
-	km.Add("synckey", syncKey)
+	km.Add("synckey", skl.String())
 	km.Add("_", strconv.FormatInt(time.Now().Unix()*1000, 10))
 	uri := "https://" + server + "/cgi-bin/mmwebwx-bin/synccheck?" + km.Encode()
 
@@ -136,7 +145,7 @@ func SyncCheck(ce *XmlConfig, server, synckey string, cookies []*http.Cookie) (i
 			ce.Wxuin,
 			ce.Wxsid,
 			ce.Skey,
-			DeviceID,
+			common.DeviceID,
 		},
 	}
 
@@ -168,7 +177,11 @@ func SyncCheck(ce *XmlConfig, server, synckey string, cookies []*http.Cookie) (i
 	return retcode, selector, nil
 }
 
-func WebWxSync(ce *XmlConfig, msg chan []byte, skl *SyncKeyList) ([]byte){
+func WebWxSync(common *Common,
+	ce *XmlConfig,
+	cookies []*http.Cookie,
+	msg chan []byte, skl *SyncKeyList) error {
+
 	km := url.Values{}
 	km.Add("skey", ce.Skey)
 	km.Add("sid", ce.Wxsid)
@@ -182,19 +195,16 @@ func WebWxSync(ce *XmlConfig, msg chan []byte, skl *SyncKeyList) ([]byte){
 			ce.Wxuin,
 			ce.Wxsid,
 			ce.Skey,
-			DeviceID,
+			common.DeviceID,
 		},
 		SyncKey: skl,
 		rr: ^int(time.Now().Unix()) + 1,
 	}
 
-	b, err := json.Marshal(js)
-	if err != nil {
-		panic(err)
-	}
+	b, _ := json.Marshal(js)
 	jar, _ := cookiejar.New(nil)
 	u, _ := url.Parse(uri)
-	jar.SetCookies(u, Cookies)
+	jar.SetCookies(u, cookies)
 	client := &http.Client{Jar: jar}
 	req, err := http.NewRequest("POST", uri, bytes.NewReader(b))
 	req.Header.Add("Content-Type", "application/json; charset=UTF-8")
@@ -202,61 +212,45 @@ func WebWxSync(ce *XmlConfig, msg chan []byte, skl *SyncKeyList) ([]byte){
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil
+		return err
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 
 	jc, err := rrconfig.LoadJsonConfigFromBytes(body)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	retcode, err := jc.GetInt("BaseResponse.Ret")
-	if err != nil {
-		panic(err)
-	}
+	retcode, _ := jc.GetInt("BaseResponse.Ret")
 	if retcode != 0 {
-		logs.Error("sync message fail")
-		return syncKey
+		return fmt.Errorf("BaseResponse.Ret %d", retcode)
 	}
-	messanger <- body
 
-	synckeylist = synckeylist[:0]
-	is, err := jc.GetInterfaceSlice("SyncKey.List") //[]interface{}
-	if err != nil {
-		panic(err)
-	}
-	iss := make([]string, 0)
-	for _, v := range is {
-		// interface{}
-		vm := v.(map[string]interface{})
-		iss = append(iss, strconv.FormatFloat(vm["Key"].(float64), 'f', -1, 64)+"_"+strconv.FormatFloat(vm["Val"].(float64), 'f', -1, 64))
-		sk := SyncKey{
-			Key: int(vm["Key"].(float64)),
-			Val: int(vm["Val"].(float64)),
-		}
-		synckeylist = append(synckeylist, sk)
-	}
-	syncKey = strings.Join(iss, "|")
-	return syncKey
+	msg <- body
+
+	skl.List = skl.List[:0]
+	skl1, _ := GetSyncKeyListFromJc(jc)
+	skl.Count = skl1.Count
+	skl.List = append(skl.List, skl1.List...)
+	return nil
 }
 
-func WebWxStatusNotify(ce Cookie, userInfo *User) string {
+func WebWxStatusNotify(common *Common, ce *XmlConfig, bot *User) (int, error) {
 	km := url.Values{}
 	km.Add("pass_ticket", ce.PassTicket)
-	km.Add("lang", "zh_CN")
-	uri := "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxstatusnotify?" + km.Encode()
+	km.Add("lang", common.Lang)
+	uri := common.CgiUrl + "/webwxstatusnotify?" + km.Encode()
 
 	js := InitReqBody{
 		BaseRequest: &BaseRequest{
 			ce.Wxuin,
 			ce.Wxsid,
 			ce.Skey,
-			DeviceID,
+			common.DeviceID,
 		},
-		Code:         3,
-		FromUserName: userInfo.UserName,
-		ToUserName:   userInfo.UserName,
+		Code: 3,
+		FromUserName: bot.UserName,
+		ToUserName:   bot.UserName,
 		ClientMsgId:  int(time.Now().Unix()),
 	}
 
@@ -268,14 +262,16 @@ func WebWxStatusNotify(ce Cookie, userInfo *User) string {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return -1, err
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
-	return string(body)
+	jc, _ := rrconfig.LoadJsonConfigFromBytes(body)
+	ret, _ := jc.GetInt("BaseResponse.Ret")
+	return ret, nil
 }
 
-func WebWxGetContact(common *Common, ce Cookie) ([]byte, error) {
+func WebWxGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie) ([]byte, error) {
 	km := url.Values{}
 	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
 	km.Add("seq", "0")
@@ -287,7 +283,7 @@ func WebWxGetContact(common *Common, ce Cookie) ([]byte, error) {
 			ce.Wxuin,
 			ce.Wxsid,
 			ce.Skey,
-			DeviceID,
+			common.DeviceID,
 		},
 	}
 
@@ -301,7 +297,7 @@ func WebWxGetContact(common *Common, ce Cookie) ([]byte, error) {
 
 	jar, _ := cookiejar.New(nil)
 	u, _ := url.Parse(uri)
-	jar.SetCookies(u, Cookies)
+	jar.SetCookies(u, cookies)
 	client := &http.Client{Jar: jar}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -312,8 +308,8 @@ func WebWxGetContact(common *Common, ce Cookie) ([]byte, error) {
 	return body, nil
 }
 
-func WebWxSendMsg(common *Common, ce *XmlConfig, 
-	from string, to string, msg string, msgId int) {
+func WebWxSendMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
+	from, to string, msg interface{}) (int, error) {
 
 	km := url.Values{}
 	km.Add("pass_ticket", ce.PassTicket)
@@ -325,32 +321,30 @@ func WebWxSendMsg(common *Common, ce *XmlConfig,
 			ce.Wxuin,
 			ce.Wxsid,
 			ce.Skey,
-			DeviceID,
+			common.DeviceID,
 		},
-		Msg: &TextMessage{
-			Type:         1,
-			Content:      msg,
-			FromUserName: from,
-			ToUserName:   to,
-			LocalID:      int(time.Now().Unix() * 1e4),
-			ClientMsgId:  msgId,
-		},
+		Msg: msg,
 	}
 
 	b, _ := json.Marshal(js)
 	req, err := http.NewRequest("POST", uri, bytes.NewReader(b))
+	if err != nil {
+		return -1, err
+	}
 	req.Header.Add("Content-Type", "application/json; charset=UTF-8")
 	req.Header.Add("User-Agent", common.UserAgent)
 
 	jar, _ := cookiejar.New(nil)
 	u, _ := url.Parse(uri)
-	jar.SetCookies(u, Cookies)
+	jar.SetCookies(u, cookies)
 	client := &http.Client{Jar: jar}
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		return -1, err
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
-	logs.Debug("sending response", string(body))
+	jc, _ := rrconfig.LoadJsonConfigFromBytes(body)
+	ret, _ := jc.GetInt("BaseResponse.Ret")
+	return ret, nil
 }

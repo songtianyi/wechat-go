@@ -1,5 +1,11 @@
 package wxweb
 
+import (
+	"encoding/xml"
+	"strconv"
+	"strings"
+)
+
 type Common struct {
 	AppId string
 	LoginUrl string
@@ -12,7 +18,7 @@ type Common struct {
 
 type InitReqBody struct {
 	BaseRequest  *BaseRequest
-	Msg          *TextMessage
+	Msg          interface{}
 	SyncKey      *SyncKeyList
 	rr           int
 	Code         int
@@ -51,11 +57,30 @@ type SyncKeyList struct {
 
 func (s *SyncKeyList) String() string {
 	strs := make([]string, 0)
-	for ix, v := range s.List {
-		strs = append(strs, strconv.FormatInt(v.Key, 10) + "_" + strconv.FormatInt(v.Val, 10)
+	for _, v := range s.List {
+		strs = append(strs, strconv.Itoa(v.Key) + "_" + strconv.Itoa(v.Val))
 	}
 	return strings.Join(strs, "|")
 }
 
 type User struct {
+	Uin               int
+	UserName          string
+	NickName          string
+	HeadImgUrl        string
+	RemarkName        string
+	PYInitial         string
+	PYQuanPin         string
+	RemarkPYInitial   string
+	RemarkPYQuanPin   string
+	HideInputBarFlag  int
+	StarFriend        int
+	Sex               int
+	Signature         string
+	AppAccountFlag    int
+	VerifyFlag        int
+	ContactFlag       int
+	WebWxPluginSwitch int
+	HeadImgFlag       int
+	SnsFlag           int
 }

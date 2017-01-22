@@ -1,8 +1,10 @@
 package wxweb
 
 import (
+	"github.com/songtianyi/rrframework/config"
 	"math/rand"
 	"time"
+	"reflect"
 )
 
 func GetRandomStringFromNum(length int) string {
@@ -34,4 +36,19 @@ func GetSyncKeyListFromJc(jc *rrconfig.JsonConfig) (*SyncKeyList, error){
 		Count: len(synks),
 		List: synks,
 	}, nil
+}
+
+func GetUserInfoFromJc(jc *rrconfig.JsonConfig) (*User, error) {
+	user, _ := jc.Get("User")
+	u := &User{}
+	fields := reflect.ValueOf(u).Elem()
+	for k, v := range user.(map[string]interface{}) {
+		field := fields.FieldByName(k)
+		if vv, ok := v.(float64); ok {
+			field.Set(reflect.ValueOf(int(vv)))
+		} else {
+			field.Set(reflect.ValueOf(v))
+		}
+	}
+	return u, nil
 }
