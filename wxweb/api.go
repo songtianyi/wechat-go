@@ -1,21 +1,45 @@
+/*
+Copyright 2017 wechat-go Authors. All Rights Reserved.
+MIT License
+
+Copyright (c) 2017
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 package wxweb
 
 import (
-	"net/http"
-	"strconv"
-	"time"
-	"net/url"
-	"io/ioutil"
-	"strings"
-	"fmt"
-	"encoding/xml"
-	"encoding/json"
 	"bytes"
-	"net/http/cookiejar"
-	"regexp"
+	"encoding/json"
+	"encoding/xml"
+	"fmt"
 	"github.com/songtianyi/rrframework/config"
+	"io/ioutil"
+	"net/http"
+	"net/http/cookiejar"
+	"net/url"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
 )
-
 
 func JsLogin(common *Common) (string, error) {
 	km := url.Values{}
@@ -51,8 +75,7 @@ func QrCode(common *Common, uuid string) ([]byte, error) {
 	return body, nil
 }
 
-
-func Login(common *Common, uuid, tip string) (string, error){
+func Login(common *Common, uuid, tip string) (string, error) {
 	km := url.Values{}
 	km.Add("tip", tip)
 	km.Add("uuid", uuid)
@@ -72,7 +95,7 @@ func Login(common *Common, uuid, tip string) (string, error){
 			return "", fmt.Errorf("parse redirect_uri fail, %s", strb)
 		}
 		return ss[1], nil
-	}else {
+	} else {
 		return "", fmt.Errorf("invalid response, %s", strb)
 	}
 }
@@ -98,7 +121,7 @@ func WebNewLoginPage(common *Common, xc *XmlConfig, uri string) ([]*http.Cookie,
 	return resp.Cookies(), nil
 }
 
-func WebWxInit(common *Common, ce *XmlConfig) ([]byte, error){
+func WebWxInit(common *Common, ce *XmlConfig) ([]byte, error) {
 	km := url.Values{}
 	km.Add("pass_ticket", ce.PassTicket)
 	km.Add("skey", ce.Skey)
@@ -200,7 +223,7 @@ func WebWxSync(common *Common,
 			common.DeviceID,
 		},
 		SyncKey: skl,
-		rr: ^int(time.Now().Unix()) + 1,
+		rr:      ^int(time.Now().Unix()) + 1,
 	}
 
 	b, _ := json.Marshal(js)
@@ -250,7 +273,7 @@ func WebWxStatusNotify(common *Common, ce *XmlConfig, bot *User) (int, error) {
 			ce.Skey,
 			common.DeviceID,
 		},
-		Code: 3,
+		Code:         3,
 		FromUserName: bot.UserName,
 		ToUserName:   bot.UserName,
 		ClientMsgId:  int(time.Now().Unix()),
