@@ -10,7 +10,7 @@ func Run() {
 	msg := make(chan []byte, 10000)
 	for {
 		select {
-		case <-time.After(300 * time.Millisecond):
+		case <-time.After(1 * time.Second):
 			go producer(msg)
 		case m := <-msg:
 			go consumer(m)
@@ -21,15 +21,19 @@ func Run() {
 
 func producer(msg chan []byte) {
 	for _, v := range WxWebDefaultCommon.SyncSrvs {
-		ret, _, err := wxweb.SyncCheck(WxWebDefaultCommon, WxWebXcg, v, SynKeyList, Cookies)
+		ret, sel, err := wxweb.SyncCheck(WxWebDefaultCommon, WxWebXcg, Cookies, v, SynKeyList)
+		logs.Debug(v, ret, sel)
 		if err != nil {
 			logs.Error(err)
 		}
 		if ret == 0 {
 			// check success
-			err := wxweb.WebWxSync(WxWebDefaultCommon, WxWebXcg, Cookies, msg, SynKeyList)
-			if err != nil {
-				logs.Error(err)
+			if sel == 2 {
+				// new message
+				err := wxweb.WebWxSync(WxWebDefaultCommon, WxWebXcg, Cookies, msg, SynKeyList)
+				if err != nil {
+					logs.Error(err)
+				}
 			}
 			break
 		}
@@ -38,4 +42,5 @@ func producer(msg chan []byte) {
 }
 
 func consumer(msg []byte) {
+	logs.Debug("received", string(msg))
 }

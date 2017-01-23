@@ -14,7 +14,6 @@ import (
 	"net/http/cookiejar"
 	"regexp"
 	"github.com/songtianyi/rrframework/config"
-	"github.com/songtianyi/rrframework/logs"
 )
 
 
@@ -66,7 +65,6 @@ func Login(common *Common, uuid, tip string) (string, error){
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 	strb := string(body)
-	logs.Debug(strb)
 	if strings.Contains(strb, "window.code=200") &&
 		strings.Contains(strb, "window.redirect_uri") {
 		ss := strings.Split(strb, "\"")
@@ -79,21 +77,25 @@ func Login(common *Common, uuid, tip string) (string, error){
 	}
 }
 
-func WebNewLoginPage(xc *XmlConfig, ce []*http.Cookie, uri string) error {
+func WebNewLoginPage(common *Common, xc *XmlConfig, uri string) ([]*http.Cookie, error) {
+	parsed, _ := url.Parse(uri)
+	km := parsed.Query()
+	km.Add("fun", "new")
+	uri = common.CgiUrl + "/webwxnewloginpage?" + km.Encode()
+
 	resp, err := http.Get(uri)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 	if err := xml.Unmarshal(body, xc); err != nil {
-		return err
+		return nil, err
 	}
 	if xc.Ret != 0 {
-		return fmt.Errorf("xc.Ret != 0, %s", xc)
+		return nil, fmt.Errorf("xc.Ret != 0, %s", xc)
 	}
-	ce = resp.Cookies()
-	return nil
+	return resp.Cookies(), nil
 }
 
 func WebWxInit(common *Common, ce *XmlConfig) ([]byte, error){
@@ -128,8 +130,8 @@ func WebWxInit(common *Common, ce *XmlConfig) ([]byte, error){
 	return body, nil
 }
 
-func SyncCheck(common *Common, ce *XmlConfig,
-	server string, skl *SyncKeyList, cookies []*http.Cookie) (int, int, error) {
+func SyncCheck(common *Common, ce *XmlConfig, cookies []*http.Cookie,
+	server string, skl *SyncKeyList) (int, int, error) {
 	km := url.Values{}
 	km.Add("r", strconv.FormatInt(time.Now().Unix()*1000, 10))
 	km.Add("sid", ce.Wxsid)

@@ -3,11 +3,12 @@ package wxbot
 import (
 	"github.com/songtianyi/wechat-go/wxweb"
 	"github.com/songtianyi/rrframework/logs"
-	"github.com/songtianyi/rrframework/storage"
 	"github.com/songtianyi/rrframework/config"
 	"fmt"
 	"time"
 	"net/http"
+	"github.com/mdp/qrterminal"
+	"os"
 )
 
 var (
@@ -44,13 +45,12 @@ func AutoLogin() {
 		panic(err)
 	}
 	logs.Debug(uuid)
+	qrterminal.Generate("https://login.weixin.qq.com/l/" + uuid, qrterminal.L, os.Stdout)
 
-	qrcb, err := wxweb.QrCode(WxWebDefaultCommon, uuid)
-
-	se := rrstorage.CreateUfileStorage("j+4uUJbKZVVa39dGyIi7CxcFbcJ+F8I2Np7pGuvQksNbL2Bu", "6234fc01f795f7e4be705ec0e7ae9d898fcf35c6", "public-songtianyi", 2)
-	if err := se.Save(qrcb, uuid+".jpg"); err != nil {
-		panic(err)
-	}
+	//qrcb, err := wxweb.QrCode(WxWebDefaultCommon, uuid)
+	//if err != nil {
+	//	panic(err)
+	//}
 
 	redirectUri := ""
 loop1:
@@ -67,7 +67,7 @@ loop1:
 	}
 	logs.Debug(redirectUri)
 
-	if err := wxweb.WebNewLoginPage(WxWebXcg, Cookies, redirectUri); err != nil {
+	if Cookies, err = wxweb.WebNewLoginPage(WxWebDefaultCommon, WxWebXcg, redirectUri); err != nil {
 		panic(err)
 	}
 
@@ -86,6 +86,7 @@ loop1:
 		panic(err)
 	}
 	Bot, _ = wxweb.GetUserInfoFromJc(jc)
+	logs.Debug(Bot)
 	ret, err := wxweb.WebWxStatusNotify(WxWebDefaultCommon, WxWebXcg, Bot)
 	if err != nil {
 		panic(err)
