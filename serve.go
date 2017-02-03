@@ -27,6 +27,7 @@ package wxbot
 
 import (
 	"github.com/songtianyi/rrframework/logs"
+	"github.com/songtianyi/rrframework/config"
 	"github.com/songtianyi/wechat-go/wxweb"
 	"time"
 )
@@ -68,5 +69,23 @@ func producer(msg chan []byte) {
 }
 
 func consumer(msg []byte) {
-	logs.Debug("received", string(msg))
+	// analize message
+	jc, _ := rrconfig.LoadJsonConfigFromBytes(msg)
+	du, _ := jc.Dump()
+	logs.Debug(du)
+	msgCount, _ := jc.GetInt("AddMsgCount")
+	if msgCount < 1 {
+		return
+	}
+	msgis, _ := jc.GetInterfaceSlice("AddMsgList")
+	for _, v := range msgis {
+		msgi := v.(map[string]interface)
+		msgType := int(msgi["MsgType"].(float64))
+		if msgType == 51 {
+			continue
+		}
+		if msgType == 1 {
+			
+		}
+	}
 }
