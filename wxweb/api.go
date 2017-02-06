@@ -333,8 +333,8 @@ func WebWxGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie) ([]b
 	return body, nil
 }
 
-func WebWxSendMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
-	from, to string, msg interface{}) (int, error) {
+func WebWxSendTextMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
+	from, to string, msg string) (int, error) {
 
 	km := url.Values{}
 	km.Add("pass_ticket", ce.PassTicket)
@@ -348,7 +348,14 @@ func WebWxSendMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 			ce.Skey,
 			common.DeviceID,
 		},
-		Msg: msg,
+		Msg: &TextMessage{
+			Type: 1,
+			Content: msg,
+			FromUserName: from,
+			ToUserName: to,
+			LocalID: int(time.Now().Unix() * 1e4),
+			ClientMsgId: int(time.Now().Unix() * 1e4),
+		},
 	}
 
 	b, _ := json.Marshal(js)

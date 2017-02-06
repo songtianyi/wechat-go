@@ -109,3 +109,12 @@ type User struct {
 	HeadImgFlag       int
 	SnsFlag           int
 }
+
+type TextMessage struct {
+	Type         int
+	Content      string
+	FromUserName string
+	ToUserName   string
+	LocalID      int
+	ClientMsgId  int
+}

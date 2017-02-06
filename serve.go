@@ -38,7 +38,7 @@ func Run() {
 	for {
 		select {
 		case <-time.After(1 * time.Second):
-			go producer(msg)
+			producer(msg)
 		case m := <-msg:
 			go consumer(m)
 		}
@@ -52,6 +52,7 @@ func producer(msg chan []byte) {
 		logs.Debug(v, ret, sel)
 		if err != nil {
 			logs.Error(err)
+			continue
 		}
 		if ret == 0 {
 			// check success
@@ -79,13 +80,16 @@ func consumer(msg []byte) {
 	}
 	msgis, _ := jc.GetInterfaceSlice("AddMsgList")
 	for _, v := range msgis {
-		msgi := v.(map[string]interface)
+		msgi := v.(map[string]interface{})
 		msgType := int(msgi["MsgType"].(float64))
 		if msgType == 51 {
 			continue
 		}
 		if msgType == 1 {
-			
+			_, handles := HandlerRegister.Get(msgType)
+			for _, v := range handles {
+				v.Run(msgi)
+			}
 		}
 	}
 }

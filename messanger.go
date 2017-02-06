@@ -26,54 +26,14 @@ SOFTWARE.
 package wxbot
 
 import (
-	"sync"
-	"fmt"
+	"github.com/songtianyi/wechat-go/wxweb"
+	"github.com/songtianyi/rrframework/logs"
 )
 
-type Handler func(map[string]interface{})
-
-type HandlerWrapper struct {
-	handle Handler
-}
-
-func (s *HandlerWrapper) Run(msg map[string]interface{}) {
-	s.handle(msg)
-}
-
-var (
-	HandlerRegister	*handlerRegister
-)
-
-func init() {
-	HandlerRegister, _ = createHandlerRegister()
-}
-
-type handlerRegister struct {
-	mu   *sync.RWMutex
-	hmap map[int][]*HandlerWrapper
-}
-
-func createHandlerRegister() (*handlerRegister, error) {
-	return &handlerRegister{
-		mu:   new(sync.RWMutex),
-		hmap: make(map[int][]*HandlerWrapper),
-	}, nil
-}
-
-func (hr *handlerRegister) Add(key int, h Handler) {
-	hr.mu.Lock()
-	defer hr.mu.Unlock()
-	if _, ok :=  hr.hmap[key]; !ok {
-		hr.hmap[key] = make([]*HandlerWrapper, 0)
+func SendText(msg, from, to string) () {
+	ret, err := wxweb.WebWxSendTextMsg(WxWebDefaultCommon, WxWebXcg, Cookies, from, to, msg)
+	if ret != 0 {
+		logs.Error(ret, err)
+		return
 	}
-	hr.hmap[key] = append(hr.hmap[key], &HandlerWrapper{handle: h})
-}
-
-func (hr *handlerRegister) Get(key int) (error, []*HandlerWrapper) {
-	hr.mu.RLock()
-	defer hr.mu.RUnlock()
-	if v, ok := hr.hmap[key]; ok {
-		return nil, v
-	}
-	return fmt.Errorf("value for key [%d] does not exist in map", key), nil
 }
