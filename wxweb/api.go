@@ -26,6 +26,7 @@ SOFTWARE.
 package wxweb
 
 import (
+	"io"
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
@@ -39,6 +40,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"mime/multipart"
+	"sync/atomic"
 )
 
 func JsLogin(common *Common) (string, error) {
@@ -356,6 +359,146 @@ func WebWxSendTextMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 			LocalID: int(time.Now().Unix() * 1e4),
 			ClientMsgId: int(time.Now().Unix() * 1e4),
 		},
+	}
+
+	b, _ := json.Marshal(js)
+	req, err := http.NewRequest("POST", uri, bytes.NewReader(b))
+	if err != nil {
+		return -1, err
+	}
+	req.Header.Add("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Add("User-Agent", common.UserAgent)
+
+	jar, _ := cookiejar.New(nil)
+	u, _ := url.Parse(uri)
+	jar.SetCookies(u, cookies)
+	client := &http.Client{Jar: jar}
+	resp, err := client.Do(req)
+	if err != nil {
+		return -1, err
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	jc, _ := rrconfig.LoadJsonConfigFromBytes(body)
+	ret, _ := jc.GetInt("BaseResponse.Ret")
+	return ret, nil
+}
+
+func WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*http.Cookie,
+	filename string, content []byte) (string, error) {
+
+	var b bytes.Buffer
+	w := multipart.NewWriter(&b)
+	fw, _ := w.CreateFormFile("filename", filename)
+	if _, err := io.Copy(fw, bytes.NewReader(content)); err != nil {
+		return "", err
+	}
+
+	fw, _ = w.CreateFormField("id")
+	_, _ = fw.Write([]byte("WU_FILE_" + strconv.Itoa(int(common.MediaCount))))
+	common.MediaCount = atomic.AddUint32(&common.MediaCount, 1)
+
+	fw, _ = w.CreateFormField("name")
+	_, _ = fw.Write([]byte(filename))
+
+	fw, _ = w.CreateFormField("type")
+	_, _ = fw.Write([]byte("image/jpeg"))
+
+	fw, _ = w.CreateFormField("lastModifieDate")
+	_, _ = fw.Write([]byte("Mon Feb 13 2017 17:27:23 GMT+0800 (CST)"))
+
+	fw, _ = w.CreateFormField("size")
+	_, _ = fw.Write([]byte(strconv.Itoa(len(content))))
+
+	fw, _ = w.CreateFormField("mediatype")
+	_, _ = fw.Write([]byte("pic"))
+
+
+	js := InitReqBody{
+		BaseRequest: &BaseRequest{
+			ce.Wxuin,
+			ce.Wxsid,
+			ce.Skey,
+			common.DeviceID,
+		},
+		ClientMediaId: int(time.Now().Unix() * 1e4),
+		TotalLen: len(content),
+		StartPos: 0,
+		DataLen: len(content),
+		MediaType: 4,
+	}
+
+	jb, _ := json.Marshal(js)
+
+	fw, _ = w.CreateFormField("uploadmediarequest")
+	_, _ = fw.Write(jb)
+
+	fw, _ = w.CreateFormField("webwx_data_ticket")
+	for _, v := range cookies {
+		if strings.Contains(v.String(), "webwx_data_ticket") {
+			_, _ = fw.Write([]byte(strings.Split(v.String(), "=")[1]))
+			break
+		}
+	}
+
+	fw, _ = w.CreateFormField("pass_ticket")
+	_, _ = fw.Write([]byte(ce.PassTicket))
+	w.Close()
+
+	req, err := http.NewRequest("POST", common.UploadUrl, &b)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Add("Content-Type",  w.FormDataContentType())
+	req.Header.Add("User-Agent", common.UserAgent)
+
+	jar, _ := cookiejar.New(nil)
+	u, _ := url.Parse(common.UploadUrl)
+	jar.SetCookies(u, cookies)
+	client := &http.Client{Jar: jar}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	jc, _ := rrconfig.LoadJsonConfigFromBytes(body)
+	ret, _ := jc.GetInt("BaseResponse.Ret")
+	if ret != 0 {
+		return "", fmt.Errorf("BaseResponse.Ret=%d", ret)
+	}
+	mediaId, _ := jc.GetString("MediaId")
+	return mediaId, nil
+}
+
+func WebWxSendMsgImg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
+	from, to, media string) (int, error) {
+
+	km := url.Values{}
+	km.Add("pass_ticket", ce.PassTicket)
+	km.Add("fun", "async")
+	km.Add("f", "json")
+	km.Add("lang", common.Lang)
+
+	uri := common.CgiUrl + "/webwxsendmsgimg?" + km.Encode()
+
+	js := InitReqBody{
+		BaseRequest: &BaseRequest{
+			ce.Wxuin,
+			ce.Wxsid,
+			ce.Skey,
+			common.DeviceID,
+		},
+		Msg: &MediaMessage{
+			Type: 3,
+			Content: "",
+			FromUserName: from,
+			ToUserName: to,
+			LocalID: int(time.Now().Unix() * 1e4),
+			ClientMsgId: int(time.Now().Unix() * 1e4),
+			MediaId: media,
+		},
+		Scene: 0,
 	}
 
 	b, _ := json.Marshal(js)

@@ -59,6 +59,8 @@ func init() {
 			"webpush1.wechat.com",
 			"webpush2.wechat.com",
 		},
+		UploadUrl: "https://file.wx.qq.com/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json",
+		MediaCount: 0,
 	}
 	WxWebXcg = &wxweb.XmlConfig{}
 }

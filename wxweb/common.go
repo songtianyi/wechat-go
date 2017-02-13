@@ -39,6 +39,8 @@ type Common struct {
 	UserAgent string
 	CgiUrl    string
 	SyncSrvs  []string
+	UploadUrl string
+	MediaCount uint32
 }
 
 type InitReqBody struct {
@@ -50,6 +52,12 @@ type InitReqBody struct {
 	FromUserName string
 	ToUserName   string
 	ClientMsgId  int
+	ClientMediaId int
+	TotalLen int
+	StartPos int
+	DataLen int
+	MediaType int
+	Scene int
 }
 
 type BaseRequest struct {
@@ -117,4 +125,14 @@ type TextMessage struct {
 	ToUserName   string
 	LocalID      int
 	ClientMsgId  int
+}
+
+type MediaMessage struct {
+	Type         int
+	Content      string
+	FromUserName string
+	ToUserName   string
+	LocalID      int
+	ClientMsgId  int
+	MediaId string
 }

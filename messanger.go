@@ -26,6 +26,8 @@ SOFTWARE.
 package wxbot
 
 import (
+	"strings"
+	"io/ioutil"
 	"github.com/songtianyi/wechat-go/wxweb"
 	"github.com/songtianyi/rrframework/logs"
 )
@@ -36,4 +38,24 @@ func SendText(msg, from, to string) () {
 		logs.Error(ret, err)
 		return
 	}
+}
+
+func SendImg(path, from, to string) () {
+	ss := strings.Split(path, "/")
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
+		logs.Error(err)
+		return
+	}
+	mediaId, err := wxweb.WebWxUploadMedia(WxWebDefaultCommon, WxWebXcg, Cookies, ss[len(ss)-1], b)
+	if err != nil {
+		logs.Error(err)
+		return
+	}
+	ret, err := wxweb.WebWxSendMsgImg(WxWebDefaultCommon, WxWebXcg, Cookies, from, to, mediaId)
+	if err != nil || ret != 0 {
+		logs.Error(ret, err)
+		return
+	}
+
 }
