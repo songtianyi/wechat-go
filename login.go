@@ -42,6 +42,7 @@ var (
 	Cookies            []*http.Cookie
 	SynKeyList         *wxweb.SyncKeyList
 	Bot                *wxweb.User
+	Cm *ContactManager
 )
 
 func init() {
@@ -120,5 +121,19 @@ loop1:
 	}
 	if ret != 0 {
 		panic(fmt.Errorf("WebWxStatusNotify fail, %d", ret))
+	}
+
+	cb, err := wxweb.WebWxGetContact(WxWebDefaultCommon, WxWebXcg, Cookies)
+	if err != nil {
+		panic(err)
+	}
+	Cm, err = LoadContactFromBytes(cb)
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = wxweb.WebWxBatchGetContact(WxWebDefaultCommon, WxWebXcg, Cookies, Cm.GetGroupContact())
+	if err != nil {
+		panic(err)
 	}
 }

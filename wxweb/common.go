@@ -58,6 +58,8 @@ type InitReqBody struct {
 	DataLen int
 	MediaType int
 	Scene int
+	Count int
+	List []*User
 }
 
 type BaseRequest struct {
@@ -101,6 +103,9 @@ type User struct {
 	UserName          string
 	NickName          string
 	HeadImgUrl        string
+	ContactFlag int
+	MemberCount int
+	MemberList []string
 	RemarkName        string
 	PYInitial         string
 	PYQuanPin         string
@@ -111,11 +116,22 @@ type User struct {
 	Sex               int
 	Signature         string
 	AppAccountFlag    int
+	Statues int
+	AttrStatus int
+	Province string
+	City string
+	Alias string
 	VerifyFlag        int
-	ContactFlag       int
+	OwnerUin int
 	WebWxPluginSwitch int
 	HeadImgFlag       int
 	SnsFlag           int
+	UniFriend int
+	DisplayName string
+	ChatRoomId int
+	KeyWord string
+	EncryChatRoomId string
+	IsOwner int
 }
 
 type TextMessage struct {
@@ -136,3 +152,26 @@ type MediaMessage struct {
 	ClientMsgId  int
 	MediaId string
 }
+
+type EmotionMessage struct {
+	ClientMsgId int
+	EmojiFlag int
+	FromUserName string
+	LocalID int
+	MediaId string
+	ToUserName string
+	Type int
+}
+
+type BaseResponse struct {
+	Ret int
+	ErrMsg string
+}
+
+type ContactResponse struct {
+	BaseResponse *BaseResponse
+	MemberCount int
+	MemberList []*User
+	Seq int
+}
+

@@ -394,6 +394,12 @@ func WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 		return "", err
 	}
 
+	ss := strings.Split(filename, ".")
+	if len(ss) != 2 {
+		return "", fmt.Errorf("file type suffix not found")
+	}
+	suffix := ss[1]
+
 	fw, _ = w.CreateFormField("id")
 	_, _ = fw.Write([]byte("WU_FILE_" + strconv.Itoa(int(common.MediaCount))))
 	common.MediaCount = atomic.AddUint32(&common.MediaCount, 1)
@@ -402,7 +408,11 @@ func WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	_, _ = fw.Write([]byte(filename))
 
 	fw, _ = w.CreateFormField("type")
-	_, _ = fw.Write([]byte("image/jpeg"))
+	if suffix == "gif" {
+		_, _ = fw.Write([]byte("image/gif"))
+	}else {
+		_, _ = fw.Write([]byte("image/jpeg"))
+	}
 
 	fw, _ = w.CreateFormField("lastModifieDate")
 	_, _ = fw.Write([]byte("Mon Feb 13 2017 17:27:23 GMT+0800 (CST)"))
@@ -411,7 +421,11 @@ func WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	_, _ = fw.Write([]byte(strconv.Itoa(len(content))))
 
 	fw, _ = w.CreateFormField("mediatype")
-	_, _ = fw.Write([]byte("pic"))
+	if suffix == "gif" {
+		_, _ = fw.Write([]byte("doc"))
+	}else {
+		_, _ = fw.Write([]byte("pic"))
+	}
 
 
 	js := InitReqBody{
@@ -522,4 +536,93 @@ func WebWxSendMsgImg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	jc, _ := rrconfig.LoadJsonConfigFromBytes(body)
 	ret, _ := jc.GetInt("BaseResponse.Ret")
 	return ret, nil
+}
+
+func WebWxSendEmoticon(common *Common, ce *XmlConfig, cookies []*http.Cookie,
+	from, to, media string) (int, error) {
+
+	km := url.Values{}
+	km.Add("fun", "sys")
+	km.Add("lang", common.Lang)
+
+	uri := common.CgiUrl + "/webwxsendemoticon?" + km.Encode()
+
+	js := InitReqBody{
+		BaseRequest: &BaseRequest{
+			ce.Wxuin,
+			ce.Wxsid,
+			ce.Skey,
+			common.DeviceID,
+		},
+		Msg: &EmotionMessage{
+			Type: 47,
+			EmojiFlag: 2,
+			FromUserName: from,
+			ToUserName: to,
+			LocalID: int(time.Now().Unix() * 1e4),
+			ClientMsgId: int(time.Now().Unix() * 1e4),
+			MediaId: media,
+		},
+		Scene: 0,
+	}
+
+	b, _ := json.Marshal(js)
+	req, err := http.NewRequest("POST", uri, bytes.NewReader(b))
+	if err != nil {
+		return -1, err
+	}
+	req.Header.Add("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Add("User-Agent", common.UserAgent)
+
+	jar, _ := cookiejar.New(nil)
+	u, _ := url.Parse(uri)
+	jar.SetCookies(u, cookies)
+	client := &http.Client{Jar: jar}
+	resp, err := client.Do(req)
+	if err != nil {
+		return -1, err
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	jc, _ := rrconfig.LoadJsonConfigFromBytes(body)
+	ret, _ := jc.GetInt("BaseResponse.Ret")
+	return ret, nil
+}
+
+func WebWxBatchGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie, cl []*User) ([]byte, error) {
+	km := url.Values{}
+	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
+	km.Add("type", "ex")
+	uri := common.CgiUrl + "/webwxbatchgetcontact?" + km.Encode()
+
+	js := InitReqBody{
+		BaseRequest: &BaseRequest{
+			ce.Wxuin,
+			ce.Wxsid,
+			ce.Skey,
+			common.DeviceID,
+		},
+		Count: len(cl),
+		List: cl,
+	}
+
+	b, _ := json.Marshal(js)
+	req, err := http.NewRequest("POST", uri, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Add("User-Agent", common.UserAgent)
+
+	jar, _ := cookiejar.New(nil)
+	u, _ := url.Parse(uri)
+	jar.SetCookies(u, cookies)
+	client := &http.Client{Jar: jar}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	return body, nil
 }

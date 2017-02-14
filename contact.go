@@ -27,53 +27,53 @@ package wxbot
 
 import (
 	"strings"
-	"io/ioutil"
+	"encoding/json"
 	"github.com/songtianyi/wechat-go/wxweb"
-	"github.com/songtianyi/rrframework/logs"
 )
 
-func SendText(msg, from, to string) () {
-	ret, err := wxweb.WebWxSendTextMsg(WxWebDefaultCommon, WxWebXcg, Cookies, from, to, msg)
-	if ret != 0 {
-		logs.Error(ret, err)
-		return
-	}
+type ContactManager struct {
+	cl []*wxweb.User //contact list
 }
 
-func SendImg(path, from, to string) () {
-	ss := strings.Split(path, "/")
-	b, err := ioutil.ReadFile(path)
-	if err != nil {
-		logs.Error(err)
-		return
+func LoadContactFromBytes(cb []byte) (*ContactManager, error) {
+	var cr wxweb.ContactResponse
+	if err  := json.Unmarshal(cb, &cr); err != nil {
+		return nil, err
 	}
-	mediaId, err := wxweb.WebWxUploadMedia(WxWebDefaultCommon, WxWebXcg, Cookies, ss[len(ss)-1], b)
-	if err != nil {
-		logs.Error(err)
-		return
+	cm := &ContactManager {
+		cl: cr.MemberList,
 	}
-	ret, err := wxweb.WebWxSendMsgImg(WxWebDefaultCommon, WxWebXcg, Cookies, from, to, mediaId)
-	if err != nil || ret != 0 {
-		logs.Error(ret, err)
-		return
-	}
-
+	return cm, nil
 }
 
-func SendEmotion(path, from, to string) () {
-	ss := strings.Split(path, "/")
-	b, err := ioutil.ReadFile(path)
-	if err != nil {
-		logs.Error(err)
-		return
+func (s *ContactManager)GetContactByUserName(un string) *wxweb.User {
+	for _, v := range s.cl {
+		if v.UserName == un {
+			return v
+		}
 	}
-	mediaId, err := wxweb.WebWxUploadMedia(WxWebDefaultCommon, WxWebXcg, Cookies, ss[len(ss)-1], b)
-	if err != nil {
-		logs.Error(err)
-		return
-	}
-	ret, err := wxweb.WebWxSendEmoticon(WxWebDefaultCommon, WxWebXcg, Cookies, from, to, mediaId)
-	if err != nil || ret != 0 {
-		logs.Error(ret, err)
-	}
+	return nil
 }
+
+func (s *ContactManager)GetGroupContact() []*wxweb.User {
+	clarray := make([]*wxweb.User, 0)
+	for _, v := range s.cl {
+		if strings.Contains(v.UserName, "@@") {
+			clarray = append(clarray, v)
+		}
+	}
+	return clarray
+}
+
+func (s *ContactManager)GetContactByName(sig string) []*wxweb.User {
+	clarray := make([]*wxweb.User, 0)
+	for _, v := range s.cl {
+		if v.NickName == sig || v.RemarkName == sig {
+			clarray = append(clarray, v)
+		}
+	}
+	return clarray
+}
+
+//func (s *ContactManager)GetMember()
+

@@ -72,8 +72,6 @@ func producer(msg chan []byte) {
 func consumer(msg []byte) {
 	// analize message
 	jc, _ := rrconfig.LoadJsonConfigFromBytes(msg)
-	du, _ := jc.Dump()
-	logs.Debug(du)
 	msgCount, _ := jc.GetInt("AddMsgCount")
 	if msgCount < 1 {
 		return
