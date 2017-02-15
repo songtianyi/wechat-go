@@ -27,13 +27,13 @@ package wxbot
 
 import (
 	"fmt"
-	//"github.com/mdp/qrterminal"
+	"github.com/mdp/qrterminal"
 	"github.com/songtianyi/rrframework/config"
 	"github.com/songtianyi/rrframework/storage"
 	"github.com/songtianyi/rrframework/logs"
 	"github.com/songtianyi/wechat-go/wxweb"
 	"net/http"
-	//"os"
+	"os"
 	"time"
 )
 
@@ -75,7 +75,7 @@ func AutoLogin() {
 		panic(err)
 	}
 	logs.Debug(uuid)
-	//qrterminal.Generate("https://login.weixin.qq.com/l/"+uuid, qrterminal.L, os.Stdout)
+	qrterminal.Generate("https://login.weixin.qq.com/l/"+uuid, qrterminal.L, os.Stdout)
 
 	qrcb, err := wxweb.QrCode(WxWebDefaultCommon, uuid)
 	if err != nil {

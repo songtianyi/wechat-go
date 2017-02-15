@@ -75,5 +75,15 @@ func (s *ContactManager)GetContactByName(sig string) []*wxweb.User {
 	return clarray
 }
 
-//func (s *ContactManager)GetMember()
+func (s *ContactManager)GetContactByPinyin(sig string) *wxweb.User {
+	for _, v := range s.cl {
+		if strings.Contains(v.RemarkPYQuanPin, "jiajia") {
+			return v
+		}
+		if v.RemarkPYQuanPin == sig {
+			return v
+		}
+	}
+	return nil
+}
 
