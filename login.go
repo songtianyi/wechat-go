@@ -29,7 +29,7 @@ import (
 	"fmt"
 	"github.com/mdp/qrterminal"
 	"github.com/songtianyi/rrframework/config"
-	"github.com/songtianyi/rrframework/storage"
+	//"github.com/songtianyi/rrframework/storage"
 	"github.com/songtianyi/rrframework/logs"
 	"github.com/songtianyi/wechat-go/wxweb"
 	"net/http"
@@ -76,15 +76,21 @@ func AutoLogin() {
 	}
 	logs.Debug(uuid)
 	qrterminal.Generate("https://login.weixin.qq.com/l/"+uuid, qrterminal.L, os.Stdout)
-
-	qrcb, err := wxweb.QrCode(WxWebDefaultCommon, uuid)
+	f, err := os.Create("qrcoe.jpg")
 	if err != nil {
 		panic(err)
 	}
-	ls := rrstorage.CreateLocalDiskStorage("./")
-	if err := ls.Save(qrcb, "qrcode.jpg"); err != nil {
-		panic(err)
-	}
+	qrterminal.Generate("https://login.weixin.qq.com/l/"+uuid, qrterminal.L, f)
+	f.Close()
+
+	//qrcb, err := wxweb.QrCode(WxWebDefaultCommon, uuid)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//ls := rrstorage.CreateLocalDiskStorage("./")
+	//if err := ls.Save(qrcb, "qrcode.jpg"); err != nil {
+	//	panic(err)
+	//}
 
 	redirectUri := ""
 loop1:
