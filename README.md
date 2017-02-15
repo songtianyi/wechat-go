@@ -15,6 +15,7 @@ import (
 	"github.com/songtianyi/wechat-go"
 )
 func main() {
+	// more code in project go-aida
 	wxbot.AutoLogin()
 	wxbot.Run()
 }
