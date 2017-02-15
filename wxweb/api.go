@@ -32,6 +32,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"github.com/songtianyi/rrframework/config"
+	"github.com/songtianyi/rrframework/logs"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
@@ -115,6 +116,7 @@ func WebNewLoginPage(common *Common, xc *XmlConfig, uri string) ([]*http.Cookie,
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
+	logs.Debug(string(body))
 	if err := xml.Unmarshal(body, xc); err != nil {
 		return nil, err
 	}
