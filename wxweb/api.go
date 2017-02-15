@@ -50,6 +50,7 @@ func JsLogin(common *Common) (string, error) {
 	km.Add("appid", common.AppId)
 	km.Add("fun", "new")
 	km.Add("lang", common.Lang)
+	km.Add("redirect_uri", common.RedirectUri)
 	km.Add("_", strconv.FormatInt(time.Now().Unix(), 10))
 	uri := common.LoginUrl + "/jslogin?" + km.Encode()
 	resp, err := http.Get(uri)

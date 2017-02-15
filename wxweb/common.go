@@ -41,6 +41,7 @@ type Common struct {
 	SyncSrvs  []string
 	UploadUrl string
 	MediaCount uint32
+	RedirectUri string
 }
 
 type InitReqBody struct {

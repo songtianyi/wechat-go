@@ -63,6 +63,7 @@ func init() {
 		},
 		UploadUrl: "https://file.wx.qq.com/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json",
 		MediaCount: 0,
+		RedirectUri: "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage",
 	}
 	WxWebXcg = &wxweb.XmlConfig{}
 }
