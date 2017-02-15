@@ -4,6 +4,11 @@ go version wechat web api
 ## Install
 	go get -u -v github.com/songtianyi/wechat-go
 
+## golang.org/x dep install
+	mkdir $GOPATH/src/golang.org/x
+	cd $GOPATH/src/golang.org/x
+	git clone https://github.com/golang/net.git
+
 ## Example code
 ```go
 import (
