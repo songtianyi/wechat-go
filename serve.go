@@ -29,16 +29,14 @@ import (
 	"github.com/songtianyi/rrframework/logs"
 	"github.com/songtianyi/rrframework/config"
 	"github.com/songtianyi/wechat-go/wxweb"
-	"time"
 )
 
 func Run() {
-	// syncheck
 	msg := make(chan []byte, 10000)
+	// syncheck
+	go producer(msg)
 	for {
 		select {
-		case <-time.After(1 * time.Second):
-			producer(msg)
 		case m := <-msg:
 			go consumer(m)
 		}
@@ -47,23 +45,25 @@ func Run() {
 }
 
 func producer(msg chan []byte) {
-	for _, v := range WxWebDefaultCommon.SyncSrvs {
-		ret, sel, err := wxweb.SyncCheck(WxWebDefaultCommon, WxWebXcg, Cookies, v, SynKeyList)
-		logs.Debug(v, ret, sel)
-		if err != nil {
-			logs.Error(err)
-			continue
-		}
-		if ret == 0 {
-			// check success
-			if sel == 2 {
-				// new message
-				err := wxweb.WebWxSync(WxWebDefaultCommon, WxWebXcg, Cookies, msg, SynKeyList)
-				if err != nil {
-					logs.Error(err)
-				}
+	for {
+		for _, v := range WxWebDefaultCommon.SyncSrvs {
+			ret, sel, err := wxweb.SyncCheck(WxWebDefaultCommon, WxWebXcg, Cookies, v, SynKeyList)
+			logs.Debug(v, ret, sel)
+			if err != nil {
+				logs.Error(err)
+				continue
 			}
-			break
+			if ret == 0 {
+				// check success
+				if sel == 2 {
+					// new message
+					err := wxweb.WebWxSync(WxWebDefaultCommon, WxWebXcg, Cookies, msg, SynKeyList)
+					if err != nil {
+						logs.Error(err)
+					}
+				}
+				break
+			}
 		}
 	}
 
