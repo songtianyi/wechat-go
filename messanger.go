@@ -26,13 +26,13 @@ SOFTWARE.
 package wxbot
 
 import (
-	"strings"
-	"io/ioutil"
-	"github.com/songtianyi/wechat-go/wxweb"
 	"github.com/songtianyi/rrframework/logs"
+	"github.com/songtianyi/wechat-go/wxweb"
+	"io/ioutil"
+	"strings"
 )
 
-func SendText(msg, from, to string) () {
+func SendText(msg, from, to string) {
 	ret, err := wxweb.WebWxSendTextMsg(WxWebDefaultCommon, WxWebXcg, Cookies, from, to, msg)
 	if ret != 0 {
 		logs.Error(ret, err)
@@ -40,7 +40,7 @@ func SendText(msg, from, to string) () {
 	}
 }
 
-func SendImg(path, from, to string) () {
+func SendImg(path, from, to string) {
 	ss := strings.Split(path, "/")
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -60,7 +60,7 @@ func SendImg(path, from, to string) () {
 
 }
 
-func SendEmotion(path, from, to string) () {
+func SendEmotion(path, from, to string) {
 	ss := strings.Split(path, "/")
 	b, err := ioutil.ReadFile(path)
 	if err != nil {

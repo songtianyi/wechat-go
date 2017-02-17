@@ -26,23 +26,23 @@ SOFTWARE.
 package wxweb
 
 import (
-	"io"
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"github.com/songtianyi/rrframework/config"
 	"github.com/songtianyi/rrframework/logs"
+	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
-	"mime/multipart"
 	"sync/atomic"
+	"time"
 )
 
 func JsLogin(common *Common) (string, error) {
@@ -355,12 +355,12 @@ func WebWxSendTextMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 			common.DeviceID,
 		},
 		Msg: &TextMessage{
-			Type: 1,
-			Content: msg,
+			Type:         1,
+			Content:      msg,
 			FromUserName: from,
-			ToUserName: to,
-			LocalID: int(time.Now().Unix() * 1e4),
-			ClientMsgId: int(time.Now().Unix() * 1e4),
+			ToUserName:   to,
+			LocalID:      int(time.Now().Unix() * 1e4),
+			ClientMsgId:  int(time.Now().Unix() * 1e4),
 		},
 	}
 
@@ -413,7 +413,7 @@ func WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	fw, _ = w.CreateFormField("type")
 	if suffix == "gif" {
 		_, _ = fw.Write([]byte("image/gif"))
-	}else {
+	} else {
 		_, _ = fw.Write([]byte("image/jpeg"))
 	}
 
@@ -426,10 +426,9 @@ func WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	fw, _ = w.CreateFormField("mediatype")
 	if suffix == "gif" {
 		_, _ = fw.Write([]byte("doc"))
-	}else {
+	} else {
 		_, _ = fw.Write([]byte("pic"))
 	}
-
 
 	js := InitReqBody{
 		BaseRequest: &BaseRequest{
@@ -439,10 +438,10 @@ func WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 			common.DeviceID,
 		},
 		ClientMediaId: int(time.Now().Unix() * 1e4),
-		TotalLen: len(content),
-		StartPos: 0,
-		DataLen: len(content),
-		MediaType: 4,
+		TotalLen:      len(content),
+		StartPos:      0,
+		DataLen:       len(content),
+		MediaType:     4,
 	}
 
 	jb, _ := json.Marshal(js)
@@ -466,7 +465,7 @@ func WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	if err != nil {
 		return "", err
 	}
-	req.Header.Add("Content-Type",  w.FormDataContentType())
+	req.Header.Add("Content-Type", w.FormDataContentType())
 	req.Header.Add("User-Agent", common.UserAgent)
 
 	jar, _ := cookiejar.New(nil)
@@ -507,13 +506,13 @@ func WebWxSendMsgImg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 			common.DeviceID,
 		},
 		Msg: &MediaMessage{
-			Type: 3,
-			Content: "",
+			Type:         3,
+			Content:      "",
 			FromUserName: from,
-			ToUserName: to,
-			LocalID: int(time.Now().Unix() * 1e4),
-			ClientMsgId: int(time.Now().Unix() * 1e4),
-			MediaId: media,
+			ToUserName:   to,
+			LocalID:      int(time.Now().Unix() * 1e4),
+			ClientMsgId:  int(time.Now().Unix() * 1e4),
+			MediaId:      media,
 		},
 		Scene: 0,
 	}
@@ -558,13 +557,13 @@ func WebWxSendEmoticon(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 			common.DeviceID,
 		},
 		Msg: &EmotionMessage{
-			Type: 47,
-			EmojiFlag: 2,
+			Type:         47,
+			EmojiFlag:    2,
 			FromUserName: from,
-			ToUserName: to,
-			LocalID: int(time.Now().Unix() * 1e4),
-			ClientMsgId: int(time.Now().Unix() * 1e4),
-			MediaId: media,
+			ToUserName:   to,
+			LocalID:      int(time.Now().Unix() * 1e4),
+			ClientMsgId:  int(time.Now().Unix() * 1e4),
+			MediaId:      media,
 		},
 		Scene: 0,
 	}
@@ -606,7 +605,7 @@ func WebWxBatchGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 			common.DeviceID,
 		},
 		Count: len(cl),
-		List: cl,
+		List:  cl,
 	}
 
 	b, _ := json.Marshal(js)

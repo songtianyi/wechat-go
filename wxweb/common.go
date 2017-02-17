@@ -32,35 +32,35 @@ import (
 )
 
 type Common struct {
-	AppId     string
-	LoginUrl  string
-	Lang      string
-	DeviceID  string
-	UserAgent string
-	CgiUrl    string
-	SyncSrvs  []string
-	UploadUrl string
-	MediaCount uint32
+	AppId       string
+	LoginUrl    string
+	Lang        string
+	DeviceID    string
+	UserAgent   string
+	CgiUrl      string
+	SyncSrvs    []string
+	UploadUrl   string
+	MediaCount  uint32
 	RedirectUri string
 }
 
 type InitReqBody struct {
-	BaseRequest  *BaseRequest
-	Msg          interface{}
-	SyncKey      *SyncKeyList
-	rr           int
-	Code         int
-	FromUserName string
-	ToUserName   string
-	ClientMsgId  int
+	BaseRequest   *BaseRequest
+	Msg           interface{}
+	SyncKey       *SyncKeyList
+	rr            int
+	Code          int
+	FromUserName  string
+	ToUserName    string
+	ClientMsgId   int
 	ClientMediaId int
-	TotalLen int
-	StartPos int
-	DataLen int
-	MediaType int
-	Scene int
-	Count int
-	List []*User
+	TotalLen      int
+	StartPos      int
+	DataLen       int
+	MediaType     int
+	Scene         int
+	Count         int
+	List          []*User
 }
 
 type BaseRequest struct {
@@ -104,9 +104,9 @@ type User struct {
 	UserName          string
 	NickName          string
 	HeadImgUrl        string
-	ContactFlag int
-	MemberCount int
-	MemberList []string
+	ContactFlag       int
+	MemberCount       int
+	MemberList        []string
 	RemarkName        string
 	PYInitial         string
 	PYQuanPin         string
@@ -117,22 +117,22 @@ type User struct {
 	Sex               int
 	Signature         string
 	AppAccountFlag    int
-	Statues int
-	AttrStatus int
-	Province string
-	City string
-	Alias string
+	Statues           int
+	AttrStatus        int
+	Province          string
+	City              string
+	Alias             string
 	VerifyFlag        int
-	OwnerUin int
+	OwnerUin          int
 	WebWxPluginSwitch int
 	HeadImgFlag       int
 	SnsFlag           int
-	UniFriend int
-	DisplayName string
-	ChatRoomId int
-	KeyWord string
-	EncryChatRoomId string
-	IsOwner int
+	UniFriend         int
+	DisplayName       string
+	ChatRoomId        int
+	KeyWord           string
+	EncryChatRoomId   string
+	IsOwner           int
 }
 
 type TextMessage struct {
@@ -151,28 +151,27 @@ type MediaMessage struct {
 	ToUserName   string
 	LocalID      int
 	ClientMsgId  int
-	MediaId string
+	MediaId      string
 }
 
 type EmotionMessage struct {
-	ClientMsgId int
-	EmojiFlag int
+	ClientMsgId  int
+	EmojiFlag    int
 	FromUserName string
-	LocalID int
-	MediaId string
-	ToUserName string
-	Type int
+	LocalID      int
+	MediaId      string
+	ToUserName   string
+	Type         int
 }
 
 type BaseResponse struct {
-	Ret int
+	Ret    int
 	ErrMsg string
 }
 
 type ContactResponse struct {
 	BaseResponse *BaseResponse
-	MemberCount int
-	MemberList []*User
-	Seq int
+	MemberCount  int
+	MemberList   []*User
+	Seq          int
 }
-

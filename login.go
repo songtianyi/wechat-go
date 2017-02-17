@@ -29,8 +29,8 @@ import (
 	"fmt"
 	"github.com/mdp/qrterminal"
 	"github.com/songtianyi/rrframework/config"
-	"github.com/songtianyi/rrframework/storage"
 	"github.com/songtianyi/rrframework/logs"
+	"github.com/songtianyi/rrframework/storage"
 	"github.com/songtianyi/wechat-go/wxweb"
 	"net/http"
 	"os"
@@ -43,7 +43,7 @@ var (
 	Cookies            []*http.Cookie
 	SynKeyList         *wxweb.SyncKeyList
 	Bot                *wxweb.User
-	Cm *ContactManager
+	Cm                 *ContactManager
 )
 
 func init() {
@@ -61,8 +61,8 @@ func init() {
 			"webpush1.wechat.com",
 			"webpush2.wechat.com",
 		},
-		UploadUrl: "https://file.wx.qq.com/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json",
-		MediaCount: 0,
+		UploadUrl:   "https://file.wx.qq.com/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json",
+		MediaCount:  0,
 		RedirectUri: "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage",
 	}
 	WxWebXcg = &wxweb.XmlConfig{}

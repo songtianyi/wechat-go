@@ -26,9 +26,9 @@ SOFTWARE.
 package wxbot
 
 import (
-	"strings"
 	"encoding/json"
 	"github.com/songtianyi/wechat-go/wxweb"
+	"strings"
 )
 
 type ContactManager struct {
@@ -37,16 +37,16 @@ type ContactManager struct {
 
 func LoadContactFromBytes(cb []byte) (*ContactManager, error) {
 	var cr wxweb.ContactResponse
-	if err  := json.Unmarshal(cb, &cr); err != nil {
+	if err := json.Unmarshal(cb, &cr); err != nil {
 		return nil, err
 	}
-	cm := &ContactManager {
+	cm := &ContactManager{
 		cl: cr.MemberList,
 	}
 	return cm, nil
 }
 
-func (s *ContactManager)GetContactByUserName(un string) *wxweb.User {
+func (s *ContactManager) GetContactByUserName(un string) *wxweb.User {
 	for _, v := range s.cl {
 		if v.UserName == un {
 			return v
@@ -55,7 +55,7 @@ func (s *ContactManager)GetContactByUserName(un string) *wxweb.User {
 	return nil
 }
 
-func (s *ContactManager)GetGroupContact() []*wxweb.User {
+func (s *ContactManager) GetGroupContact() []*wxweb.User {
 	clarray := make([]*wxweb.User, 0)
 	for _, v := range s.cl {
 		if strings.Contains(v.UserName, "@@") {
@@ -65,7 +65,7 @@ func (s *ContactManager)GetGroupContact() []*wxweb.User {
 	return clarray
 }
 
-func (s *ContactManager)GetContactByName(sig string) []*wxweb.User {
+func (s *ContactManager) GetContactByName(sig string) []*wxweb.User {
 	clarray := make([]*wxweb.User, 0)
 	for _, v := range s.cl {
 		if v.NickName == sig || v.RemarkName == sig {
@@ -75,7 +75,7 @@ func (s *ContactManager)GetContactByName(sig string) []*wxweb.User {
 	return clarray
 }
 
-func (s *ContactManager)GetContactByPinyin(sig string) *wxweb.User {
+func (s *ContactManager) GetContactByPinyin(sig string) *wxweb.User {
 	for _, v := range s.cl {
 		if strings.Contains(v.RemarkPYQuanPin, "jiajia") {
 			return v
@@ -86,4 +86,3 @@ func (s *ContactManager)GetContactByPinyin(sig string) *wxweb.User {
 	}
 	return nil
 }
-

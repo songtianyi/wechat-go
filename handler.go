@@ -26,8 +26,8 @@ SOFTWARE.
 package wxbot
 
 import (
-	"sync"
 	"fmt"
+	"sync"
 )
 
 type Handler func(map[string]interface{})
@@ -41,7 +41,7 @@ func (s *HandlerWrapper) Run(msg map[string]interface{}) {
 }
 
 var (
-	HandlerRegister	*handlerRegister
+	HandlerRegister *handlerRegister
 )
 
 func init() {
@@ -63,7 +63,7 @@ func createHandlerRegister() (*handlerRegister, error) {
 func (hr *handlerRegister) Add(key int, h Handler) {
 	hr.mu.Lock()
 	defer hr.mu.Unlock()
-	if _, ok :=  hr.hmap[key]; !ok {
+	if _, ok := hr.hmap[key]; !ok {
 		hr.hmap[key] = make([]*HandlerWrapper, 0)
 	}
 	hr.hmap[key] = append(hr.hmap[key], &HandlerWrapper{handle: h})

@@ -26,8 +26,8 @@ SOFTWARE.
 package wxbot
 
 import (
-	"github.com/songtianyi/rrframework/logs"
 	"github.com/songtianyi/rrframework/config"
+	"github.com/songtianyi/rrframework/logs"
 	"github.com/songtianyi/wechat-go/wxweb"
 )
 
