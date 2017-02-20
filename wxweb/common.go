@@ -106,7 +106,7 @@ type User struct {
 	HeadImgUrl        string
 	ContactFlag       int
 	MemberCount       int
-	MemberList        []string
+	MemberList        []*GroupUser
 	RemarkName        string
 	PYInitial         string
 	PYQuanPin         string
@@ -133,6 +133,20 @@ type User struct {
 	KeyWord           string
 	EncryChatRoomId   string
 	IsOwner           int
+}
+
+type GroupUser struct {
+	Uin             int
+	UserName        string
+	NickName        string
+	AttrStatus      int
+	PYInitial       string
+	PYQuanPin       string
+	RemarkPYInitial string
+	RemarkPYQuanPin string
+	MemberStatus    int
+	DisplayName     string
+	KeyWord         string
 }
 
 type TextMessage struct {
@@ -174,4 +188,10 @@ type ContactResponse struct {
 	MemberCount  int
 	MemberList   []*User
 	Seq          int
+}
+
+type GroupContactResponse struct {
+	BaseResponse *BaseResponse
+	Count        int
+	ContactList  []*User
 }

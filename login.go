@@ -133,7 +133,7 @@ loop1:
 	if err != nil {
 		panic(err)
 	}
-	Cm, err = LoadContactFromBytes(cb)
+	Cm, err = CreateContactManagerFromBytes(cb)
 	if err != nil {
 		panic(err)
 	}

@@ -60,6 +60,10 @@ func SendImg(path, from, to string) {
 
 }
 
+func GetImg(msgId string) ([]byte, error) {
+	return wxweb.WebWxGetMsgImg(WxWebDefaultCommon, WxWebXcg, Cookies, msgId)
+}
+
 func SendEmotion(path, from, to string) {
 	ss := strings.Split(path, "/")
 	b, err := ioutil.ReadFile(path)

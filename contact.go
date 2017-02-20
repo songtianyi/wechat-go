@@ -27,6 +27,7 @@ package wxbot
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/songtianyi/wechat-go/wxweb"
 	"strings"
 )
@@ -35,7 +36,7 @@ type ContactManager struct {
 	cl []*wxweb.User //contact list
 }
 
-func LoadContactFromBytes(cb []byte) (*ContactManager, error) {
+func CreateContactManagerFromBytes(cb []byte) (*ContactManager, error) {
 	var cr wxweb.ContactResponse
 	if err := json.Unmarshal(cb, &cr); err != nil {
 		return nil, err
@@ -44,6 +45,23 @@ func LoadContactFromBytes(cb []byte) (*ContactManager, error) {
 		cl: cr.MemberList,
 	}
 	return cm, nil
+}
+
+func CreateContactManagerFromContact(user *wxweb.User) (*ContactManager, error) {
+	b, err := wxweb.WebWxBatchGetContact(WxWebDefaultCommon, WxWebXcg, Cookies, []*wxweb.User{user})
+	if err != nil {
+		return nil, err
+	}
+	return CreateContactManagerFromBytes(b)
+}
+
+func (s *ContactManager) AddConactFromBytes(cb []byte) error {
+	var cr wxweb.ContactResponse
+	if err := json.Unmarshal(cb, &cr); err != nil {
+		return err
+	}
+	s.cl = append(s.cl, cr.MemberList...)
+	return nil
 }
 
 func (s *ContactManager) GetContactByUserName(un string) *wxweb.User {
@@ -75,12 +93,10 @@ func (s *ContactManager) GetContactByName(sig string) []*wxweb.User {
 	return clarray
 }
 
-func (s *ContactManager) GetContactByPinyin(sig string) *wxweb.User {
+func (s *ContactManager) GetContactByQuanPin(sig string) *wxweb.User {
 	for _, v := range s.cl {
-		if strings.Contains(v.RemarkPYQuanPin, "jiajia") {
-			return v
-		}
-		if v.RemarkPYQuanPin == sig {
+		fmt.Println(v.PYQuanPin, v.RemarkPYQuanPin)
+		if v.PYQuanPin == sig || v.RemarkPYQuanPin == sig {
 			return v
 		}
 	}

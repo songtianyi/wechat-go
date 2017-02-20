@@ -64,7 +64,7 @@ func GetSyncKeyListFromJc(jc *rrconfig.JsonConfig) (*SyncKeyList, error) {
 }
 
 func GetUserInfoFromJc(jc *rrconfig.JsonConfig) (*User, error) {
-	user, _ := jc.Get("User")
+	user, _ := jc.GetInterface("User")
 	u := &User{}
 	fields := reflect.ValueOf(u).Elem()
 	for k, v := range user.(map[string]interface{}) {
