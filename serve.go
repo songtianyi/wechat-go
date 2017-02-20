@@ -80,14 +80,12 @@ func consumer(msg []byte) {
 	for _, v := range msgis {
 		msgi := v.(map[string]interface{})
 		msgType := int(msgi["MsgType"].(float64))
-		if msgType == 51 {
-			continue
+		err, handles := HandlerRegister.Get(msgType)
+		if err != nil {
+			logs.Error(err)
 		}
-		if msgType == 1 {
-			_, handles := HandlerRegister.Get(msgType)
-			for _, v := range handles {
-				v.Run(msgi)
-			}
+		for _, v := range handles {
+			v.Run(msgi)
 		}
 	}
 }

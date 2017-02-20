@@ -75,5 +75,5 @@ func (hr *handlerRegister) Get(key int) (error, []*HandlerWrapper) {
 	if v, ok := hr.hmap[key]; ok {
 		return nil, v
 	}
-	return fmt.Errorf("value for key [%d] does not exist in map", key), nil
+	return fmt.Errorf("handlers for key [%d] not registered", key), nil
 }
