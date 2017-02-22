@@ -32,6 +32,7 @@ import (
 	"strings"
 )
 
+// send text msg type 1
 func SendText(msg, from, to string) {
 	ret, err := wxweb.WebWxSendTextMsg(WxWebDefaultCommon, WxWebXcg, Cookies, from, to, msg)
 	if ret != 0 {
@@ -40,6 +41,7 @@ func SendText(msg, from, to string) {
 	}
 }
 
+// send img, upload then send
 func SendImg(path, from, to string) {
 	ss := strings.Split(path, "/")
 	b, err := ioutil.ReadFile(path)
@@ -60,10 +62,12 @@ func SendImg(path, from, to string) {
 
 }
 
+// get img by MsgId
 func GetImg(msgId string) ([]byte, error) {
 	return wxweb.WebWxGetMsgImg(WxWebDefaultCommon, WxWebXcg, Cookies, msgId)
 }
 
+// send gif, upload then send
 func SendEmotion(path, from, to string) {
 	ss := strings.Split(path, "/")
 	b, err := ioutil.ReadFile(path)

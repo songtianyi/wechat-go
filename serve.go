@@ -62,6 +62,9 @@ func producer(msg chan []byte) {
 						logs.Error(err)
 					}
 				}
+				if sel == 6 {
+					AutoLogin()
+				}
 				break
 			}
 		}

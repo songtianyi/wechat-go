@@ -618,6 +618,60 @@ func WebWxSendEmoticon(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	return ret, nil
 }
 
+func WebWxGetIcon(common *Common, ce *XmlConfig, cookies []*http.Cookie,
+	username, chatroomid string) ([]byte, error) {
+	km := url.Values{}
+	km.Add("seq", "0")
+	km.Add("username", username)
+	if chatroomid != "" {
+		km.Add("chatroomid", chatroomid)
+	}
+	km.Add("skey", ce.Skey)
+	uri := common.CgiUrl + "/webwxgeticon?" + km.Encode()
+
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", "image/jpeg")
+	req.Header.Add("User-Agent", common.UserAgent)
+
+	jar, _ := cookiejar.New(nil)
+	u, _ := url.Parse(uri)
+	jar.SetCookies(u, cookies)
+	client := &http.Client{Jar: jar}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	return body, nil
+}
+
+func WebWxGetIconByHeadImgUrl(common *Common, ce *XmlConfig, cookies []*http.Cookie, headImgUrl string) ([]byte, error) {
+	uri := common.CgiDomain + headImgUrl
+
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", "image/jpeg")
+	req.Header.Add("User-Agent", common.UserAgent)
+
+	jar, _ := cookiejar.New(nil)
+	u, _ := url.Parse(uri)
+	jar.SetCookies(u, cookies)
+	client := &http.Client{Jar: jar}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	return body, nil
+}
+
 func WebWxBatchGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie, cl []*User) ([]byte, error) {
 	km := url.Values{}
 	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
@@ -653,6 +707,47 @@ func WebWxBatchGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
-	logs.Debug(string(body))
+	return body, nil
+}
+
+func WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*http.Cookie, verifyContent string, vul []*VerifyUser) ([]byte, error) {
+	km := url.Values{}
+	km.Add("r",strconv.FormatInt(time.Now().Unix(), 10))
+	km.Add("pass_ticket", ce.PassTicket)
+
+	uri := common.CgiUrl + "/webwxverifyuser?" + km.Encode()
+	js := InitReqBody {
+		BaseRequest: &BaseRequest {
+			ce.Wxuin,
+			ce.Wxsid,
+			ce.Skey,
+			common.DeviceID,
+		},
+		Opcode: 2,
+		SceneList: []int{33},
+		SceneListCount: 1,
+		VerifyContent: verifyContent,
+		VerifyUserList: vul,
+		VerifyUserListSize: len(vul),
+		skey: ce.Skey,
+	}
+	b, _ := json.Marshal(js)
+	req, err := http.NewRequest("POST", uri, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Add("User-Agent", common.UserAgent)
+
+	jar, _ := cookiejar.New(nil)
+	u, _ := url.Parse(uri)
+	jar.SetCookies(u, cookies)
+	client := &http.Client{Jar: jar}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
 	return body, nil
 }

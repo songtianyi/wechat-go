@@ -27,7 +27,6 @@ package wxbot
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/songtianyi/wechat-go/wxweb"
 	"strings"
 )
@@ -45,14 +44,6 @@ func CreateContactManagerFromBytes(cb []byte) (*ContactManager, error) {
 		cl: cr.MemberList,
 	}
 	return cm, nil
-}
-
-func CreateContactManagerFromContact(user *wxweb.User) (*ContactManager, error) {
-	b, err := wxweb.WebWxBatchGetContact(WxWebDefaultCommon, WxWebXcg, Cookies, []*wxweb.User{user})
-	if err != nil {
-		return nil, err
-	}
-	return CreateContactManagerFromBytes(b)
 }
 
 func (s *ContactManager) AddConactFromBytes(cb []byte) error {
@@ -95,10 +86,13 @@ func (s *ContactManager) GetContactByName(sig string) []*wxweb.User {
 
 func (s *ContactManager) GetContactByQuanPin(sig string) *wxweb.User {
 	for _, v := range s.cl {
-		fmt.Println(v.PYQuanPin, v.RemarkPYQuanPin)
 		if v.PYQuanPin == sig || v.RemarkPYQuanPin == sig {
 			return v
 		}
 	}
 	return nil
+}
+
+func (s *ContactManager) GetAll() []*wxweb.User {
+	return s.cl
 }

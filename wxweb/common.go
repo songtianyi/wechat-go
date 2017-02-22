@@ -38,6 +38,7 @@ type Common struct {
 	DeviceID    string
 	UserAgent   string
 	CgiUrl      string
+	CgiDomain      string
 	SyncSrvs    []string
 	UploadUrl   string
 	MediaCount  uint32
@@ -61,6 +62,13 @@ type InitReqBody struct {
 	Scene         int
 	Count         int
 	List          []*User
+	Opcode int
+	SceneList []int
+	SceneListCount int
+	VerifyContent string
+	VerifyUserList []*VerifyUser
+	VerifyUserListSize int
+	skey string
 }
 
 type BaseRequest struct {
@@ -106,7 +114,7 @@ type User struct {
 	HeadImgUrl        string
 	ContactFlag       int
 	MemberCount       int
-	MemberList        []*GroupUser
+	MemberList        []*User
 	RemarkName        string
 	PYInitial         string
 	PYQuanPin         string
@@ -133,20 +141,7 @@ type User struct {
 	KeyWord           string
 	EncryChatRoomId   string
 	IsOwner           int
-}
-
-type GroupUser struct {
-	Uin             int
-	UserName        string
-	NickName        string
-	AttrStatus      int
-	PYInitial       string
-	PYQuanPin       string
-	RemarkPYInitial string
-	RemarkPYQuanPin string
-	MemberStatus    int
-	DisplayName     string
-	KeyWord         string
+	MemberStatus int
 }
 
 type TextMessage struct {
@@ -194,4 +189,9 @@ type GroupContactResponse struct {
 	BaseResponse *BaseResponse
 	Count        int
 	ContactList  []*User
+}
+
+type VerifyUser struct {
+	Value string
+	VerifyUserTicket string
 }

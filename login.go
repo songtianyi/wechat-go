@@ -54,6 +54,7 @@ func init() {
 		DeviceID:  "e" + wxweb.GetRandomStringFromNum(15),
 		UserAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36",
 		CgiUrl:    "https://wx.qq.com/cgi-bin/mmwebwx-bin",
+		CgiDomain: "https://wx.qq.com",
 		SyncSrvs: []string{
 			"webpush.wx.qq.com",
 			"webpush.weixin.qq.com",
