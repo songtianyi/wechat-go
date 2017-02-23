@@ -478,7 +478,10 @@ func WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
-	jc, _ := rrconfig.LoadJsonConfigFromBytes(body)
+	jc, err := rrconfig.LoadJsonConfigFromBytes(body)
+	if err != nil {
+		return "", err
+	}
 	ret, _ := jc.GetInt("BaseResponse.Ret")
 	if ret != 0 {
 		return "", fmt.Errorf("BaseResponse.Ret=%d", ret)
