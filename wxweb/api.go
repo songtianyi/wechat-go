@@ -715,24 +715,24 @@ func WebWxBatchGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 
 func WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*http.Cookie, verifyContent string, vul []*VerifyUser) ([]byte, error) {
 	km := url.Values{}
-	km.Add("r",strconv.FormatInt(time.Now().Unix(), 10))
+	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
 	km.Add("pass_ticket", ce.PassTicket)
 
 	uri := common.CgiUrl + "/webwxverifyuser?" + km.Encode()
-	js := InitReqBody {
-		BaseRequest: &BaseRequest {
+	js := InitReqBody{
+		BaseRequest: &BaseRequest{
 			ce.Wxuin,
 			ce.Wxsid,
 			ce.Skey,
 			common.DeviceID,
 		},
-		Opcode: 2,
-		SceneList: []int{33},
-		SceneListCount: 1,
-		VerifyContent: verifyContent,
-		VerifyUserList: vul,
+		Opcode:             2,
+		SceneList:          []int{33},
+		SceneListCount:     1,
+		VerifyContent:      verifyContent,
+		VerifyUserList:     vul,
 		VerifyUserListSize: len(vul),
-		skey: ce.Skey,
+		skey:               ce.Skey,
 	}
 	b, _ := json.Marshal(js)
 	req, err := http.NewRequest("POST", uri, bytes.NewReader(b))

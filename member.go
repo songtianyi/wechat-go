@@ -35,7 +35,7 @@ type MemberManager struct {
 	Group *wxweb.User
 }
 
-func CreateMemberManagerFromGroupContact(user *wxweb.User)(*MemberManager, error) {
+func CreateMemberManagerFromGroupContact(user *wxweb.User) (*MemberManager, error) {
 	b, err := wxweb.WebWxBatchGetContact(WxWebDefaultCommon, WxWebXcg, Cookies, []*wxweb.User{user})
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func CreateMemberManagerFromGroupContact(user *wxweb.User)(*MemberManager, error
 	return CreateMemberManagerFromBytes(b)
 }
 
-func CreateMemberManagerFromBytes(b []byte)(*MemberManager, error) {
+func CreateMemberManagerFromBytes(b []byte) (*MemberManager, error) {
 	var gcr wxweb.GroupContactResponse
 	if err := json.Unmarshal(b, &gcr); err != nil {
 		return nil, err
@@ -62,11 +62,11 @@ func CreateMemberManagerFromBytes(b []byte)(*MemberManager, error) {
 	return mm, nil
 }
 
-func (s *MemberManager) Update () error {
+func (s *MemberManager) Update() error {
 	members := make([]*wxweb.User, len(s.Group.MemberList))
 	for i, v := range s.Group.MemberList {
 		members[i] = &wxweb.User{
-			UserName: v.UserName,
+			UserName:        v.UserName,
 			EncryChatRoomId: s.Group.UserName,
 		}
 	}
@@ -87,7 +87,7 @@ func (s *MemberManager) Update () error {
 	return nil
 }
 
-func (s *MemberManager) GetHeadImgUrlByGender(sex int) ([]string){
+func (s *MemberManager) GetHeadImgUrlByGender(sex int) []string {
 	uris := make([]string, 0)
 	for _, v := range s.Group.MemberList {
 		if v.Sex == sex {
@@ -97,7 +97,7 @@ func (s *MemberManager) GetHeadImgUrlByGender(sex int) ([]string){
 	return uris
 }
 
-func (s *MemberManager) GetContactsByGender(sex int) ([]*wxweb.User) {
+func (s *MemberManager) GetContactsByGender(sex int) []*wxweb.User {
 	contacts := make([]*wxweb.User, 0)
 	for _, v := range s.Group.MemberList {
 		if v.Sex == sex {

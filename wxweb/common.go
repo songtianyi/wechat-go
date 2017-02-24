@@ -38,7 +38,7 @@ type Common struct {
 	DeviceID    string
 	UserAgent   string
 	CgiUrl      string
-	CgiDomain      string
+	CgiDomain   string
 	SyncSrvs    []string
 	UploadUrl   string
 	MediaCount  uint32
@@ -46,29 +46,29 @@ type Common struct {
 }
 
 type InitReqBody struct {
-	BaseRequest   *BaseRequest
-	Msg           interface{}
-	SyncKey       *SyncKeyList
-	rr            int
-	Code          int
-	FromUserName  string
-	ToUserName    string
-	ClientMsgId   int
-	ClientMediaId int
-	TotalLen      int
-	StartPos      int
-	DataLen       int
-	MediaType     int
-	Scene         int
-	Count         int
-	List          []*User
-	Opcode int
-	SceneList []int
-	SceneListCount int
-	VerifyContent string
-	VerifyUserList []*VerifyUser
+	BaseRequest        *BaseRequest
+	Msg                interface{}
+	SyncKey            *SyncKeyList
+	rr                 int
+	Code               int
+	FromUserName       string
+	ToUserName         string
+	ClientMsgId        int
+	ClientMediaId      int
+	TotalLen           int
+	StartPos           int
+	DataLen            int
+	MediaType          int
+	Scene              int
+	Count              int
+	List               []*User
+	Opcode             int
+	SceneList          []int
+	SceneListCount     int
+	VerifyContent      string
+	VerifyUserList     []*VerifyUser
 	VerifyUserListSize int
-	skey string
+	skey               string
 }
 
 type BaseRequest struct {
@@ -141,7 +141,7 @@ type User struct {
 	KeyWord           string
 	EncryChatRoomId   string
 	IsOwner           int
-	MemberStatus int
+	MemberStatus      int
 }
 
 type TextMessage struct {
@@ -192,6 +192,6 @@ type GroupContactResponse struct {
 }
 
 type VerifyUser struct {
-	Value string
+	Value            string
 	VerifyUserTicket string
 }
