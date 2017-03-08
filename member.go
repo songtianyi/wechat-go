@@ -107,7 +107,7 @@ func (s *MemberManager) GetContactsByGender(sex int) []*wxweb.User {
 	return contacts
 }
 
-func (s *MemberManager) GetContactsByUserName(username string) *wxweb.User {
+func (s *MemberManager) GetContactByUserName(username string) *wxweb.User {
 	for _, v := range s.Group.MemberList {
 		if v.UserName == username {
 			return v
