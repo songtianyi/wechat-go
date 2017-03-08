@@ -80,10 +80,6 @@ func (s *MemberManager) Update() error {
 		return err
 	}
 	s.Group.MemberList = gcr.ContactList
-	fmt.Println(s.Group.NickName)
-	for _, v := range s.Group.MemberList {
-		fmt.Println(v.NickName)
-	}
 	return nil
 }
 
