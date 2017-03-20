@@ -32,53 +32,20 @@ import (
 	"github.com/songtianyi/rrframework/logs"
 	"github.com/songtianyi/rrframework/storage"
 	"github.com/songtianyi/wechat-go/wxweb"
-	"net/http"
 	"os"
 	"time"
 )
 
-var (
-	WxWebDefaultCommon *wxweb.Common
-	WxWebXcg           *wxweb.XmlConfig
-	Cookies            []*http.Cookie
-	SynKeyList         *wxweb.SyncKeyList
-	Bot                *wxweb.User
-	Cm                 *ContactManager
-)
-
-func init() {
-	WxWebDefaultCommon = &wxweb.Common{
-		AppId:     "wx782c26e4c19acffb",
-		LoginUrl:  "https://login.weixin.qq.com",
-		Lang:      "zh_CN",
-		DeviceID:  "e" + wxweb.GetRandomStringFromNum(15),
-		UserAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36",
-		CgiUrl:    "https://wx.qq.com/cgi-bin/mmwebwx-bin",
-		CgiDomain: "https://wx.qq.com",
-		SyncSrvs: []string{
-			"webpush.wx.qq.com",
-			"webpush.weixin.qq.com",
-			"webpush.wechat.com",
-			"webpush1.wechat.com",
-			"webpush2.wechat.com",
-		},
-		UploadUrl:   "https://file.wx.qq.com/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json",
-		MediaCount:  0,
-		RedirectUri: "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage",
-	}
-	WxWebXcg = &wxweb.XmlConfig{}
-}
-
-func AutoLogin() {
-	logs.Debug("%v", WxWebDefaultCommon)
-	uuid, err := wxweb.JsLogin(WxWebDefaultCommon)
+func AutoLogin(session *WxWebSession) {
+	logs.Debug("%v", session.WxWebDefaultCommon)
+	uuid, err := wxweb.JsLogin(session.WxWebDefaultCommon)
 	if err != nil {
 		panic(err)
 	}
 	logs.Debug(uuid)
 	qrterminal.Generate("https://login.weixin.qq.com/l/"+uuid, qrterminal.L, os.Stdout)
 
-	qrcb, err := wxweb.QrCode(WxWebDefaultCommon, uuid)
+	qrcb, err := wxweb.QrCode(session.WxWebDefaultCommon, uuid)
 	if err != nil {
 		panic(err)
 	}
@@ -92,7 +59,7 @@ loop1:
 	for {
 		select {
 		case <-time.After(5 * time.Second):
-			redirectUri, err = wxweb.Login(WxWebDefaultCommon, uuid, "0")
+			redirectUri, err = wxweb.Login(session.WxWebDefaultCommon, uuid, "0")
 			if err != nil {
 				logs.Error(err)
 			} else {
@@ -102,11 +69,11 @@ loop1:
 	}
 	logs.Debug(redirectUri)
 
-	if Cookies, err = wxweb.WebNewLoginPage(WxWebDefaultCommon, WxWebXcg, redirectUri); err != nil {
+	if session.Cookies, err = wxweb.WebNewLoginPage(session.WxWebDefaultCommon, session.WxWebXcg, redirectUri); err != nil {
 		panic(err)
 	}
 
-	jb, err := wxweb.WebWxInit(WxWebDefaultCommon, WxWebXcg)
+	jb, err := wxweb.WebWxInit(session.WxWebDefaultCommon, session.WxWebXcg)
 	if err != nil {
 		panic(err)
 	}
@@ -116,13 +83,13 @@ loop1:
 		panic(err)
 	}
 
-	SynKeyList, err = wxweb.GetSyncKeyListFromJc(jc)
+	session.SynKeyList, err = wxweb.GetSyncKeyListFromJc(jc)
 	if err != nil {
 		panic(err)
 	}
-	Bot, _ = wxweb.GetUserInfoFromJc(jc)
-	logs.Debug(Bot)
-	ret, err := wxweb.WebWxStatusNotify(WxWebDefaultCommon, WxWebXcg, Bot)
+	session.Bot, _ = wxweb.GetUserInfoFromJc(jc)
+	logs.Debug(session.Bot)
+	ret, err := wxweb.WebWxStatusNotify(session.WxWebDefaultCommon, session.WxWebXcg, session.Bot)
 	if err != nil {
 		panic(err)
 	}
@@ -130,16 +97,16 @@ loop1:
 		panic(fmt.Errorf("WebWxStatusNotify fail, %d", ret))
 	}
 
-	cb, err := wxweb.WebWxGetContact(WxWebDefaultCommon, WxWebXcg, Cookies)
+	cb, err := wxweb.WebWxGetContact(session.WxWebDefaultCommon, session.WxWebXcg, session.Cookies)
 	if err != nil {
 		panic(err)
 	}
-	Cm, err = CreateContactManagerFromBytes(cb)
+	session.Cm, err = CreateContactManagerFromBytes(cb)
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = wxweb.WebWxBatchGetContact(WxWebDefaultCommon, WxWebXcg, Cookies, Cm.GetGroupContact())
+	_, err = wxweb.WebWxBatchGetContact(session.WxWebDefaultCommon, session.WxWebXcg, session.Cookies, session.Cm.GetGroupContact())
 	if err != nil {
 		panic(err)
 	}

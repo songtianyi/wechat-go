@@ -35,8 +35,8 @@ type MemberManager struct {
 	Group *wxweb.User
 }
 
-func CreateMemberManagerFromGroupContact(user *wxweb.User) (*MemberManager, error) {
-	b, err := wxweb.WebWxBatchGetContact(WxWebDefaultCommon, WxWebXcg, Cookies, []*wxweb.User{user})
+func CreateMemberManagerFromGroupContact(session *WxWebSession, user *wxweb.User) (*MemberManager, error) {
+	b, err := wxweb.WebWxBatchGetContact(session.WxWebDefaultCommon, session.WxWebXcg, session.Cookies, []*wxweb.User{user})
 	if err != nil {
 		return nil, err
 	}
