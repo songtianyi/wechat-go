@@ -2,8 +2,7 @@
 Copyright 2017 wechat-go Authors. All Rights Reserved.
 MIT License
 
-Copyright (c) 2017
-
+Copyright (c) 2017 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -88,7 +87,7 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 	if err != nil {
 		return nil, err
 	}
-	logs.Debug(uuid)
+	logs.Info(uuid)
 	session := &Session{
 		WxWebCommon: common,
 		WxWebXcg:    wxWebXcg,
@@ -186,7 +185,7 @@ func (s *Session) LoginAndServe(useCache bool) error {
 		return err
 	}
 	s.Bot, _ = GetUserInfoFromJc(jc)
-	logs.Debug(s.Bot)
+	logs.Info(s.Bot)
 	ret, err := WebWxStatusNotify(s.WxWebCommon, s.WxWebXcg, s.Bot)
 	if err != nil {
 		return err
@@ -199,6 +198,7 @@ func (s *Session) LoginAndServe(useCache bool) error {
 	if err != nil {
 		return err
 	}
+
 	s.Cm, err = CreateContactManagerFromBytes(cb)
 	if err != nil {
 		return err
@@ -230,7 +230,7 @@ func (s *Session) producer(msg chan []byte, errChan chan error) {
 loop1:
 	for {
 		ret, sel, err := SyncCheck(s.WxWebCommon, s.WxWebXcg, s.Cookies, s.WxWebCommon.SyncSrv, s.SynKeyList)
-		logs.Debug(s.WxWebCommon.SyncSrv, ret, sel)
+		logs.Info(s.WxWebCommon.SyncSrv, ret, sel)
 		if err != nil {
 			logs.Error(err)
 			continue

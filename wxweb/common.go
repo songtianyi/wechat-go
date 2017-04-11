@@ -174,7 +174,7 @@ type User struct {
 	Signature         string
 	AppAccountFlag    int
 	Statues           int
-	AttrStatus        int
+	AttrStatus        uint32
 	Province          string
 	City              string
 	Alias             string
