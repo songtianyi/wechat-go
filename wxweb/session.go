@@ -31,7 +31,6 @@ import (
 	"github.com/songtianyi/rrframework/config"
 	"github.com/songtianyi/rrframework/logs"
 	"github.com/songtianyi/rrframework/storage"
-	"github.com/songtianyi/wechat-go/wxweb"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -45,11 +44,11 @@ const (
 )
 
 var (
-	DefaultCommon = &wxweb.Common{
+	DefaultCommon = &Common{
 		AppId:     "wx782c26e4c19acffb",
 		LoginUrl:  "https://login.weixin.qq.com",
 		Lang:      "zh_CN",
-		DeviceID:  "e" + wxweb.GetRandomStringFromNum(15),
+		DeviceID:  "e" + GetRandomStringFromNum(15),
 		UserAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36",
 		CgiUrl:    "https://wx.qq.com/cgi-bin/mmwebwx-bin",
 		CgiDomain: "https://wx.qq.com",
@@ -67,11 +66,11 @@ var (
 )
 
 type Session struct {
-	WxWebCommon     *wxweb.Common
-	WxWebXcg        *wxweb.XmlConfig
+	WxWebCommon     *Common
+	WxWebXcg        *XmlConfig
 	Cookies         []*http.Cookie
-	SynKeyList      *wxweb.SyncKeyList
-	Bot             *wxweb.User
+	SynKeyList      *SyncKeyList
+	Bot             *User
 	Cm              *ContactManager
 	QrcodePath      string //qrcode path
 	QrcodeUUID      string //uuid
@@ -79,15 +78,15 @@ type Session struct {
 	HandlerRegister *HandlerRegister
 }
 
-func CreateSession(common *wxweb.Common, qrmode int) (*WxWebSession, error) {
+func CreateSession(common *Common, qrmode int) (*Session, error) {
 	if common == nil {
 		common = DefaultCommon
 	}
 
-	wxWebXcg := &wxweb.XmlConfig{}
+	wxWebXcg := &XmlConfig{}
 
 	// get qrcode
-	uuid, err := wxweb.JsLogin(common)
+	uuid, err := JsLogin(common)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +101,7 @@ func CreateSession(common *wxweb.Common, qrmode int) (*WxWebSession, error) {
 	if qrmode == TERMINAL_MODE {
 		qrterminal.Generate("https://login.weixin.qq.com/l/"+uuid, qrterminal.L, os.Stdout)
 	} else if qrmode == WEB_MODE {
-		qrcb, err := wxweb.QrCode(common, uuid)
+		qrcb, err := QrCode(common, uuid)
 		if err != nil {
 			return nil, err
 		}
@@ -125,7 +124,7 @@ loop1:
 	for {
 		select {
 		case <-time.After(5 * time.Second):
-			redirectUri, err = wxweb.Login(s.WxWebCommon, s.QrcodeUUID, "0")
+			redirectUri, err = Login(s.WxWebCommon, s.QrcodeUUID, "0")
 			if err != nil {
 				logs.Error(err)
 			} else {
@@ -135,11 +134,11 @@ loop1:
 	}
 	logs.Debug(redirectUri)
 
-	if s.Cookies, err = wxweb.WebNewLoginPage(s.WxWebCommon, s.WxWebXcg, redirectUri); err != nil {
+	if s.Cookies, err = WebNewLoginPage(s.WxWebCommon, s.WxWebXcg, redirectUri); err != nil {
 		return err
 	}
 
-	jb, err := wxweb.WebWxInit(s.WxWebCommon, s.WxWebXcg)
+	jb, err := WebWxInit(s.WxWebCommon, s.WxWebXcg)
 	if err != nil {
 		return err
 	}
@@ -149,13 +148,13 @@ loop1:
 		return err
 	}
 
-	s.SynKeyList, err = wxweb.GetSyncKeyListFromJc(jc)
+	s.SynKeyList, err = GetSyncKeyListFromJc(jc)
 	if err != nil {
 		return err
 	}
-	s.Bot, _ = wxweb.GetUserInfoFromJc(jc)
+	s.Bot, _ = GetUserInfoFromJc(jc)
 	logs.Debug(s.Bot)
-	ret, err := wxweb.WebWxStatusNotify(s.WxWebCommon, s.WxWebXcg, s.Bot)
+	ret, err := WebWxStatusNotify(s.WxWebCommon, s.WxWebXcg, s.Bot)
 	if err != nil {
 		return err
 	}
@@ -163,7 +162,7 @@ loop1:
 		return fmt.Errorf("WebWxStatusNotify fail, %d", ret)
 	}
 
-	cb, err := wxweb.WebWxGetContact(s.WxWebCommon, s.WxWebXcg, s.Cookies)
+	cb, err := WebWxGetContact(s.WxWebCommon, s.WxWebXcg, s.Cookies)
 	if err != nil {
 		return err
 	}
@@ -200,7 +199,7 @@ func (s *Session) producer(msg chan []byte) {
 			}
 		default:
 			for _, v := range s.WxWebCommon.SyncSrvs {
-				ret, sel, err := wxweb.SyncCheck(s.WxWebCommon, s.WxWebXcg, s.Cookies, v, s.SynKeyList)
+				ret, sel, err := SyncCheck(s.WxWebCommon, s.WxWebXcg, s.Cookies, v, s.SynKeyList)
 				logs.Debug(v, ret, sel)
 				if err != nil {
 					logs.Error(err)
@@ -210,7 +209,7 @@ func (s *Session) producer(msg chan []byte) {
 					// check success
 					if sel == 2 {
 						// new message
-						err := wxweb.WebWxSync(s.WxWebCommon, s.WxWebXcg, s.Cookies, msg, s.SynKeyList)
+						err := WebWxSync(s.WxWebCommon, s.WxWebXcg, s.Cookies, msg, s.SynKeyList)
 						if err != nil {
 							logs.Error(err)
 						}
@@ -244,7 +243,7 @@ func (s *Session) consumer(msg []byte) {
 			continue
 		}
 		for _, v := range handles {
-			v.Run(s, analize(msgi))
+			v.Run(s, s.analize(msgi))
 		}
 	}
 }
@@ -272,7 +271,7 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 
 // send text msg type 1
 func (s *Session) SendText(msg, from, to string) {
-	ret, err := wxweb.WebWxSendTextMsg(s.WxWebCommon, s.WxWebXcg, s.Cookies, from, to, msg)
+	ret, err := WebWxSendTextMsg(s.WxWebCommon, s.WxWebXcg, s.Cookies, from, to, msg)
 	if ret != 0 {
 		logs.Error(ret, err)
 		return
@@ -287,12 +286,12 @@ func (s *Session) SendImg(path, from, to string) {
 		logs.Error(err)
 		return
 	}
-	mediaId, err := wxweb.WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.Cookies, ss[len(ss)-1], b)
+	mediaId, err := WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.Cookies, ss[len(ss)-1], b)
 	if err != nil {
 		logs.Error(err)
 		return
 	}
-	ret, err := wxweb.WebWxSendMsgImg(s.WxWebCommon, s.WxWebXcg, s.Cookies, from, to, mediaId)
+	ret, err := WebWxSendMsgImg(s.WxWebCommon, s.WxWebXcg, s.Cookies, from, to, mediaId)
 	if err != nil || ret != 0 {
 		logs.Error(ret, err)
 		return
@@ -301,7 +300,7 @@ func (s *Session) SendImg(path, from, to string) {
 
 // get img by MsgId
 func (s *Session) GetImg(msgId string) ([]byte, error) {
-	return wxweb.WebWxGetMsgImg(s.WxWebCommon, s.WxWebXcg, s.Cookies, msgId)
+	return WebWxGetMsgImg(s.WxWebCommon, s.WxWebXcg, s.Cookies, msgId)
 }
 
 // send gif, upload then send
@@ -312,12 +311,12 @@ func (s *Session) SendEmotion(path, from, to string) {
 		logs.Error(err)
 		return
 	}
-	mediaId, err := wxweb.WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.Cookies, ss[len(ss)-1], b)
+	mediaId, err := WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.Cookies, ss[len(ss)-1], b)
 	if err != nil {
 		logs.Error(err)
 		return
 	}
-	ret, err := wxweb.WebWxSendEmoticon(s.WxWebCommon, s.WxWebXcg, s.Cookies, from, to, mediaId)
+	ret, err := WebWxSendEmoticon(s.WxWebCommon, s.WxWebXcg, s.Cookies, from, to, mediaId)
 	if err != nil || ret != 0 {
 		logs.Error(ret, err)
 	}

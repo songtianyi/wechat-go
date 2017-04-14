@@ -27,16 +27,15 @@ package wxweb
 
 import (
 	"encoding/json"
-	"github.com/songtianyi/wechat-go/wxweb"
 	"strings"
 )
 
 type ContactManager struct {
-	cl []*wxweb.User //contact list
+	cl []*User //contact list
 }
 
 func CreateContactManagerFromBytes(cb []byte) (*ContactManager, error) {
-	var cr wxweb.ContactResponse
+	var cr ContactResponse
 	if err := json.Unmarshal(cb, &cr); err != nil {
 		return nil, err
 	}
@@ -47,7 +46,7 @@ func CreateContactManagerFromBytes(cb []byte) (*ContactManager, error) {
 }
 
 func (s *ContactManager) AddConactFromBytes(cb []byte) error {
-	var cr wxweb.ContactResponse
+	var cr ContactResponse
 	if err := json.Unmarshal(cb, &cr); err != nil {
 		return err
 	}
@@ -55,7 +54,7 @@ func (s *ContactManager) AddConactFromBytes(cb []byte) error {
 	return nil
 }
 
-func (s *ContactManager) GetContactByUserName(un string) *wxweb.User {
+func (s *ContactManager) GetContactByUserName(un string) *User {
 	for _, v := range s.cl {
 		if v.UserName == un {
 			return v
@@ -64,8 +63,8 @@ func (s *ContactManager) GetContactByUserName(un string) *wxweb.User {
 	return nil
 }
 
-func (s *ContactManager) GetGroupContact() []*wxweb.User {
-	clarray := make([]*wxweb.User, 0)
+func (s *ContactManager) GetGroupContact() []*User {
+	clarray := make([]*User, 0)
 	for _, v := range s.cl {
 		if strings.Contains(v.UserName, "@@") {
 			clarray = append(clarray, v)
@@ -74,8 +73,8 @@ func (s *ContactManager) GetGroupContact() []*wxweb.User {
 	return clarray
 }
 
-func (s *ContactManager) GetContactByName(sig string) []*wxweb.User {
-	clarray := make([]*wxweb.User, 0)
+func (s *ContactManager) GetContactByName(sig string) []*User {
+	clarray := make([]*User, 0)
 	for _, v := range s.cl {
 		if v.NickName == sig || v.RemarkName == sig {
 			clarray = append(clarray, v)
@@ -84,7 +83,7 @@ func (s *ContactManager) GetContactByName(sig string) []*wxweb.User {
 	return clarray
 }
 
-func (s *ContactManager) GetContactByQuanPin(sig string) *wxweb.User {
+func (s *ContactManager) GetContactByQuanPin(sig string) *User {
 	for _, v := range s.cl {
 		if v.PYQuanPin == sig || v.RemarkPYQuanPin == sig {
 			return v
@@ -93,6 +92,6 @@ func (s *ContactManager) GetContactByQuanPin(sig string) *wxweb.User {
 	return nil
 }
 
-func (s *ContactManager) GetAll() []*wxweb.User {
+func (s *ContactManager) GetAll() []*User {
 	return s.cl
 }

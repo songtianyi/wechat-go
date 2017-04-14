@@ -2,11 +2,14 @@ package faceplusplus
 
 import (
 	"bytes"
+	"github.com/songtianyi/rrframework/config"
+	"github.com/songtianyi/rrframework/logs"
 	"github.com/songtianyi/wechat-go/wxweb"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+	"strconv"
 )
 
 const (
@@ -24,7 +27,7 @@ func FaceDetectHandle(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	contact := session.Cm.GetContactByUserName(msg.FromUserName)
 	// contact filter
 	if contact == nil {
-		logs.Error("no this contact", targetUserName)
+		logs.Error("no this contact", msg.FromUserName)
 		return
 	}
 
@@ -33,7 +36,7 @@ func FaceDetectHandle(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 		logs.Error(err)
 		return
 	}
-	res, err := Detect(msgId+".jpg", b)
+	res, err := Detect(msg.MsgId+".jpg", b)
 	if err != nil {
 		logs.Error(err)
 		return
@@ -51,7 +54,7 @@ func FaceDetectHandle(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 		str += genders[i] + "," + strconv.Itoa(v) + "\n"
 	}
 	if !msg.IsGroup {
-		wxbot.SendText(str, session.Bot.UserName, msg.FromUserName)
+		session.SendText(str, session.Bot.UserName, msg.FromUserName)
 	}
 
 }
