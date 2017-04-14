@@ -322,6 +322,6 @@ func (s *Session) SendEmotion(path, from, to string) {
 	}
 }
 
-func (s *Session) Stop() {
+func (s *Session) Close() {
 	close(s.RefreshFlag)
 }

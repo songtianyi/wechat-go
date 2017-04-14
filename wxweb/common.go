@@ -31,6 +31,11 @@ import (
 	"strings"
 )
 
+const (
+	MSG_TEXT = 1
+	MSG_IMG  = 3
+)
+
 type Common struct {
 	AppId       string
 	LoginUrl    string

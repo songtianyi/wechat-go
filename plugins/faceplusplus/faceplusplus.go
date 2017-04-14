@@ -19,7 +19,7 @@ const (
 )
 
 func Register(session *wxweb.Session) {
-	session.HandlerRegister.Add(3, wxweb.Handler(FaceDetectHandle))
+	session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(FaceDetectHandle))
 
 }
 
