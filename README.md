@@ -8,6 +8,7 @@ go version wechat web api
 	mkdir $GOPATH/src/golang.org/x
 	cd $GOPATH/src/golang.org/x
 	git clone https://github.com/golang/net.git
+	git clone https://github.com/golang/text.git
 
 ## Example code
 ```go
