@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package wxbot
+package wxweb
 
 import (
 	"encoding/json"
@@ -36,7 +36,7 @@ type MemberManager struct {
 }
 
 func CreateMemberManagerFromGroupContact(session *WxWebSession, user *wxweb.User) (*MemberManager, error) {
-	b, err := wxweb.WebWxBatchGetContact(session.WxWebDefaultCommon, session.WxWebXcg, session.Cookies, []*wxweb.User{user})
+	b, err := wxweb.WebWxBatchGetContact(session.WxWebCommon, session.WxWebXcg, session.Cookies, []*wxweb.User{user})
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (s *MemberManager) Update() error {
 			EncryChatRoomId: s.Group.UserName,
 		}
 	}
-	b, err := wxweb.WebWxBatchGetContact(WxWebDefaultCommon, WxWebXcg, Cookies, members)
+	b, err := wxweb.WebWxBatchGetContact(WxWebCommon, WxWebXcg, Cookies, members)
 	if err != nil {
 		return err
 	}
