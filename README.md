@@ -11,13 +11,27 @@ go version wechat web api
 
 ## Example code
 ```go
+package main
+
 import (
-	"github.com/songtianyi/wechat-go"
+	"github.com/songtianyi/rrframework/logs"
+	"github.com/songtianyi/wechat-go/plugins/faceplusplus"
+	"github.com/songtianyi/wechat-go/wxweb"
 )
+
 func main() {
-	// more code in project go-aida
-	wxbot.AutoLogin()
-	wxbot.Run()
+	// create session
+	session, err := wxweb.CreateSession(nil, wxweb.TERMINAL_MODE)
+	if err != nil {
+		logs.Error(err)
+		return
+	}
+	// add plugins for this session
+	faceplusplus.Register(session)
+
+	if err := session.LoginAndServe(); err != nil {
+		logs.Error("session exit, %s", err)
+	}
 }
 ```
 
