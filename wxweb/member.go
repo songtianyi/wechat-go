@@ -23,20 +23,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package wxbot
+package wxweb
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/songtianyi/wechat-go/wxweb"
 )
 
 type MemberManager struct {
-	Group *wxweb.User
+	Group *User
 }
 
-func CreateMemberManagerFromGroupContact(user *wxweb.User) (*MemberManager, error) {
-	b, err := wxweb.WebWxBatchGetContact(WxWebDefaultCommon, WxWebXcg, Cookies, []*wxweb.User{user})
+func CreateMemberManagerFromGroupContact(session *Session, user *User) (*MemberManager, error) {
+	b, err := WebWxBatchGetContact(session.WxWebCommon, session.WxWebXcg, session.Cookies, []*User{user})
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +43,7 @@ func CreateMemberManagerFromGroupContact(user *wxweb.User) (*MemberManager, erro
 }
 
 func CreateMemberManagerFromBytes(b []byte) (*MemberManager, error) {
-	var gcr wxweb.GroupContactResponse
+	var gcr GroupContactResponse
 	if err := json.Unmarshal(b, &gcr); err != nil {
 		return nil, err
 	}
@@ -62,20 +61,20 @@ func CreateMemberManagerFromBytes(b []byte) (*MemberManager, error) {
 	return mm, nil
 }
 
-func (s *MemberManager) Update() error {
-	members := make([]*wxweb.User, len(s.Group.MemberList))
+func (s *MemberManager) Update(session *Session) error {
+	members := make([]*User, len(s.Group.MemberList))
 	for i, v := range s.Group.MemberList {
-		members[i] = &wxweb.User{
+		members[i] = &User{
 			UserName:        v.UserName,
 			EncryChatRoomId: s.Group.UserName,
 		}
 	}
-	b, err := wxweb.WebWxBatchGetContact(WxWebDefaultCommon, WxWebXcg, Cookies, members)
+	b, err := WebWxBatchGetContact(session.WxWebCommon, session.WxWebXcg, session.Cookies, members)
 	if err != nil {
 		return err
 	}
 
-	var gcr wxweb.GroupContactResponse
+	var gcr GroupContactResponse
 	if err := json.Unmarshal(b, &gcr); err != nil {
 		return err
 	}
@@ -93,8 +92,8 @@ func (s *MemberManager) GetHeadImgUrlByGender(sex int) []string {
 	return uris
 }
 
-func (s *MemberManager) GetContactsByGender(sex int) []*wxweb.User {
-	contacts := make([]*wxweb.User, 0)
+func (s *MemberManager) GetContactsByGender(sex int) []*User {
+	contacts := make([]*User, 0)
 	for _, v := range s.Group.MemberList {
 		if v.Sex == sex {
 			contacts = append(contacts, v)
@@ -103,7 +102,7 @@ func (s *MemberManager) GetContactsByGender(sex int) []*wxweb.User {
 	return contacts
 }
 
-func (s *MemberManager) GetContactByUserName(username string) *wxweb.User {
+func (s *MemberManager) GetContactByUserName(username string) *User {
 	for _, v := range s.Group.MemberList {
 		if v.UserName == username {
 			return v

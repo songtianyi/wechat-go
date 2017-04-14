@@ -23,53 +23,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package wxbot
+package wxweb
 
 import (
 	"fmt"
 	"sync"
 )
 
-type Handler func(map[string]interface{})
+type Handler func(*Session, *ReceivedMessage)
 
 type HandlerWrapper struct {
 	handle Handler
 }
 
-func (s *HandlerWrapper) Run(msg map[string]interface{}) {
-	s.handle(msg)
+func (s *HandlerWrapper) Run(session *Session, msg *ReceivedMessage) {
+	s.handle(session, msg)
 }
 
-var (
-	HandlerRegister *handlerRegister
-)
-
-func init() {
-	HandlerRegister, _ = createHandlerRegister()
-}
-
-type handlerRegister struct {
-	mu   *sync.RWMutex
+type HandlerRegister struct {
+	mu   sync.RWMutex
 	hmap map[int][]*HandlerWrapper
 }
 
-func createHandlerRegister() (*handlerRegister, error) {
-	return &handlerRegister{
-		mu:   new(sync.RWMutex),
+func CreateHandlerRegister() *HandlerRegister {
+	return &HandlerRegister{
 		hmap: make(map[int][]*HandlerWrapper),
-	}, nil
+	}
 }
 
-func (hr *handlerRegister) Add(key int, h Handler) {
+func (hr *HandlerRegister) Add(key int, h Handler) {
 	hr.mu.Lock()
 	defer hr.mu.Unlock()
-	if _, ok := hr.hmap[key]; !ok {
-		hr.hmap[key] = make([]*HandlerWrapper, 0)
-	}
 	hr.hmap[key] = append(hr.hmap[key], &HandlerWrapper{handle: h})
 }
 
-func (hr *handlerRegister) Get(key int) (error, []*HandlerWrapper) {
+func (hr *HandlerRegister) Get(key int) (error, []*HandlerWrapper) {
 	hr.mu.RLock()
 	defer hr.mu.RUnlock()
 	if v, ok := hr.hmap[key]; ok {

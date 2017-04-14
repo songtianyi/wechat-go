@@ -195,3 +195,12 @@ type VerifyUser struct {
 	Value            string
 	VerifyUserTicket string
 }
+
+type ReceivedMessage struct {
+	IsGroup      bool
+	MsgId        string
+	Content      string
+	FromUserName string
+	ToUserName   string
+	At           string
+}
