@@ -304,7 +304,7 @@ func (s *Session) GetImg(msgId string) ([]byte, error) {
 }
 
 // send gif, upload then send
-func (s *Session) SendEmotion(path, from, to string) {
+func (s *Session) SendEmotionWithPath(path, from, to string) {
 	ss := strings.Split(path, "/")
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -312,6 +312,18 @@ func (s *Session) SendEmotion(path, from, to string) {
 		return
 	}
 	mediaId, err := WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.Cookies, ss[len(ss)-1], b)
+	if err != nil {
+		logs.Error(err)
+		return
+	}
+	ret, err := WebWxSendEmoticon(s.WxWebCommon, s.WxWebXcg, s.Cookies, from, to, mediaId)
+	if err != nil || ret != 0 {
+		logs.Error(ret, err)
+	}
+}
+
+func (s *Session)SendEmotionWithBytes(b []bytes, from, to string){
+	mediaId, err := WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.Cookies, from + ".gif", b)
 	if err != nil {
 		logs.Error(err)
 		return
