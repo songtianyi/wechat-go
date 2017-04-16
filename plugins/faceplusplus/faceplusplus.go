@@ -27,7 +27,7 @@ func FaceDetectHandle(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	contact := session.Cm.GetContactByUserName(msg.FromUserName)
 	// contact filter
 	if contact == nil {
-		logs.Error("no this contact", msg.FromUserName)
+		logs.Error("no this contact, ignore", msg.FromUserName)
 		return
 	}
 
@@ -36,12 +36,12 @@ func FaceDetectHandle(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 		logs.Error(err)
 		return
 	}
-	res, err := Detect(msg.MsgId+".jpg", b)
+	res, err := detect(msg.MsgId+".jpg", b)
 	if err != nil {
 		logs.Error(err)
 		return
 	}
-	logs.Debug(string(res))
+
 	jc, _ := rrconfig.LoadJsonConfigFromBytes(res)
 	ages, err := jc.GetSliceInt("faces.attributes.age.value")
 	if err != nil {
@@ -59,7 +59,7 @@ func FaceDetectHandle(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 
 }
 
-func Detect(filename string, content []byte) ([]byte, error) {
+func detect(filename string, content []byte) ([]byte, error) {
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)
 	fw, _ := w.CreateFormFile("image_file", filename)
