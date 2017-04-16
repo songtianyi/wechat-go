@@ -322,8 +322,8 @@ func (s *Session) SendEmotionWithPath(path, from, to string) {
 	}
 }
 
-func (s *Session)SendEmotionWithBytes(b []bytes, from, to string){
-	mediaId, err := WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.Cookies, from + ".gif", b)
+func (s *Session) SendEmotionWithBytes(b []byte, from, to string) {
+	mediaId, err := WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.Cookies, from+".gif", b)
 	if err != nil {
 		logs.Error(err)
 		return
