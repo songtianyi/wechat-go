@@ -1,10 +1,15 @@
 package gifer
 import (
-
+	"github.com/songtianyi/wechat-go/wxweb"
+	"net/url"
+	"github.com/songtianyi/laosj/spider"
+	"net/http"
+	"github.com/songtianyi/rrframework/logs"
+	"math/rand"
 )
 
 func  Register(session *wxweb.Session) {
-	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(Gifer))
+	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(Gifer), "gifer")
 }
 
 func Gifer(session *wxweb.Session, msg *wxweb.ReceivedMessage){
@@ -34,5 +39,4 @@ func Gifer(session *wxweb.Session, msg *wxweb.ReceivedMessage){
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 	session.SendEmotionWithBytes(body, wxbot.Bot.UserName, msg.FromUserName)
-
 }

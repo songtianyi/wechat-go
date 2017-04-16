@@ -34,11 +34,30 @@ type Handler func(*Session, *ReceivedMessage)
 
 type HandlerWrapper struct {
 	handle Handler
+	enabled  bool
+	name string
 }
 
 func (s *HandlerWrapper) Run(session *Session, msg *ReceivedMessage) {
-	s.handle(session, msg)
+	if s.enabled {
+		s.handle(session, msg)
+	}
 }
+
+func (s *HandlerWrapper) Name() string {
+	return s.name
+}
+
+func (s *HandlerWrapper) Enable() {
+	s.enabled = true
+	return
+}
+
+func (s *HandlerWrapper) Disable() {
+	s.enabled = false
+	return
+}
+
 
 type HandlerRegister struct {
 	mu   sync.RWMutex
@@ -51,10 +70,17 @@ func CreateHandlerRegister() *HandlerRegister {
 	}
 }
 
-func (hr *HandlerRegister) Add(key int, h Handler) {
+func (hr *HandlerRegister) Add(key int, h Handler, name string) error {
 	hr.mu.Lock()
 	defer hr.mu.Unlock()
-	hr.hmap[key] = append(hr.hmap[key], &HandlerWrapper{handle: h})
+	for _, v := range hr.hmap {
+		for _, handle := range hr.hmap {
+			if handle.Name() == name {
+				return fmt.Errorf("handler  name %s has been registered",  name)
+			}
+		}
+	}
+	hr.hmap[key] = append(hr.hmap[key], &HandlerWrapper{handle: h, enabled: true, name: name})
 }
 
 func (hr *HandlerRegister) Get(key int) (error, []*HandlerWrapper) {
@@ -65,3 +91,34 @@ func (hr *HandlerRegister) Get(key int) (error, []*HandlerWrapper) {
 	}
 	return fmt.Errorf("handlers for key [%d] not registered", key), nil
 }
+
+func  (hr *HandlerRegister) Enable(key int, name string) error {
+	err, handles :=  s.Get(key)
+	if err != nil {
+		return err
+	}
+	hr.mu.RLock()
+	defer hr.mu.RUnlock()
+	for _, v := range handles  {
+		if  v.Name() == name  {
+			v.Enable()
+			return
+		}
+	}
+}
+
+func  (hr *HandlerRegister) Enable(key int, name string) error {
+	err, handles :=  s.Get(key)
+	if err != nil {
+		return err
+	}
+	hr.mu.RLock()
+	defer hr.mu.RUnlock()
+	for _, v := range handles  {
+		if  v.Name() == name  {
+			v.Disable()
+			return
+		}
+	}
+}
+

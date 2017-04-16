@@ -5,8 +5,8 @@ import (
 )
 
 func Register(session *wxweb.Session) {
-	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(AutoReply))
-	session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(AutoReply))
+	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(AutoReply), "repiler")
+	session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(AutoReply), "repiler")
 
 }
 func AutoReply(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
