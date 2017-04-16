@@ -11,7 +11,7 @@ go version wechat web api
 	git clone https://github.com/golang/text.git
 
 ## Example project
-	![go-aida](https://www.github.com/songtianyi/go-aida)
+[go-aida](https://www.github.com/songtianyi/go-aida)
 
 ## Example code for creating your own chatbot
 ```go
