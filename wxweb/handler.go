@@ -79,7 +79,7 @@ func (hr *HandlerRegister) Add(key int, h Handler, name string) error {
 			}
 		}
 	}
-	hr.hmap[key] = append(hr.hmap[key], &HandlerWrapper{handle: h, enabled: true, name: name})
+	hr.hmap[key] = append(hr.hmap[key], &HandlerWrapper{handle: h, enabled: false, name: name})
 	return nil
 }
 
@@ -97,8 +97,8 @@ func (hr *HandlerRegister) EnableByType(key int) error {
 	if err != nil {
 		return err
 	}
-	hr.mu.RLock()
-	defer hr.mu.RUnlock()
+	hr.mu.Lock()
+	defer hr.mu.Unlock()
 	// all
 	for _, v := range handles {
 		v.enableHandle()
@@ -111,8 +111,8 @@ func (hr *HandlerRegister) DisableByType(key int) error {
 	if err != nil {
 		return err
 	}
-	hr.mu.RLock()
-	defer hr.mu.RUnlock()
+	hr.mu.Lock()
+	defer hr.mu.Unlock()
 	// all
 	for _, v := range handles {
 		v.disableHandle()
@@ -121,8 +121,8 @@ func (hr *HandlerRegister) DisableByType(key int) error {
 }
 
 func (hr *HandlerRegister) EnableByName(name string) {
-	hr.mu.RLock()
-	defer hr.mu.RUnlock()
+	hr.mu.Lock()
+	defer hr.mu.Unlock()
 	for _, handles := range hr.hmap {
 		for _, v := range handles {
 			if v.getName() == name {
@@ -133,8 +133,8 @@ func (hr *HandlerRegister) EnableByName(name string) {
 }
 
 func (hr *HandlerRegister) DisableByName(name string) {
-	hr.mu.RLock()
-	defer hr.mu.RUnlock()
+	hr.mu.Lock()
+	defer hr.mu.Unlock()
 	for _, handles := range hr.hmap {
 		for _, v := range handles {
 			if v.getName() == name {
@@ -142,4 +142,16 @@ func (hr *HandlerRegister) DisableByName(name string) {
 			}
 		}
 	}
+}
+
+func (hr *HandlerRegister) Dump() string {
+	hr.mu.RLock()
+	defer hr.mu.RUnlock()
+	str := "[plugins dump]\n"
+	for k, handles := range hr.hmap {
+		for _, v := range handles {
+			str += fmt.Sprintf("%d %s [%v]\n", k, v.getName(), v.enabled)
+		}
+	}
+	return str
 }

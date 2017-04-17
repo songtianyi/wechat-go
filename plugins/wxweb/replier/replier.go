@@ -13,5 +13,7 @@ func Register(session *wxweb.Session) {
 
 }
 func AutoReply(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
-	session.SendText("暂时不在，稍后回复", session.Bot.UserName, msg.FromUserName)
+	if !msg.IsGroup {
+		session.SendText("暂时不在，稍后回复", session.Bot.UserName, msg.FromUserName)
+	}
 }

@@ -77,3 +77,11 @@ func GetUserInfoFromJc(jc *rrconfig.JsonConfig) (*User, error) {
 	}
 	return u, nil
 }
+
+func RealTargetUserName(session *Session, msg *ReceivedMessage) string {
+	if session.Bot.UserName == msg.FromUserName {
+		return msg.ToUserName
+	} else {
+		return msg.FromUserName
+	}
+}

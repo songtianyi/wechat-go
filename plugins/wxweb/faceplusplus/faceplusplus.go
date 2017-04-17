@@ -53,7 +53,9 @@ func FaceDetectHandle(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	for i, v := range ages {
 		str += genders[i] + "," + strconv.Itoa(v) + "\n"
 	}
-	if !msg.IsGroup {
+	if session.Bot.UserName == msg.FromUserName {
+		session.SendText(str, session.Bot.UserName, msg.ToUserName)
+	} else {
 		session.SendText(str, session.Bot.UserName, msg.FromUserName)
 	}
 
