@@ -6,8 +6,8 @@ import (
 )
 
 func Register(session *wxweb.Session) {
-	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(AutoReply), "text_repiler")
-	if err := session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(AutoReply), "img_repiler"); err != nil {
+	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(AutoReply), "text_replier")
+	if err := session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(AutoReply), "img_replier"); err != nil {
 		logs.Error(err)
 	}
 
