@@ -28,7 +28,7 @@ import (
 
 func main() {
 	// create session
-	session, err := wxweb.CreateSession(nil, wxweb.TERMINAL_MODE)
+	session, err := wxweb.CreateSession(nil, nil, wxweb.TERMINAL_MODE)
 	if err != nil {
 		logs.Error(err)
 		return
@@ -66,6 +66,10 @@ dump
 以收到的文字消息为关键字做gif搜索，返回gif图, 注意返回的gif可能尺度较大，比如文字消息中包含“污”等关键词。
 ###### replier
 对收到的文字/图片消息，做自动应答，回复固定文字消息
-
+###### laosj
+```
+#随机获取一张美女图片, 在聊天窗口输入
+美女
+```
 ## Show
 ![example](http://p1.bpimg.com/567571/374325070b2a9042.jpg)

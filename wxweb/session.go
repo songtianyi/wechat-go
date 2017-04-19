@@ -74,11 +74,10 @@ type Session struct {
 	Cm              *ContactManager
 	QrcodePath      string //qrcode path
 	QrcodeUUID      string //uuid
-	RefreshFlag     chan struct{}
 	HandlerRegister *HandlerRegister
 }
 
-func CreateSession(common *Common, qrmode int) (*Session, error) {
+func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int) (*Session, error) {
 	if common == nil {
 		common = DefaultCommon
 	}
@@ -92,12 +91,17 @@ func CreateSession(common *Common, qrmode int) (*Session, error) {
 	}
 	logs.Debug(uuid)
 	session := &Session{
-		WxWebCommon:     common,
-		WxWebXcg:        wxWebXcg,
-		QrcodeUUID:      uuid,
-		RefreshFlag:     make(chan struct{}, 1),
-		HandlerRegister: CreateHandlerRegister(),
+		WxWebCommon: common,
+		WxWebXcg:    wxWebXcg,
+		QrcodeUUID:  uuid,
 	}
+
+	if handlerRegister != nil {
+		session.HandlerRegister = handlerRegister
+	} else {
+		session.HandlerRegister = CreateHandlerRegister()
+	}
+
 	if qrmode == TERMINAL_MODE {
 		qrterminal.Generate("https://login.weixin.qq.com/l/"+uuid, qrterminal.L, os.Stdout)
 	} else if qrmode == WEB_MODE {
@@ -127,6 +131,9 @@ loop1:
 			redirectUri, err = Login(s.WxWebCommon, s.QrcodeUUID, "0")
 			if err != nil {
 				logs.Error(err)
+				if strings.Contains(err.Error(), "window.code=408") {
+					return err
+				}
 			} else {
 				break loop1
 			}
@@ -171,55 +178,54 @@ loop1:
 		return err
 	}
 
-	s.serve()
+	if err := s.serve(); err != nil {
+		return err
+	}
 	return nil
 }
 
-func (s *Session) serve() {
+func (s *Session) serve() error {
 	msg := make(chan []byte, 1000)
 	// syncheck
-	go s.producer(msg)
+	errChan := make(chan error)
+	go s.producer(msg, errChan)
 	for {
 		select {
-		case _, ok := <-s.RefreshFlag:
-			if !ok {
-				break
-			}
 		case m := <-msg:
 			go s.consumer(m)
+		case err := <-errChan:
+			// all received message have been consumed
+			return err
 		}
 	}
 }
-func (s *Session) producer(msg chan []byte) {
+func (s *Session) producer(msg chan []byte, errChan chan error) {
+loop1:
 	for {
-		select {
-		case _, ok := <-s.RefreshFlag:
-			if !ok {
-				break
+		for _, v := range s.WxWebCommon.SyncSrvs {
+			ret, sel, err := SyncCheck(s.WxWebCommon, s.WxWebXcg, s.Cookies, v, s.SynKeyList)
+			logs.Debug(v, ret, sel)
+			if err != nil {
+				logs.Error(err)
+				continue
 			}
-		default:
-			for _, v := range s.WxWebCommon.SyncSrvs {
-				ret, sel, err := SyncCheck(s.WxWebCommon, s.WxWebXcg, s.Cookies, v, s.SynKeyList)
-				logs.Debug(v, ret, sel)
-				if err != nil {
-					logs.Error(err)
-					continue
-				}
-				if ret == 0 {
-					// check success
-					if sel == 2 {
-						// new message
-						err := WebWxSync(s.WxWebCommon, s.WxWebXcg, s.Cookies, msg, s.SynKeyList)
-						if err != nil {
-							logs.Error(err)
-						}
+			if ret == 0 {
+				// check success
+				if sel == 2 {
+					// new message
+					err := WebWxSync(s.WxWebCommon, s.WxWebXcg, s.Cookies, msg, s.SynKeyList)
+					if err != nil {
+						logs.Error(err)
 					}
-					if sel == 6 {
-						s.RefreshFlag <- struct{}{}
-					}
-					break
+				} else if sel != 0 && sel != 7 {
+					errChan <- fmt.Errorf("session done, sel %d", sel)
+					break loop1
 				}
+			} else if ret == 1205 {
+				errChan <- fmt.Errorf("Api blocked, ret:%d", 1205)
+				break loop1
 			}
+			break
 		}
 	}
 
@@ -298,6 +304,20 @@ func (s *Session) SendImg(path, from, to string) {
 	}
 }
 
+func (s *Session) SendImgFromBytes(b []byte, path, from, to string) {
+	ss := strings.Split(path, "/")
+	mediaId, err := WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.Cookies, ss[len(ss)-1], b)
+	if err != nil {
+		logs.Error(err)
+		return
+	}
+	ret, err := WebWxSendMsgImg(s.WxWebCommon, s.WxWebXcg, s.Cookies, from, to, mediaId)
+	if err != nil || ret != 0 {
+		logs.Error(ret, err)
+		return
+	}
+}
+
 // get img by MsgId
 func (s *Session) GetImg(msgId string) ([]byte, error) {
 	return WebWxGetMsgImg(s.WxWebCommon, s.WxWebXcg, s.Cookies, msgId)
@@ -332,8 +352,4 @@ func (s *Session) SendEmotionWithBytes(b []byte, from, to string) {
 	if err != nil || ret != 0 {
 		logs.Error(ret, err)
 	}
-}
-
-func (s *Session) Close() {
-	close(s.RefreshFlag)
 }
