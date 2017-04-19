@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -51,6 +52,9 @@ func FaceDetectHandle(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	genders, _ := jc.GetSliceString("faces.attributes.gender.value")
 	str := ""
 	for i, v := range ages {
+		if strings.ToLower(genders[i]) == "female" {
+			v = v * 8 / 10
+		}
 		str += genders[i] + "," + strconv.Itoa(v) + "\n"
 	}
 	if session.Bot.UserName == msg.FromUserName {
