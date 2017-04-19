@@ -74,6 +74,9 @@ type InitReqBody struct {
 	VerifyUserList     []*VerifyUser
 	VerifyUserListSize int
 	skey               string
+	MemberCount        int
+	MemberList         []*User
+	Topic              string
 }
 
 type BaseRequest struct {

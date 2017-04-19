@@ -754,3 +754,41 @@ func WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*http.Cookie, veri
 	body, _ := ioutil.ReadAll(resp.Body)
 	return body, nil
 }
+
+func WebWxCreateChatroom(common *Common, ce *XmlConfig, cookies []*http.Cookie, users []*User, topic string) (interface{}, error) {
+	km := url.Values{}
+	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
+	km.Add("pass_ticket", ce.PassTicket)
+
+	uri := common.CgiUrl + "/webwxcreatechatroom?" + km.Encode()
+	js := InitReqBody{
+		BaseRequest: &BaseRequest{
+			ce.Wxuin,
+			ce.Wxsid,
+			ce.Skey,
+			common.DeviceID,
+		},
+		MemberCount: len(users),
+		MemberList:  users,
+		Topic:       topic,
+	}
+	b, _ := json.Marshal(js)
+	req, err := http.NewRequest("POST", uri, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Add("User-Agent", common.UserAgent)
+
+	jar, _ := cookiejar.New(nil)
+	u, _ := url.Parse(uri)
+	jar.SetCookies(u, cookies)
+	client := &http.Client{Jar: jar}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	return body, nil
+}

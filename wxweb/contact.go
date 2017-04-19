@@ -30,6 +30,39 @@ import (
 	"strings"
 )
 
+var (
+	SpecialContact = map[string]bool{
+		"filehelper":            true,
+		"newsapp":               true,
+		"fmessage":              true,
+		"weibo":                 true,
+		"qqmail":                true,
+		"tmessage":              true,
+		"qmessage":              true,
+		"qqsync":                true,
+		"floatbottle":           true,
+		"lbsapp":                true,
+		"shakeapp":              true,
+		"medianote":             true,
+		"qqfriend":              true,
+		"readerapp":             true,
+		"blogapp":               true,
+		"facebookapp":           true,
+		"masssendapp":           true,
+		"meishiapp":             true,
+		"feedsapp":              true,
+		"voip":                  true,
+		"blogappweixin":         true,
+		"weixin":                true,
+		"brandsessionholder":    true,
+		"weixinreminder":        true,
+		"officialaccounts":      true,
+		"wxitil":                true,
+		"userexperience_alarm":  true,
+		"notification_messages": true,
+	}
+)
+
 type ContactManager struct {
 	cl []*User //contact list
 }
@@ -67,6 +100,20 @@ func (s *ContactManager) GetGroupContact() []*User {
 	clarray := make([]*User, 0)
 	for _, v := range s.cl {
 		if strings.Contains(v.UserName, "@@") {
+			clarray = append(clarray, v)
+		}
+	}
+	return clarray
+}
+
+// not group and not StarFriend
+func (s *ContactManager) GetStrangers() []*User {
+	clarray := make([]*User, 0)
+	for _, v := range s.cl {
+		if !strings.Contains(v.UserName, "@@") &&
+			v.StarFriend == 0 &&
+			v.VerifyFlag&8 == 0 &&
+			!SpecialContact[v.UserName] {
 			clarray = append(clarray, v)
 		}
 	}
