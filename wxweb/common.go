@@ -227,6 +227,6 @@ type ReceivedMessage struct {
 	Content      string
 	FromUserName string
 	ToUserName   string
-	At           string
+	Who          string
 	MsgType      int
 }
