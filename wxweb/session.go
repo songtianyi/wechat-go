@@ -118,30 +118,39 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 	return session, nil
 }
 
-func (s *Session) LoginAndServe() error {
-
-	var (
-		err         error
-		redirectUri string
-	)
+func (s *Session) scanWaiter() error {
 loop1:
 	for {
 		select {
 		case <-time.After(5 * time.Second):
-			redirectUri, err = Login(s.WxWebCommon, s.QrcodeUUID, "0")
+			redirectUri, err := Login(s.WxWebCommon, s.QrcodeUUID, "0")
 			if err != nil {
 				logs.Error(err)
 				if strings.Contains(err.Error(), "window.code=408") {
 					return err
 				}
 			} else {
+				s.WxWebCommon.RedirectUri = redirectUri
 				break loop1
 			}
 		}
 	}
-	logs.Debug(redirectUri)
+	return nil
+}
 
-	if s.Cookies, err = WebNewLoginPage(s.WxWebCommon, s.WxWebXcg, redirectUri); err != nil {
+func (s *Session) LoginAndServe(useCache bool) error {
+
+	var (
+		err error
+	)
+
+	if !useCache {
+		if err := s.scanWaiter(); err != nil {
+			return err
+		}
+	}
+
+	if s.Cookies, err = WebNewLoginPage(s.WxWebCommon, s.WxWebXcg, s.WxWebCommon.RedirectUri); err != nil {
 		return err
 	}
 
@@ -218,11 +227,14 @@ loop1:
 						logs.Error(err)
 					}
 				} else if sel != 0 && sel != 7 {
-					errChan <- fmt.Errorf("session done, sel %d", sel)
+					errChan <- fmt.Errorf("session down, sel %d", sel)
 					break loop1
 				}
+			} else if ret == 1101 {
+				errChan <- nil
+				break loop1
 			} else if ret == 1205 {
-				errChan <- fmt.Errorf("Api blocked, ret:%d", 1205)
+				errChan <- fmt.Errorf("api blocked, ret:%d", 1205)
 				break loop1
 			}
 			break
