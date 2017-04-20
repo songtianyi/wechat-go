@@ -1,6 +1,13 @@
 ## wechat-go
 go version wechat web api
 
+* 支持多用户(多开)
+* 功能以插件的形式提供，可以根据用户(比如付费情况）选择加载或者不加载插件
+* 对于加载的插件可以动态开启/关闭.
+* 目前已提供头像识别, gif搜索等多个有趣插件
+* 插件编写简单
+
+
 ## Install
 	go get -u -v github.com/songtianyi/wechat-go
 
@@ -110,7 +117,7 @@ func demo(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 		return
 	}
 
-	// 可选: 根绝wxweb.User数据结构结构中的数据来过滤
+	// 可选: 根据wxweb.User数据结构中的数据来过滤
 	if contact.PYQuanPin != "songtianyi" {
 		// 根据用户昵称的拼音全拼来过滤
 		return
@@ -136,6 +143,7 @@ func demo(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	// 第二个参数: 机器人ID
 	// 第三个参数: 联系人/群组/特殊账号ID
 	session.SendText("plugin demo", session.Bot.UserName, wxweb.RealTargetUserName(session, msg))
+	// 回复图片和gif 参见wxweb/session.go
 
 }
 ```
