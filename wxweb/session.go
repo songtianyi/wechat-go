@@ -280,7 +280,7 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 		// group message
 		ss := strings.Split(rmsg.Content, ":")
 		if len(ss) > 1 {
-			rmsg.At = ss[0]
+			rmsg.Who = ss[0]
 			rmsg.Content = strings.TrimPrefix(ss[1], "<br/>")
 		}
 	}
