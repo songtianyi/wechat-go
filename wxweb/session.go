@@ -122,7 +122,7 @@ func (s *Session) scanWaiter() error {
 loop1:
 	for {
 		select {
-		case <-time.After(5 * time.Second):
+		case <-time.After(3 * time.Second):
 			redirectUri, err := Login(s.WxWebCommon, s.QrcodeUUID, "0")
 			if err != nil {
 				logs.Error(err)
