@@ -39,8 +39,8 @@ func demo(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 		return
 	}
 
-	// 可选:过滤群组消息
-	if msg.IsGroup {
+	// 可选:过滤和自己无关的群组消息
+	if msg.IsGroup && msg.At != session.Bot.UserName {
 		return
 	}
 

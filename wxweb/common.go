@@ -228,4 +228,5 @@ type ReceivedMessage struct {
 	FromUserName string
 	ToUserName   string
 	At           string
+	MsgType      int
 }

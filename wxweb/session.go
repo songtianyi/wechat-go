@@ -260,6 +260,7 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 		Content:      msg["Content"].(string),
 		FromUserName: msg["FromUserName"].(string),
 		ToUserName:   msg["ToUserName"].(string),
+		MsgType:      int(msg["MsgType"].(float64)),
 	}
 
 	if strings.Contains(rmsg.FromUserName, "@@") {
