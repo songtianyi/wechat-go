@@ -1,11 +1,17 @@
 ## wechat-go
+
+[![Build Status](https://travis-ci.org/songtianyi/wechat-go.svg?branch=master)](https://travis-ci.org/songtianyi/wechat-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/songtianyi/wechat-go)](https://goreportcard.com/report/github.com/songtianyi/wechat-go)
+[![codebeat badge](https://codebeat.co/badges/c05ec05d-e902-4091-b5e0-c1656f88ae3c)](https://codebeat.co/projects/github-com-songtianyi-wechat-go)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
+
 go version wechat web api
 
 * 支持多用户(多开)
 * 防掉线
 * 功能以插件的形式提供，可以根据用户(比如付费情况）选择加载或者不加载某插件
 * 对于加载的插件, 用户可以通过微信动态开启/关闭.
-* 目前已提供头像识别, gif搜索, 笑话大全, 阅后即焚等多个有趣插件
+* 目前已提供头像识别, gif搜索, 笑话大全, "阅后即焚"等多个有趣插件
 * 插件编写简单, 二次开发极为方便
 * 可以发送图片/文字/gif/视频/表情等多种消息
 
