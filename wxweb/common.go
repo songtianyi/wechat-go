@@ -32,6 +32,7 @@ import (
 )
 
 const (
+	// msg types
 	MSG_TEXT        = 1     // text message
 	MSG_IMG         = 3     // image message
 	MSG_VOICE       = 34    // voice message
@@ -53,6 +54,7 @@ const (
 
 )
 
+// Common: session config
 type Common struct {
 	AppId       string
 	LoginUrl    string
@@ -67,6 +69,7 @@ type Common struct {
 	RedirectUri string
 }
 
+// InitReqBody: common http request body struct
 type InitReqBody struct {
 	BaseRequest        *BaseRequest
 	Msg                interface{}
@@ -96,6 +99,7 @@ type InitReqBody struct {
 	Topic              string
 }
 
+// RevokeReqBody: revoke message api http request body
 type RevokeReqBody struct {
 	BaseRequest *BaseRequest
 	ClientMsgId string
@@ -103,6 +107,7 @@ type RevokeReqBody struct {
 	ToUserName  string
 }
 
+// BaseRequest: http request body BaseRequest
 type BaseRequest struct {
 	Uin      string
 	Sid      string
@@ -110,6 +115,7 @@ type BaseRequest struct {
 	DeviceID string
 }
 
+// XmlConfig: web api xml response struct
 type XmlConfig struct {
 	XMLName     xml.Name `xml:"error"`
 	Ret         int      `xml:"ret"`
@@ -121,16 +127,19 @@ type XmlConfig struct {
 	IsGrayscale int      `xml:"isgrayscale"`
 }
 
+// SyncKey: struct for synccheck
 type SyncKey struct {
 	Key int
 	Val int
 }
 
+// SyncKeyList: list of synckey
 type SyncKeyList struct {
 	Count int
 	List  []SyncKey
 }
 
+// s.String output synckey list in string
 func (s *SyncKeyList) String() string {
 	strs := make([]string, 0)
 	for _, v := range s.List {
@@ -139,6 +148,7 @@ func (s *SyncKeyList) String() string {
 	return strings.Join(strs, "|")
 }
 
+// User: contact struct
 type User struct {
 	Uin               int
 	UserName          string
@@ -176,6 +186,7 @@ type User struct {
 	MemberStatus      int
 }
 
+// TextMessage: text message struct
 type TextMessage struct {
 	Type         int
 	Content      string
@@ -185,6 +196,7 @@ type TextMessage struct {
 	ClientMsgId  int
 }
 
+// MediaMessage
 type MediaMessage struct {
 	Type         int
 	Content      string
@@ -195,6 +207,7 @@ type MediaMessage struct {
 	MediaId      string
 }
 
+// EmotionMessage: gif/emoji message struct
 type EmotionMessage struct {
 	ClientMsgId  int
 	EmojiFlag    int
@@ -205,11 +218,13 @@ type EmotionMessage struct {
 	Type         int
 }
 
+// BaseResponse: web api http response body BaseResponse struct
 type BaseResponse struct {
 	Ret    int
 	ErrMsg string
 }
 
+// ContactResponse: get contact response struct
 type ContactResponse struct {
 	BaseResponse *BaseResponse
 	MemberCount  int
@@ -217,17 +232,20 @@ type ContactResponse struct {
 	Seq          int
 }
 
+// GroupContactResponse: get batch contact response struct
 type GroupContactResponse struct {
 	BaseResponse *BaseResponse
 	Count        int
 	ContactList  []*User
 }
 
+// VerifyUser: verify user request body struct
 type VerifyUser struct {
 	Value            string
 	VerifyUserTicket string
 }
 
+// ReceivedMessage: for received message
 type ReceivedMessage struct {
 	IsGroup      bool
 	MsgId        string

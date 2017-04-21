@@ -13,12 +13,13 @@ import (
 )
 
 var (
-	JokeQueue     = make(chan string, 100)
-	LastFetchTime = time.Now().Unix() - 2*24*3600
+	jokeQueue     = make(chan string, 100)
+	lastFetchTime = time.Now().Unix() - 2*24*3600
 )
 
+// Register plugin
 func Register(session *wxweb.Session) {
-	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(ListenCmd), "joker")
+	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(listenCmd), "joker")
 	go fetchJokes()
 
 }
@@ -47,7 +48,7 @@ func fetchJokes() {
 		jokes, _ := jc.GetSliceString("result.data.content")
 		times, _ := jc.GetSliceInt64("result.data.unixtime")
 		for i, v := range jokes {
-			JokeQueue <- v
+			jokeQueue <- v
 			if times[i] > LastFetchTime {
 				LastFetchTime = times[i]
 			}
@@ -55,7 +56,7 @@ func fetchJokes() {
 	}
 }
 
-func ListenCmd(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
+func listenCmd(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	if contact := session.Cm.GetContactByUserName(msg.FromUserName); contact == nil {
 		logs.Error("ignore the messages from", msg.FromUserName)
 		return
@@ -66,7 +67,7 @@ func ListenCmd(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	select {
 	case <-time.After(time.Second * 5):
 		return
-	case joke := <-JokeQueue:
+	case joke := <-jokeQueue:
 		session.SendText(joke, session.Bot.UserName, wxweb.RealTargetUserName(session, msg))
 	}
 }

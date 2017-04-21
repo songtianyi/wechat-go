@@ -31,6 +31,7 @@ import (
 )
 
 var (
+	// SpecialContact: special contacts map
 	SpecialContact = map[string]bool{
 		"filehelper":            true,
 		"newsapp":               true,
@@ -63,10 +64,12 @@ var (
 	}
 )
 
+// ContactManager: contact manager
 type ContactManager struct {
 	cl []*User //contact list
 }
 
+// CreateContactManagerFromBytes: create contact maanger from bytes
 func CreateContactManagerFromBytes(cb []byte) (*ContactManager, error) {
 	var cr ContactResponse
 	if err := json.Unmarshal(cb, &cr); err != nil {
@@ -78,6 +81,8 @@ func CreateContactManagerFromBytes(cb []byte) (*ContactManager, error) {
 	return cm, nil
 }
 
+// AddConactFromBytes
+// upate contact manager from bytes
 func (s *ContactManager) AddConactFromBytes(cb []byte) error {
 	var cr ContactResponse
 	if err := json.Unmarshal(cb, &cr); err != nil {
@@ -87,6 +92,8 @@ func (s *ContactManager) AddConactFromBytes(cb []byte) error {
 	return nil
 }
 
+// GetContactByUserName
+// get contact by UserName
 func (s *ContactManager) GetContactByUserName(un string) *User {
 	for _, v := range s.cl {
 		if v.UserName == un {
@@ -96,6 +103,7 @@ func (s *ContactManager) GetContactByUserName(un string) *User {
 	return nil
 }
 
+// GetGroupContact: get group contacts
 func (s *ContactManager) GetGroupContact() []*User {
 	clarray := make([]*User, 0)
 	for _, v := range s.cl {
@@ -106,7 +114,7 @@ func (s *ContactManager) GetGroupContact() []*User {
 	return clarray
 }
 
-// not group and not StarFriend
+// GetStrangers: not group and not StarFriend
 func (s *ContactManager) GetStrangers() []*User {
 	clarray := make([]*User, 0)
 	for _, v := range s.cl {
@@ -120,6 +128,7 @@ func (s *ContactManager) GetStrangers() []*User {
 	return clarray
 }
 
+// GetContactByName: get contacts by name
 func (s *ContactManager) GetContactByName(sig string) []*User {
 	clarray := make([]*User, 0)
 	for _, v := range s.cl {
@@ -130,6 +139,7 @@ func (s *ContactManager) GetContactByName(sig string) []*User {
 	return clarray
 }
 
+// GetContactByQuanPin: get contact by User.QuanPin
 func (s *ContactManager) GetContactByQuanPin(sig string) *User {
 	for _, v := range s.cl {
 		if v.PYQuanPin == sig || v.RemarkPYQuanPin == sig {
@@ -139,6 +149,7 @@ func (s *ContactManager) GetContactByQuanPin(sig string) *User {
 	return nil
 }
 
+// GetAll: get all contacts
 func (s *ContactManager) GetAll() []*User {
 	return s.cl
 }

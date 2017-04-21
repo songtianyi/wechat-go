@@ -32,6 +32,7 @@ import (
 	"time"
 )
 
+// Register plugin
 // 必须有的插件注册函数
 // 指定session, 可以对不同用户注册不同插件
 func Register(session *wxweb.Session) {

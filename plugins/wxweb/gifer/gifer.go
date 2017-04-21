@@ -36,7 +36,7 @@ import (
 	"time"
 )
 
-// register plugin
+// Register plugin
 func Register(session *wxweb.Session) {
 	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(gifer), "gifer")
 }

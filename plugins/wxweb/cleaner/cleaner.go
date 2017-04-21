@@ -33,11 +33,12 @@ import (
 	"strings"
 )
 
+// Register plugin
 func Register(session *wxweb.Session) {
-	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(ListenCmd), "cleaner")
+	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(listenCmd), "cleaner")
 }
 
-func ListenCmd(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
+func listenCmd(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	// from myself
 	if msg.FromUserName != session.Bot.UserName {
 		return

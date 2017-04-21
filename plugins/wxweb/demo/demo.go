@@ -30,6 +30,7 @@ import (
 	"github.com/songtianyi/wechat-go/wxweb"  // 导入协议包
 )
 
+// Register plugin
 // 必须有的插件注册函数
 // 指定session, 可以对不同用户注册不同插件
 func Register(session *wxweb.Session) {

@@ -39,12 +39,14 @@ import (
 )
 
 const (
-	WEB_MODE      = iota + 1 // in this mode CreateSession will return a QRCode image url
-	TERMINAL_MODE            // in this mode CreateSession will output qrcode in terminal
+	// WEB_MODE: in this mode CreateSession will return a QRCode image url
+	WEB_MODE = iota + 1
+	// MINAL_MODE:  CreateSession will output qrcode in terminal
+	TERMINAL_MODE
 )
 
 var (
-	// default session config
+	// DefaultCommon: default session config
 	DefaultCommon = &Common{
 		AppId:     "wx782c26e4c19acffb",
 		LoginUrl:  "https://login.weixin.qq.com",
@@ -66,7 +68,7 @@ var (
 	}
 )
 
-// wechat bot session
+// Session: wechat bot session
 type Session struct {
 	WxWebCommon     *Common
 	WxWebXcg        *XmlConfig
@@ -79,7 +81,7 @@ type Session struct {
 	HandlerRegister *HandlerRegister
 }
 
-// create wechat bot session
+// CreateSession: create wechat bot session
 // if common is nil, session will be created with default config
 // if handlerRegister is nil,  session will create a new HandlerRegister
 func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int) (*Session, error) {
@@ -143,7 +145,7 @@ loop1:
 	return nil
 }
 
-// login wechat web and enter message receiving loop
+// LoginAndServe: login wechat web and enter message receiving loop
 func (s *Session) LoginAndServe(useCache bool) error {
 
 	var (
@@ -293,7 +295,7 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 
 }
 
-// send text msg type 1
+// SendText: send text msg type 1
 func (s *Session) SendText(msg, from, to string) (string, string, error) {
 	b, err := WebWxSendMsg(s.WxWebCommon, s.WxWebXcg, s.Cookies, from, to, msg)
 	if err != nil {
@@ -310,7 +312,7 @@ func (s *Session) SendText(msg, from, to string) (string, string, error) {
 	return msgID, localID, nil
 }
 
-// send img, upload then send
+// SendImg: send img, upload then send
 func (s *Session) SendImg(path, from, to string) {
 	ss := strings.Split(path, "/")
 	b, err := ioutil.ReadFile(path)
@@ -330,7 +332,7 @@ func (s *Session) SendImg(path, from, to string) {
 	}
 }
 
-// send image from mem
+// SendImgFromBytes: send image from mem
 func (s *Session) SendImgFromBytes(b []byte, path, from, to string) {
 	ss := strings.Split(path, "/")
 	mediaId, err := WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.Cookies, ss[len(ss)-1], b)
@@ -345,12 +347,12 @@ func (s *Session) SendImgFromBytes(b []byte, path, from, to string) {
 	}
 }
 
-// get img by MsgId
+// GetImg: get img by MsgId
 func (s *Session) GetImg(msgId string) ([]byte, error) {
 	return WebWxGetMsgImg(s.WxWebCommon, s.WxWebXcg, s.Cookies, msgId)
 }
 
-// send gif, upload then send
+// SendEmotionFromPath: send gif, upload then send
 func (s *Session) SendEmotionFromPath(path, from, to string) {
 	ss := strings.Split(path, "/")
 	b, err := ioutil.ReadFile(path)
@@ -369,7 +371,7 @@ func (s *Session) SendEmotionFromPath(path, from, to string) {
 	}
 }
 
-// send gif/emoji from mem
+// SendEmotionFromBytes: send gif/emoji from mem
 func (s *Session) SendEmotionFromBytes(b []byte, from, to string) {
 	mediaId, err := WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.Cookies, from+".gif", b)
 	if err != nil {
@@ -382,7 +384,7 @@ func (s *Session) SendEmotionFromBytes(b []byte, from, to string) {
 	}
 }
 
-// revoke message
+// RevokeMsg: revoke message
 func (s *Session) RevokeMsg(clientMsgId, svrMsgId, toUserName string) {
 	err := WebWxRevokeMsg(s.WxWebCommon, s.WxWebXcg, s.Cookies, clientMsgId, svrMsgId, toUserName)
 	if err != nil {

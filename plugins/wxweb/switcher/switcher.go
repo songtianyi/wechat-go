@@ -31,11 +31,12 @@ import (
 	"strings"
 )
 
+// Register plugin
 func Register(session *wxweb.Session) {
-	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(Switcher), "switcher")
+	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(switcher), "switcher")
 }
 
-func Switcher(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
+func switcher(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	// contact filter
 	contact := session.Cm.GetContactByUserName(msg.FromUserName)
 	if contact == nil {
