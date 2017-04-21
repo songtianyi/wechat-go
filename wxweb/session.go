@@ -253,15 +253,14 @@ func (s *Session) consumer(msg []byte) {
 	}
 	msgis, _ := jc.GetInterfaceSlice("AddMsgList")
 	for _, v := range msgis {
-		msgi := v.(map[string]interface{})
-		msgType := int(msgi["MsgType"].(float64))
-		err, handles := s.HandlerRegister.Get(msgType)
+		rmsg := s.analize(v.(map[string]interface{}))
+		err, handles := s.HandlerRegister.Get(rmsg.MsgType)
 		if err != nil {
 			logs.Error(err)
 			continue
 		}
 		for _, v := range handles {
-			v.Run(s, s.analize(msgi))
+			go v.Run(s, rmsg)
 		}
 	}
 }
@@ -289,12 +288,20 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 }
 
 // send text msg type 1
-func (s *Session) SendText(msg, from, to string) {
-	ret, err := WebWxSendTextMsg(s.WxWebCommon, s.WxWebXcg, s.Cookies, from, to, msg)
-	if ret != 0 {
-		logs.Error(ret, err)
-		return
+func (s *Session) SendText(msg, from, to string) (string, string, error) {
+	b, err := WebWxSendMsg(s.WxWebCommon, s.WxWebXcg, s.Cookies, from, to, msg)
+	if err != nil {
+		return "", "", err
 	}
+	jc, _ := rrconfig.LoadJsonConfigFromBytes(b)
+	ret, _ := jc.GetInt("BaseResponse.Ret")
+	if ret != 0 {
+		errMsg, _ := jc.GetString("BaseResponse.ErrMsg")
+		return "", "", fmt.Errorf("WebWxSendMsg Ret=%d, ErrMsg=%s", ret, errMsg)
+	}
+	msgID, _ := jc.GetString("MsgID")
+	localID, _ := jc.GetString("LocalID")
+	return msgID, localID, nil
 }
 
 // send img, upload then send
@@ -364,5 +371,13 @@ func (s *Session) SendEmotionWithBytes(b []byte, from, to string) {
 	ret, err := WebWxSendEmoticon(s.WxWebCommon, s.WxWebXcg, s.Cookies, from, to, mediaId)
 	if err != nil || ret != 0 {
 		logs.Error(ret, err)
+	}
+}
+
+func (s *Session) RevokeMsg(clientMsgId, svrMsgId, toUserName string) {
+	err := WebWxRevokeMsg(s.WxWebCommon, s.WxWebXcg, s.Cookies, clientMsgId, svrMsgId, toUserName)
+	if err != nil {
+		logs.Error("revoke msg %s failed, %s", clientMsgId+":"+svrMsgId, err)
+		return
 	}
 }

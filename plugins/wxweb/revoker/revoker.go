@@ -26,8 +26,8 @@ SOFTWARE.
 package revoker // 以插件名命令包名
 
 import (
-	//"github.com/songtianyi/rrframework/logs" // 导入日志包
-	"github.com/songtianyi/wechat-go/wxweb" // 导入协议包
+	"github.com/songtianyi/rrframework/logs" // 导入日志包
+	"github.com/songtianyi/wechat-go/wxweb"  // 导入协议包
 	//"strings"
 	"time"
 )

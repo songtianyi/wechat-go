@@ -337,8 +337,8 @@ func WebWxGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie) ([]b
 	return body, nil
 }
 
-func WebWxSendTextMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
-	from, to string, msg string) (int, error) {
+func WebWxSendMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
+	from, to string, msg string) ([]byte, error) {
 
 	km := url.Values{}
 	km.Add("pass_ticket", ce.PassTicket)
@@ -365,7 +365,7 @@ func WebWxSendTextMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	b, _ := json.Marshal(js)
 	req, err := http.NewRequest("POST", uri, bytes.NewReader(b))
 	if err != nil {
-		return -1, err
+		return nil, err
 	}
 	req.Header.Add("Content-Type", "application/json; charset=UTF-8")
 	req.Header.Add("User-Agent", common.UserAgent)
@@ -376,13 +376,11 @@ func WebWxSendTextMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	client := &http.Client{Jar: jar}
 	resp, err := client.Do(req)
 	if err != nil {
-		return -1, err
+		return nil, err
 	}
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
-	jc, _ := rrconfig.LoadJsonConfigFromBytes(body)
-	ret, _ := jc.GetInt("BaseResponse.Ret")
-	return ret, nil
+	return body, nil
 }
 
 func WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*http.Cookie,
@@ -789,4 +787,49 @@ func WebWxCreateChatroom(common *Common, ce *XmlConfig, cookies []*http.Cookie, 
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 	return body, nil
+}
+
+func WebWxRevokeMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie, clientMsgId, svrMsgId, toUserName string) error {
+	km := url.Values{}
+	km.Add("lang", common.Lang)
+
+	uri := common.CgiUrl + "/webwxrevokemsg?" + km.Encode()
+	js := RevokeReqBody{
+		BaseRequest: &BaseRequest{
+			ce.Wxuin,
+			ce.Wxsid,
+			ce.Skey,
+			common.DeviceID,
+		},
+		ClientMsgId: clientMsgId,
+		SvrMsgId:    svrMsgId,
+		ToUserName:  toUserName,
+	}
+	b, _ := json.Marshal(js)
+	req, err := http.NewRequest("POST", uri, bytes.NewReader(b))
+	if err != nil {
+		return err
+	}
+	req.Header.Add("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Add("User-Agent", common.UserAgent)
+
+	jar, _ := cookiejar.New(nil)
+	u, _ := url.Parse(uri)
+	jar.SetCookies(u, cookies)
+	client := &http.Client{Jar: jar}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	jc, err := rrconfig.LoadJsonConfigFromBytes(body)
+	if err != nil {
+		return err
+	}
+	retcode, _ := jc.GetInt("BaseResponse.Ret")
+	if retcode != 0 {
+		return fmt.Errorf("BaseResponse.Ret %d", retcode)
+	}
+	return nil
 }

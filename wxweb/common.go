@@ -96,6 +96,13 @@ type InitReqBody struct {
 	Topic              string
 }
 
+type RevokeReqBody struct {
+	BaseRequest *BaseRequest
+	ClientMsgId string
+	SvrMsgId    string
+	ToUserName  string
+}
+
 type BaseRequest struct {
 	Uin      string
 	Sid      string
