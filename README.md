@@ -107,7 +107,7 @@ func Register(session *wxweb.Session) {
 	// 第三个参数: 自定义插件名，不能重名，switcher插件会用到此名称
 	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(demo), "textdemo")
 
-	// 可以多个个消息类型使用同一个处理函数，也可以分开
+	// 可以多个消息类型使用同一个处理函数，也可以分开
 	session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(demo), "imgdemo")
 }
 
