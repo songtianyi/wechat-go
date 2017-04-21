@@ -68,8 +68,8 @@ func Gifer(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 	if msg.FromUserName == session.Bot.UserName {
-		session.SendEmotionWithBytes(body, session.Bot.UserName, msg.ToUserName)
+		session.SendEmotionFromBytes(body, session.Bot.UserName, msg.ToUserName)
 	} else {
-		session.SendEmotionWithBytes(body, session.Bot.UserName, msg.FromUserName)
+		session.SendEmotionFromBytes(body, session.Bot.UserName, msg.FromUserName)
 	}
 }
