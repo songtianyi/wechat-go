@@ -29,11 +29,11 @@ package main
 
 import (
 	"github.com/songtianyi/rrframework/logs"
-	"github.com/songtianyi/wechat-go/plugins/faceplusplus"
-	"github.com/songtianyi/wechat-go/wxweb"
+	"github.com/songtianyi/wechat-go/plugins/wxweb/faceplusplus"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/gifer"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/replier"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/switcher"
+	"github.com/songtianyi/wechat-go/wxweb"
 )
 
 func main() {
@@ -54,7 +54,7 @@ func main() {
 	session.HandlerRegister.EnableByName("switcher")
 	session.HandlerRegister.EnableByName("faceplusplus")
 
-	if err := session.LoginAndServe(); err != nil {
+	if err := session.LoginAndServe(false); err != nil {
 		logs.Error("session exit, %s", err)
 	}
 }
