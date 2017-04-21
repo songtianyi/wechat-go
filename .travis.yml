@@ -11,6 +11,7 @@ install:
     - go get github.com/samuel/go-zookeeper/zk
     - go get github.com/cheggaaa/pb
       # dep for wechat-go
+    - go get github.com/mdp/qrterminal
     - go get github.com/songtianyi/laosj/spider
     - go get github.com/PuerkitoBio/goquery
     - go get github.com/songtianyi/rrframework
