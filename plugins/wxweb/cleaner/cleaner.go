@@ -52,7 +52,7 @@ func ListenCmd(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 		fmt.Println(v.NickName)
 	}
 	max := 25
-	for i, _ := range users {
+	for i := range users {
 		if i%max == 0 {
 			b, err := wxweb.WebWxCreateChatroom(session.WxWebCommon, session.WxWebXcg, session.Cookies, users[i:int(math.Max(float64(i+max), float64(len(users))))], "test")
 			if err != nil {

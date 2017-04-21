@@ -44,7 +44,7 @@ const (
 	apiUrl    = "https://api-cn.faceplusplus.com/facepp/v3/"
 )
 
-// 注册函数
+// Register 注册函数
 func Register(session *wxweb.Session) {
 	session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(faceDetectHandle), "faceplusplus")
 
