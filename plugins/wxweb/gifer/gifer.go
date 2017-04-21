@@ -36,11 +36,12 @@ import (
 	"time"
 )
 
+// register plugin
 func Register(session *wxweb.Session) {
-	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(Gifer), "gifer")
+	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(gifer), "gifer")
 }
 
-func Gifer(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
+func gifer(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	// contact filter
 	contact := session.Cm.GetContactByUserName(msg.FromUserName)
 	if contact == nil {

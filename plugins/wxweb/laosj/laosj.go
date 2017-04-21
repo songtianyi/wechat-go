@@ -36,11 +36,12 @@ import (
 	"time"
 )
 
+// register plugin
 func Register(session *wxweb.Session) {
-	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(ListenCmd), "laosj")
+	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(listenCmd), "laosj")
 }
 
-func ListenCmd(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
+func listenCmd(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	// contact filter
 	contact := session.Cm.GetContactByUserName(msg.FromUserName)
 	if contact == nil {

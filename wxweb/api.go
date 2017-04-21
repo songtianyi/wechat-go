@@ -44,6 +44,7 @@ import (
 	"time"
 )
 
+// jslogin api
 func JsLogin(common *Common) (string, error) {
 	km := url.Values{}
 	km.Add("appid", common.AppId)
@@ -65,6 +66,7 @@ func JsLogin(common *Common) (string, error) {
 	return ss[1], nil
 }
 
+// get qrcode
 func QrCode(common *Common, uuid string) ([]byte, error) {
 	km := url.Values{}
 	km.Add("t", "webwx")
@@ -79,6 +81,7 @@ func QrCode(common *Common, uuid string) ([]byte, error) {
 	return body, nil
 }
 
+// login api
 func Login(common *Common, uuid, tip string) (string, error) {
 	km := url.Values{}
 	km.Add("tip", tip)
@@ -104,6 +107,7 @@ func Login(common *Common, uuid, tip string) (string, error) {
 	}
 }
 
+// webwxnewloginpage api
 func WebNewLoginPage(common *Common, xc *XmlConfig, uri string) ([]*http.Cookie, error) {
 	parsed, _ := url.Parse(uri)
 	km := parsed.Query()
@@ -125,6 +129,7 @@ func WebNewLoginPage(common *Common, xc *XmlConfig, uri string) ([]*http.Cookie,
 	return resp.Cookies(), nil
 }
 
+// webwxinit api
 func WebWxInit(common *Common, ce *XmlConfig) ([]byte, error) {
 	km := url.Values{}
 	km.Add("pass_ticket", ce.PassTicket)
@@ -157,6 +162,7 @@ func WebWxInit(common *Common, ce *XmlConfig) ([]byte, error) {
 	return body, nil
 }
 
+// synccheck api
 func SyncCheck(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	server string, skl *SyncKeyList) (int, int, error) {
 	km := url.Values{}
@@ -206,6 +212,7 @@ func SyncCheck(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	return retcode, selector, nil
 }
 
+// webwxsync api
 func WebWxSync(common *Common,
 	ce *XmlConfig,
 	cookies []*http.Cookie,
@@ -264,6 +271,7 @@ func WebWxSync(common *Common,
 	return nil
 }
 
+// webwxstatusnotify api
 func WebWxStatusNotify(common *Common, ce *XmlConfig, bot *User) (int, error) {
 	km := url.Values{}
 	km.Add("pass_ticket", ce.PassTicket)
@@ -300,6 +308,7 @@ func WebWxStatusNotify(common *Common, ce *XmlConfig, bot *User) (int, error) {
 	return ret, nil
 }
 
+// webwxgetcontact api
 func WebWxGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie) ([]byte, error) {
 	km := url.Values{}
 	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
@@ -337,6 +346,7 @@ func WebWxGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie) ([]b
 	return body, nil
 }
 
+// webwxsendmsg api
 func WebWxSendMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	from, to string, msg string) ([]byte, error) {
 
@@ -383,6 +393,7 @@ func WebWxSendMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	return body, nil
 }
 
+// webwxuploadmedia api
 func WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	filename string, content []byte) (string, error) {
 
@@ -486,6 +497,7 @@ func WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	return mediaId, nil
 }
 
+// webwxsendmsgimg api
 func WebWxSendMsgImg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	from, to, media string) (int, error) {
 
@@ -539,6 +551,7 @@ func WebWxSendMsgImg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	return ret, nil
 }
 
+// webwxgetmsgimg api
 func WebWxGetMsgImg(common *Common, ce *XmlConfig, cookies []*http.Cookie, msgId string) ([]byte, error) {
 	km := url.Values{}
 	km.Add("MsgID", msgId)
@@ -566,6 +579,7 @@ func WebWxGetMsgImg(common *Common, ce *XmlConfig, cookies []*http.Cookie, msgId
 	return body, nil
 }
 
+// webwxsendemoticon api
 func WebWxSendEmoticon(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	from, to, media string) (int, error) {
 
@@ -617,6 +631,7 @@ func WebWxSendEmoticon(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	return ret, nil
 }
 
+// webwxgeticon api
 func WebWxGetIcon(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	username, chatroomid string) ([]byte, error) {
 	km := url.Values{}
@@ -648,6 +663,7 @@ func WebWxGetIcon(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	return body, nil
 }
 
+// get head img
 func WebWxGetIconByHeadImgUrl(common *Common, ce *XmlConfig, cookies []*http.Cookie, headImgUrl string) ([]byte, error) {
 	uri := common.CgiDomain + headImgUrl
 
@@ -671,6 +687,7 @@ func WebWxGetIconByHeadImgUrl(common *Common, ce *XmlConfig, cookies []*http.Coo
 	return body, nil
 }
 
+// webwxbatchgetcontact api
 func WebWxBatchGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie, cl []*User) ([]byte, error) {
 	km := url.Values{}
 	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
@@ -709,6 +726,7 @@ func WebWxBatchGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	return body, nil
 }
 
+// webwxverifyuser api
 func WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*http.Cookie, verifyContent string, vul []*VerifyUser) ([]byte, error) {
 	km := url.Values{}
 	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
@@ -751,6 +769,7 @@ func WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*http.Cookie, veri
 	return body, nil
 }
 
+// webwxcreatechatroom api
 func WebWxCreateChatroom(common *Common, ce *XmlConfig, cookies []*http.Cookie, users []*User, topic string) (interface{}, error) {
 	km := url.Values{}
 	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
@@ -789,6 +808,7 @@ func WebWxCreateChatroom(common *Common, ce *XmlConfig, cookies []*http.Cookie, 
 	return body, nil
 }
 
+// webwxrevokemsg api
 func WebWxRevokeMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie, clientMsgId, svrMsgId, toUserName string) error {
 	km := url.Values{}
 	km.Add("lang", common.Lang)

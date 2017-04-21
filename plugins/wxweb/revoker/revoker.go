@@ -39,10 +39,10 @@ func Register(session *wxweb.Session) {
 	// 第一个参数: 指定消息类型, 所有该类型的消息都会被转发到此插件
 	// 第二个参数: 指定消息处理函数, 消息会进入此函数
 	// 第三个参数: 自定义插件名，不能重名，switcher插件会用到此名称
-	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(Revoker), "revoker")
+	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(revoker), "revoker")
 }
 
-func Revoker(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
+func revoker(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	if msg.FromUserName != session.Bot.UserName {
 		return
 	}

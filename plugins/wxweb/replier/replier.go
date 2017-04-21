@@ -30,14 +30,15 @@ import (
 	"github.com/songtianyi/wechat-go/wxweb"
 )
 
+// register plugin
 func Register(session *wxweb.Session) {
-	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(AutoReply), "text_replier")
-	if err := session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(AutoReply), "img_replier"); err != nil {
+	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(autoReply), "text_replier")
+	if err := session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(autoReply), "img_replier"); err != nil {
 		logs.Error(err)
 	}
 
 }
-func AutoReply(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
+func autoReply(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	if !msg.IsGroup {
 		session.SendText("暂时不在，稍后回复", session.Bot.UserName, msg.FromUserName)
 	}

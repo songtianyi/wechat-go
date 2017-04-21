@@ -44,12 +44,13 @@ const (
 	apiUrl    = "https://api-cn.faceplusplus.com/facepp/v3/"
 )
 
+// 注册函数
 func Register(session *wxweb.Session) {
-	session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(FaceDetectHandle), "faceplusplus")
+	session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(faceDetectHandle), "faceplusplus")
 
 }
 
-func FaceDetectHandle(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
+func faceDetectHandle(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	contact := session.Cm.GetContactByUserName(msg.FromUserName)
 	// contact filter
 	if contact == nil {
