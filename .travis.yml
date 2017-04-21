@@ -18,4 +18,4 @@ install:
 
 
 script:
-    - go install tests/test.go
+    - go build tests/test.go
