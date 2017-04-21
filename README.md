@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/songtianyi/wechat-go.svg?branch=master)](https://travis-ci.org/songtianyi/wechat-go)
 [![Go Report Card](https://goreportcard.com/badge/github.com/songtianyi/wechat-go)](https://goreportcard.com/report/github.com/songtianyi/wechat-go)
-[![codebeat badge](https://codebeat.co/badges/c05ec05d-e902-4091-b5e0-c1656f88ae3c)](https://codebeat.co/projects/github-com-songtianyi-wechat-go)
+[![codebeat badge](https://codebeat.co/badges/4f78bcb2-bf75-477d-a8f4-b09fde3dae80)](https://codebeat.co/projects/github-com-songtianyi-wechat-go-master)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
 go version wechat web api
