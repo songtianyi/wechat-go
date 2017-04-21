@@ -48,7 +48,7 @@ func Register(session *wxweb.Session) {
 // 消息处理函数
 func demo(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 
-	// 可选:避免此插件对所有群/联系人生效 可以用contact manager来过滤
+	// 可选:避免此插件对未保存到通讯录的群生效 可以用contact manager来过滤
 	contact := session.Cm.GetContactByUserName(msg.FromUserName)
 	if contact == nil {
 		logs.Error("ignore the messages from", msg.FromUserName)
@@ -60,7 +60,7 @@ func demo(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 		return
 	}
 
-	// 可选: 根绝wxweb.User数据结构结构中的数据来过滤
+	// 可选: 根绝wxweb.User数据结构中的数据来过滤
 	if contact.PYQuanPin != "songtianyi" {
 		// 根据用户昵称的拼音全拼来过滤
 		return

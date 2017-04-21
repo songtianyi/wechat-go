@@ -114,7 +114,7 @@ func Register(session *wxweb.Session) {
 // 消息处理函数
 func demo(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 
-	// 可选:避免此插件对所有群/联系人生效 可以用contact manager来过滤
+	// 可选:可以用contact manager来过滤, 过滤掉没有保存到通讯录的群
 	contact := session.Cm.GetContactByUserName(msg.FromUserName)
 	if contact == nil {
 		logs.Error("ignore the messages from", msg.FromUserName)
