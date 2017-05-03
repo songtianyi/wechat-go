@@ -21,4 +21,4 @@ install:
 
 
 script:
-    - go build tests/test.go
+    - go build travis/test.go
