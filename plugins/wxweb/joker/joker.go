@@ -31,7 +31,7 @@ func fetchJokes() {
 		km.Add("sort", "desc")
 		km.Add("page", "1")
 		km.Add("pagesize", "20")
-		km.Add("time", strconv.FormatInt(LastFetchTime, 10))
+		km.Add("time", strconv.FormatInt(lastFetchTime, 10))
 		km.Add("key", "6f2e982b7b9f86591c063d2db0fb20eb")
 		uri := "http://japi.juhe.cn/joke/content/list.from?" + km.Encode()
 		resp, err := http.Get(uri)
@@ -49,8 +49,8 @@ func fetchJokes() {
 		times, _ := jc.GetSliceInt64("result.data.unixtime")
 		for i, v := range jokes {
 			jokeQueue <- v
-			if times[i] > LastFetchTime {
-				LastFetchTime = times[i]
+			if times[i] > lastFetchTime {
+				lastFetchTime = times[i]
 			}
 		}
 	}
