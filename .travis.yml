@@ -8,17 +8,7 @@ go:
     - tip
 
 install:
-    # dep for rrframework
-    - go get gopkg.in/redis.v5
-    - go get github.com/golang/protobuf/proto
-    - go get github.com/samuel/go-zookeeper/zk
-    - go get github.com/cheggaaa/pb
       # dep for wechat-go
-    - go get github.com/mdp/qrterminal
-    - go get github.com/songtianyi/laosj/spider
-    - go get github.com/PuerkitoBio/goquery
-    - go get github.com/songtianyi/rrframework
-
 
 script:
     - go build travis/test.go
