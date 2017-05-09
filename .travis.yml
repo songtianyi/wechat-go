@@ -19,4 +19,7 @@ install:
     - go get github.com/songtianyi/rrframework/storage
 
 script:
-    - go build travis/test.go
+    - go build travis/bot1.go
+    - go build travis/bot2.go
+    - go build travis/bot3.go
+
