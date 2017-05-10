@@ -33,6 +33,7 @@ import (
 	"github.com/songtianyi/rrframework/storage"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -48,23 +49,14 @@ const (
 var (
 	// DefaultCommon: default session config
 	DefaultCommon = &Common{
-		AppId:     "wx782c26e4c19acffb",
-		LoginUrl:  "https://login.weixin.qq.com",
-		Lang:      "zh_CN",
-		DeviceID:  "e" + GetRandomStringFromNum(15),
-		UserAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36",
-		CgiUrl:    "https://wx.qq.com/cgi-bin/mmwebwx-bin",
-		CgiDomain: "https://wx.qq.com",
-		SyncSrvs: []string{
-			"webpush.wx.qq.com",
-			"webpush.weixin.qq.com",
-			"webpush.wechat.com",
-			"webpush1.wechat.com",
-			"webpush2.wechat.com",
-		},
-		UploadUrl:   "https://file.wx.qq.com/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json",
-		MediaCount:  0,
-		RedirectUri: "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage",
+		AppId:      "wx782c26e4c19acffb",
+		LoginUrl:   "https://login.weixin.qq.com",
+		Lang:       "zh_CN",
+		DeviceID:   "e" + GetRandomStringFromNum(15),
+		UserAgent:  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36",
+		SyncSrv:    "webpush.wx.qq.com",
+		UploadUrl:  "https://file.wx.qq.com/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json",
+		MediaCount: 0,
 	}
 )
 
@@ -125,6 +117,22 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 	return session, nil
 }
 
+func (s *Session) analizeVersion(uri string) {
+	u, _ := url.Parse(uri)
+
+	// version may change
+	s.WxWebCommon.CgiDomain = u.Scheme + "://" + u.Host
+	s.WxWebCommon.CgiUrl = s.WxWebCommon.CgiDomain + "/cgi-bin/mmwebwx-bin"
+
+	if strings.Contains(u.Host, "wx2") {
+		// new version
+		s.WxWebCommon.SyncSrv = "webpush.wx2.qq.com"
+	} else {
+		// old version
+		s.WxWebCommon.SyncSrv = "webpush.wx.qq.com"
+	}
+}
+
 func (s *Session) scanWaiter() error {
 loop1:
 	for {
@@ -138,6 +146,7 @@ loop1:
 				}
 			} else {
 				s.WxWebCommon.RedirectUri = redirectUri
+				s.analizeVersion(s.WxWebCommon.RedirectUri)
 				break loop1
 			}
 		}
@@ -217,35 +226,33 @@ func (s *Session) serve() error {
 	}
 }
 func (s *Session) producer(msg chan []byte, errChan chan error) {
+	logs.Info("entering synccheck loop")
 loop1:
 	for {
-		for _, v := range s.WxWebCommon.SyncSrvs {
-			ret, sel, err := SyncCheck(s.WxWebCommon, s.WxWebXcg, s.Cookies, v, s.SynKeyList)
-			logs.Debug(v, ret, sel)
-			if err != nil {
-				logs.Error(err)
-				continue
-			}
-			if ret == 0 {
-				// check success
-				if sel == 2 {
-					// new message
-					err := WebWxSync(s.WxWebCommon, s.WxWebXcg, s.Cookies, msg, s.SynKeyList)
-					if err != nil {
-						logs.Error(err)
-					}
-				} else if sel != 0 && sel != 7 {
-					errChan <- fmt.Errorf("session down, sel %d", sel)
-					break loop1
+		ret, sel, err := SyncCheck(s.WxWebCommon, s.WxWebXcg, s.Cookies, s.WxWebCommon.SyncSrv, s.SynKeyList)
+		logs.Debug(s.WxWebCommon.SyncSrv, ret, sel)
+		if err != nil {
+			logs.Error(err)
+			continue
+		}
+		if ret == 0 {
+			// check success
+			if sel == 2 {
+				// new message
+				err := WebWxSync(s.WxWebCommon, s.WxWebXcg, s.Cookies, msg, s.SynKeyList)
+				if err != nil {
+					logs.Error(err)
 				}
-			} else if ret == 1101 {
-				errChan <- nil
-				break loop1
-			} else if ret == 1205 {
-				errChan <- fmt.Errorf("api blocked, ret:%d", 1205)
+			} else if sel != 0 && sel != 7 {
+				errChan <- fmt.Errorf("session down, sel %d", sel)
 				break loop1
 			}
-			break
+		} else if ret == 1101 {
+			errChan <- nil
+			break loop1
+		} else if ret == 1205 {
+			errChan <- fmt.Errorf("api blocked, ret:%d", 1205)
+			break loop1
 		}
 	}
 

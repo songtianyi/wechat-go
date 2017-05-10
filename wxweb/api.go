@@ -53,7 +53,13 @@ func JsLogin(common *Common) (string, error) {
 	km.Add("redirect_uri", common.RedirectUri)
 	km.Add("_", strconv.FormatInt(time.Now().Unix(), 10))
 	uri := common.LoginUrl + "/jslogin?" + km.Encode()
-	resp, err := http.Get(uri)
+
+	req, err := http.NewRequest("GET", uri, nil)
+	req.Header.Add("User-Agent", common.UserAgent)
+	//req.Header.Add("Referer", "https://wx.qq.com/")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
 	if err != nil {
 		return "", err
 	}
@@ -86,6 +92,7 @@ func Login(common *Common, uuid, tip string) (string, error) {
 	km := url.Values{}
 	km.Add("tip", tip)
 	km.Add("uuid", uuid)
+	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
 	km.Add("_", strconv.FormatInt(time.Now().Unix(), 10))
 	uri := common.LoginUrl + "/cgi-bin/mmwebwx-bin/login?" + km.Encode()
 	resp, err := http.Get(uri)
@@ -109,11 +116,10 @@ func Login(common *Common, uuid, tip string) (string, error) {
 
 // WebNewLoginPage: webwxnewloginpage api
 func WebNewLoginPage(common *Common, xc *XmlConfig, uri string) ([]*http.Cookie, error) {
-	parsed, _ := url.Parse(uri)
-	km := parsed.Query()
+	u, _ := url.Parse(uri)
+	km := u.Query()
 	km.Add("fun", "new")
 	uri = common.CgiUrl + "/webwxnewloginpage?" + km.Encode()
-
 	resp, err := http.Get(uri)
 	if err != nil {
 		return nil, err

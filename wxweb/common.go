@@ -63,7 +63,7 @@ type Common struct {
 	UserAgent   string
 	CgiUrl      string
 	CgiDomain   string
-	SyncSrvs    []string
+	SyncSrv     string
 	UploadUrl   string
 	MediaCount  uint32
 	RedirectUri string
