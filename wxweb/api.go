@@ -859,3 +859,34 @@ func WebWxRevokeMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie, clien
 	}
 	return nil
 }
+
+// WebWxlogout: webwxlogout api
+func WebWxLogout(common *Common, ce *XmlConfig, cookies []*http.Cookie) error {
+	km := url.Values{}
+	km.Add("redirect", "1")
+	km.Add("type", "1")
+	km.Add("skey", ce.Skey)
+
+	uri := common.CgiUrl + "/webwxlogout?" + km.Encode()
+	js := LogoutReqBody{
+		uin: ce.Wxuin,
+		sid: ce.Wxsid,
+	}
+	b, _ := json.Marshal(js)
+	req, err := http.NewRequest("POST", uri, bytes.NewReader(b))
+	if err != nil {
+		return err
+	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("User-Agent", common.UserAgent)
+
+	jar, _ := cookiejar.New(nil)
+	u, _ := url.Parse(uri)
+	jar.SetCookies(u, cookies)
+	client := &http.Client{Jar: jar}
+	_, err = client.Do(req)
+	if err != nil {
+		return err
+	}
+	return nil
+}

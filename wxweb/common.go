@@ -107,6 +107,12 @@ type RevokeReqBody struct {
 	ToUserName  string
 }
 
+// LogoutReqBody: logout api http request body
+type LogoutReqBody struct {
+	sid string
+	uin string
+}
+
 // BaseRequest: http request body BaseRequest
 type BaseRequest struct {
 	Uin      string

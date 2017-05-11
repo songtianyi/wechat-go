@@ -399,3 +399,9 @@ func (s *Session) RevokeMsg(clientMsgId, svrMsgId, toUserName string) {
 		return
 	}
 }
+
+// Logout: logout web wechat
+
+func (s *Session) Logout() error {
+	return WebWxLogout(s.WxWebCommon, s.WxWebXcg, s.Cookies)
+}
