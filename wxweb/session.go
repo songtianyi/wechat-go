@@ -2,7 +2,7 @@
 Copyright 2017 wechat-go Authors. All Rights Reserved.
 MIT License
 
-Copyright (c) 2017 
+Copyright (c) 2017
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -289,13 +289,17 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 		MsgType:      int(msg["MsgType"].(float64)),
 	}
 
-	if strings.Contains(rmsg.FromUserName, "@@") {
+	if strings.Contains(rmsg.FromUserName, "@@") ||
+		strings.Contains(rmsg.ToUserName, "@@") {
 		rmsg.IsGroup = true
 		// group message
-		ss := strings.Split(rmsg.Content, ":")
+		rmsg.OriginContent = rmsg.Content
+		ss := strings.Split(rmsg.Content, ":<br/>")
 		if len(ss) > 1 {
 			rmsg.Who = ss[0]
-			rmsg.Content = strings.TrimPrefix(ss[1], "<br/>")
+			rmsg.Content = ss[1]
+		} else {
+			//rmsg.Who = session.Bot.UserName
 		}
 	}
 	return rmsg

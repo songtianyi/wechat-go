@@ -5,6 +5,7 @@ import (
 	"github.com/songtianyi/wechat-go/plugins/wxweb/cleaner"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/demo"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/faceplusplus"
+	"github.com/songtianyi/wechat-go/plugins/wxweb/forwarder"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/gifer"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/joker"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/laosj"
@@ -32,6 +33,7 @@ func main() {
 	demo.Register(session)
 	joker.Register(session)
 	revoker.Register(session)
+	forwarder.Register(session)
 
 	// enable plugin
 	session.HandlerRegister.EnableByName("switcher")

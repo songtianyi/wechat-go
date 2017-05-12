@@ -103,8 +103,8 @@ func (s *ContactManager) GetContactByUserName(un string) *User {
 	return nil
 }
 
-// GetGroupContact: get group contacts
-func (s *ContactManager) GetGroupContact() []*User {
+// GetGroupContacts: get group contacts
+func (s *ContactManager) GetGroupContacts() []*User {
 	clarray := make([]*User, 0)
 	for _, v := range s.cl {
 		if strings.Contains(v.UserName, "@@") {
@@ -139,8 +139,8 @@ func (s *ContactManager) GetContactByName(sig string) []*User {
 	return clarray
 }
 
-// GetContactByQuanPin: get contact by User.QuanPin
-func (s *ContactManager) GetContactByQuanPin(sig string) *User {
+// GetContactByPYQuanPin: get contact by User.PYQuanPin
+func (s *ContactManager) GetContactByPYQuanPin(sig string) *User {
 	for _, v := range s.cl {
 		if v.PYQuanPin == sig || v.RemarkPYQuanPin == sig {
 			return v

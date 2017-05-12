@@ -62,14 +62,21 @@ func switcher(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 		session.SendText("hehe, you think too much", session.Bot.UserName, wxweb.RealTargetUserName(session, msg))
 		return
 	}
+
+	var (
+		err error
+	)
 	if strings.ToLower(ss[0]) == "enable" {
-		session.HandlerRegister.EnableByName(ss[1])
+		if err = session.HandlerRegister.EnableByName(ss[1]); err == nil {
+			session.SendText(msg.Content+" [DONE]", session.Bot.UserName, wxweb.RealTargetUserName(session, msg))
+		} else {
+			session.SendText(err.Error(), session.Bot.UserName, wxweb.RealTargetUserName(session, msg))
+		}
 	} else if strings.ToLower(ss[0]) == "disable" {
-		session.HandlerRegister.DisableByName(ss[1])
-	}
-	if session.Bot.UserName == msg.FromUserName {
-		session.SendText(msg.Content+" [DONE]", session.Bot.UserName, msg.ToUserName)
-	} else {
-		session.SendText(msg.Content+" [DONE]", session.Bot.UserName, msg.FromUserName)
+		if err = session.HandlerRegister.DisableByName(ss[1]); err == nil {
+			session.SendText(msg.Content+" [DONE]", session.Bot.UserName, wxweb.RealTargetUserName(session, msg))
+		} else {
+			session.SendText(err.Error(), session.Bot.UserName, wxweb.RealTargetUserName(session, msg))
+		}
 	}
 }

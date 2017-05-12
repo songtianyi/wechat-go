@@ -26,7 +26,7 @@ func Register(session *wxweb.Session) {
 
 func fetchJokes() {
 	for {
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 3600)
 		km := url.Values{}
 		km.Add("sort", "desc")
 		km.Add("page", "1")
@@ -64,6 +64,7 @@ func listenCmd(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	if !strings.Contains(msg.Content, "笑话") {
 		return
 	}
+	logs.Debug(len(jokeQueue))
 	select {
 	case <-time.After(time.Second * 5):
 		return

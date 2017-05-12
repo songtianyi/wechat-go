@@ -130,29 +130,33 @@ func (hr *HandlerRegister) DisableByType(key int) error {
 }
 
 // EnableByName: enable message handler by name
-func (hr *HandlerRegister) EnableByName(name string) {
+func (hr *HandlerRegister) EnableByName(name string) error {
 	hr.mu.Lock()
 	defer hr.mu.Unlock()
 	for _, handles := range hr.hmap {
 		for _, v := range handles {
 			if v.getName() == name {
 				v.enableHandle()
+				return nil
 			}
 		}
 	}
+	return fmt.Errorf("cannot find handler %s", name)
 }
 
 // DisableByName: disable message handler by name
-func (hr *HandlerRegister) DisableByName(name string) {
+func (hr *HandlerRegister) DisableByName(name string) error {
 	hr.mu.Lock()
 	defer hr.mu.Unlock()
 	for _, handles := range hr.hmap {
 		for _, v := range handles {
 			if v.getName() == name {
 				v.disableHandle()
+				return nil
 			}
 		}
 	}
+	return fmt.Errorf("cannot find handler %s", name)
 }
 
 // Dump: output all message handlers

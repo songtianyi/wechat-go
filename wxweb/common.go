@@ -253,11 +253,12 @@ type VerifyUser struct {
 
 // ReceivedMessage: for received message
 type ReceivedMessage struct {
-	IsGroup      bool
-	MsgId        string
-	Content      string
-	FromUserName string
-	ToUserName   string
-	Who          string
-	MsgType      int
+	IsGroup       bool
+	MsgId         string
+	Content       string
+	FromUserName  string
+	ToUserName    string
+	Who           string
+	MsgType       int
+	OriginContent string
 }
