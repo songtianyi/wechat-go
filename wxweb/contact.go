@@ -81,15 +81,24 @@ func CreateContactManagerFromBytes(cb []byte) (*ContactManager, error) {
 	return cm, nil
 }
 
-// AddConactFromBytes
+// AddContactFromBytes
 // upate contact manager from bytes
-func (s *ContactManager) AddConactFromBytes(cb []byte) error {
+func (s *ContactManager) AddContactFromBytes(cb []byte) error {
 	var cr ContactResponse
 	if err := json.Unmarshal(cb, &cr); err != nil {
 		return err
 	}
 	s.cl = append(s.cl, cr.MemberList...)
 	return nil
+}
+
+// AddContactFromUser
+// add a new user contact to contact manager
+func (s *ContactManager) AddContactFromUser(user *User) {
+	if user == nil {
+		return
+	}
+	s.cl = append(s.cl, user)
 }
 
 // GetContactByUserName

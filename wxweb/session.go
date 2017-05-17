@@ -204,6 +204,8 @@ func (s *Session) LoginAndServe(useCache bool) error {
 		return err
 	}
 
+	s.Cm.AddContactFromUser(s.Bot)
+
 	if err := s.serve(); err != nil {
 		return err
 	}
