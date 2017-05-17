@@ -1,5 +1,7 @@
 ## wechat-go
 
+[![Join the chat at https://gitter.im/wechat-go/Lobby](https://badges.gitter.im/wechat-go/Lobby.svg)](https://gitter.im/wechat-go/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/songtianyi/wechat-go.svg?branch=master)](https://travis-ci.org/songtianyi/wechat-go)
 [![Gitter chat](https://badges.gitter.im/songtianyi/wechat-go.png)](https://gitter.im/we-gophers/wechat-go?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
 [![Go Report Card](https://goreportcard.com/badge/github.com/songtianyi/wechat-go)](https://goreportcard.com/report/github.com/songtianyi/wechat-go)
