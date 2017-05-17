@@ -26,7 +26,6 @@ func Register(session *wxweb.Session) {
 
 func fetchJokes() {
 	for {
-		time.Sleep(time.Second * 3600)
 		km := url.Values{}
 		km.Add("sort", "desc")
 		km.Add("page", "1")
@@ -53,6 +52,7 @@ func fetchJokes() {
 				lastFetchTime = times[i]
 			}
 		}
+		time.Sleep(time.Second * 3600)
 	}
 }
 
