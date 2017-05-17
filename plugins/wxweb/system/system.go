@@ -23,23 +23,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package replier
+package system // 以插件名命令包名
 
 import (
-	"github.com/songtianyi/rrframework/logs"
-	"github.com/songtianyi/wechat-go/wxweb"
+	"github.com/songtianyi/rrframework/logs" // 导入日志包
+	"github.com/songtianyi/wechat-go/wxweb"  // 导入协议包
 )
 
-// register plugin
+// Register plugin
+// 必须有的插件注册函数
+// 指定session, 可以对不同用户注册不同插件
 func Register(session *wxweb.Session) {
-	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(autoReply), "text-replier")
-	if err := session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(autoReply), "img-replier"); err != nil {
-		logs.Error(err)
-	}
-
+	// 将插件注册到session
+	// 第一个参数: 指定消息类型, 所有该类型的消息都会被转发到此插件
+	// 第二个参数: 指定消息处理函数, 消息会进入此函数
+	// 第三个参数: 自定义插件名，不能重名，switcher插件会用到此名称
+	session.HandlerRegister.Add(wxweb.MSG_SYS, wxweb.Handler(system), "system")
 }
-func autoReply(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
-	if !msg.IsGroup {
-		session.SendText("暂时不在，稍后回复", session.Bot.UserName, msg.FromUserName)
-	}
+
+// 消息处理函数
+func system(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
+
+	logs.Debug(msg)
 }

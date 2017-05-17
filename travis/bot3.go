@@ -12,6 +12,7 @@ import (
 	"github.com/songtianyi/wechat-go/plugins/wxweb/replier"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/revoker"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/switcher"
+	"github.com/songtianyi/wechat-go/plugins/wxweb/system"
 	"github.com/songtianyi/wechat-go/wxweb"
 	"time"
 )
@@ -34,6 +35,7 @@ func main() {
 	joker.Register(session)
 	revoker.Register(session)
 	forwarder.Register(session)
+	system.Register(session)
 
 	// enable plugin
 	session.HandlerRegister.EnableByName("switcher")
@@ -42,10 +44,11 @@ func main() {
 	session.HandlerRegister.EnableByName("laosj")
 	session.HandlerRegister.EnableByName("joker")
 
-	// disable by type example
-	//if err := session.HandlerRegister.EnableByType(wxweb.MSG_TEXT); err != nil {
-	//	logs.Error(err)
-	//}
+	// enable by type example
+	if err := session.HandlerRegister.EnableByType(wxweb.MSG_SYSTEM); err != nil {
+		logs.Error(err)
+		return
+	}
 
 	for {
 		if err := session.LoginAndServe(false); err != nil {
