@@ -18,12 +18,11 @@ go version wechat web api
 
 
 ## 安装
-	go get -u -v github.com/songtianyi/wechat-go
-
-## golang.org/x 安装
 	mkdir $GOPATH/src/golang.org/x
 	cd $GOPATH/src/golang.org/x
 	git clone https://github.com/golang/net.git
+
+	go get -u -v github.com/songtianyi/wechat-go
 
 ## 示例项目
 [go-aida](https://www.github.com/songtianyi/go-aida)
@@ -98,7 +97,6 @@ dump
 
 ###### system
 处理消息撤回/红包等系统提示
-
 
 ###### forwarder
 消息跨群转发, 在插件里修改群名的全拼即可.
