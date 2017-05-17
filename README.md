@@ -17,20 +17,19 @@ go version wechat web api
 * 可以发送图片/文字/gif/视频/表情等多种消息
 
 
-## Install
+## 安装
 	go get -u -v github.com/songtianyi/wechat-go
 
-## golang.org/x dep install
+## golang.org/x 安装
 	mkdir $GOPATH/src/golang.org/x
 	cd $GOPATH/src/golang.org/x
 	git clone https://github.com/golang/net.git
-	git clone https://github.com/golang/text.git
 
-## Demo project
+## 示例项目
 [go-aida](https://www.github.com/songtianyi/go-aida)
 
-## Example code
-##### Create your own chatbot
+## 示例代码
+##### 基于wechat-go创建自定义的机器人
 ```go
 package main
 
@@ -44,29 +43,30 @@ import (
 )
 
 func main() {
-	// create session
+	// 创建session, 一个session对应一个机器人
 	session, err := wxweb.CreateSession(nil, nil, wxweb.TERMINAL_MODE)
 	if err != nil {
 		logs.Error(err)
 		return
 	}
 
-	// add plugins for this session, they are disabled by default
+	// 注册插件, 所有插件默认是关闭的
 	faceplusplus.Register(session)
 	replier.Register(session)
 	switcher.Register(session)
 	gifer.Register(session)
 
-	// enable plugin
+	// 开启一些常用插件
 	session.HandlerRegister.EnableByName("switcher")
 	session.HandlerRegister.EnableByName("faceplusplus")
 
+	// 登录并接收消息
 	if err := session.LoginAndServe(false); err != nil {
 		logs.Error("session exit, %s", err)
 	}
 }
 ```
-## Plugins
+## 插件列表
 ###### switcher
 一个管理插件的插件
 ```
@@ -124,25 +124,25 @@ func Register(session *wxweb.Session) {
 // 消息处理函数
 func demo(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 
-	// 可选:可以用contact manager来过滤, 过滤掉没有保存到通讯录的群
+	// 可选: 可以用contact manager来过滤, 比如过滤掉没有保存到通讯录的群
 	contact := session.Cm.GetContactByUserName(msg.FromUserName)
 	if contact == nil {
 		logs.Error("ignore the messages from", msg.FromUserName)
 		return
 	}
 
-	// 可选: 过滤消息类型
+	// 可选: 根据消息类型来过滤
 	if msg.MsgType == wxweb.MSG_IMG {
 		return
 	}
 
 	// 可选: 根据wxweb.User数据结构中的数据来过滤
 	if contact.PYQuanPin != "songtianyi" {
-		// 根据用户昵称的拼音全拼来过滤
+		// 比如根据用户昵称的拼音全拼来过滤
 		return
 	}
 
-	// 可选:过滤和自己无关的群组消息
+	// 可选: 过滤和自己无关的群组消息
 	if msg.IsGroup && msg.Who != session.Bot.UserName {
 		return
 	}
@@ -166,5 +166,5 @@ func demo(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 
 }
 ```
-## Show
+## 展示
 ![example](http://p1.bpimg.com/567571/374325070b2a9042.jpg)

@@ -301,7 +301,7 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 			rmsg.Who = ss[0]
 			rmsg.Content = ss[1]
 		} else {
-			//rmsg.Who = session.Bot.UserName
+			rmsg.Who = session.Bot.UserName
 		}
 	}
 	return rmsg

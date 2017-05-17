@@ -52,7 +52,6 @@ func fetchJokes() {
 				lastFetchTime = times[i]
 			}
 		}
-		time.Sleep(time.Second * 3600)
 	}
 }
 
@@ -64,7 +63,7 @@ func listenCmd(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	if !strings.Contains(msg.Content, "笑话") {
 		return
 	}
-	logs.Debug(len(jokeQueue))
+	logs.Debug("jokeQueue length:", len(jokeQueue))
 	select {
 	case <-time.After(time.Second * 5):
 		return
