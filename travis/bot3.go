@@ -43,9 +43,10 @@ func main() {
 	session.HandlerRegister.EnableByName("cleaner")
 	session.HandlerRegister.EnableByName("laosj")
 	session.HandlerRegister.EnableByName("joker")
+	session.HandlerRegister.EnableByName("system-withdraw")
 
 	// enable by type example
-	if err := session.HandlerRegister.EnableByType(wxweb.MSG_SYSTEM); err != nil {
+	if err := session.HandlerRegister.EnableByType(wxweb.MSG_SYS); err != nil {
 		logs.Error(err)
 		return
 	}
