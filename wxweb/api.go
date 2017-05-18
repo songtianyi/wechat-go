@@ -56,7 +56,6 @@ func JsLogin(common *Common) (string, error) {
 
 	req, err := http.NewRequest("GET", uri, nil)
 	req.Header.Add("User-Agent", common.UserAgent)
-	//req.Header.Add("Referer", "https://wx.qq.com/")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
