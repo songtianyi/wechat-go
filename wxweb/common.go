@@ -261,4 +261,5 @@ type ReceivedMessage struct {
 	Who           string
 	MsgType       int
 	OriginContent string
+	At            string
 }

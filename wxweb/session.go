@@ -284,24 +284,33 @@ func (s *Session) consumer(msg []byte) {
 
 func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 	rmsg := &ReceivedMessage{
-		MsgId:        msg["MsgId"].(string),
-		Content:      msg["Content"].(string),
-		FromUserName: msg["FromUserName"].(string),
-		ToUserName:   msg["ToUserName"].(string),
-		MsgType:      int(msg["MsgType"].(float64)),
+		MsgId:         msg["MsgId"].(string),
+		OriginContent: msg["Content"].(string),
+		FromUserName:  msg["FromUserName"].(string),
+		ToUserName:    msg["ToUserName"].(string),
+		MsgType:       int(msg["MsgType"].(float64)),
 	}
 
 	if strings.Contains(rmsg.FromUserName, "@@") ||
 		strings.Contains(rmsg.ToUserName, "@@") {
 		rmsg.IsGroup = true
 		// group message
-		rmsg.OriginContent = rmsg.Content
-		ss := strings.Split(rmsg.Content, ":<br/>")
+		ss := strings.Split(rmsg.OriginContent, ":<br/>")
 		if len(ss) > 1 {
 			rmsg.Who = ss[0]
 			rmsg.Content = ss[1]
 		} else {
 			rmsg.Who = s.Bot.UserName
+			rmsg.Content = rmsg.OriginContent
+		}
+	}
+	if rmsg.MsgType == MSG_TEXT &&
+		len(rmsg.Content) > 1 &&
+		strings.HasPrefix(rmsg.Content, "@") {
+		ss := strings.Split(rmsg.Content, "\u2005")
+		if len(ss) == 2 {
+			rmsg.At = ss[0] + "\u2005"
+			rmsg.Content = ss[1]
 		}
 	}
 	return rmsg
