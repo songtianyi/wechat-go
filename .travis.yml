@@ -7,17 +7,6 @@ go:
     - 1.8
     - tip
 
-install:
-      # dep for wechat-go
-      # - go get github.com/mdp/qrterminal
-      # - go get github.com/cheggaaa/pb
-      # - go get github.com/PuerkitoBio/goquery
-      # - go get github.com/mdp/rsc/qr
-      # - go get github.com/songtianyi/laosj/spider
-      #- go get github.com/songtianyi/rrframework/config
-      #- go get github.com/songtianyi/rrframework/logs
-      #- go get github.com/songtianyi/rrframework/storage
-
 script:
     - go get ./...
     - go build travis/bot.go
