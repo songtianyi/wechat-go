@@ -18,13 +18,16 @@ go version wechat web api
 * 树莓派也支持
 
 
-## 安装
+## 获取源码并运行
 	mkdir $GOPATH/src/golang.org/x
 	cd $GOPATH/src/golang.org/x
 	git clone https://github.com/golang/net.git
 
 	go get -u -v github.com/songtianyi/wechat-go
+	cd $GOPATH/src/github.com/songtianyi/wechat-go
 	go get ./...
+	go build travis/bot.go
+	./bot
 
 ## 示例项目
 [go-aida](https://www.github.com/songtianyi/go-aida)
