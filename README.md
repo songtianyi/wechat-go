@@ -24,6 +24,7 @@ go version wechat web api
 	git clone https://github.com/golang/net.git
 
 	go get -u -v github.com/songtianyi/wechat-go
+	go get ./...
 
 ## 示例项目
 [go-aida](https://www.github.com/songtianyi/go-aida)
