@@ -255,6 +255,9 @@ loop1:
 		} else if ret == 1205 {
 			errChan <- fmt.Errorf("api blocked, ret:%d", 1205)
 			break loop1
+		} else {
+			errChan <- fmt.Errorf("unhandled exception ret %d", ret)
+			break loop1
 		}
 	}
 
