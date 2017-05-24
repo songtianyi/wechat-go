@@ -9,5 +9,5 @@ go:
 
 script:
     - go get ./...
-    - go build travis/terminal_bot.go
+    - go build travis/linux/terminal_bot.go
 
