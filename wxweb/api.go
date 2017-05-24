@@ -262,7 +262,10 @@ func WebWxSync(common *Common,
 	if err != nil {
 		return err
 	}
-	retcode, _ := jc.GetInt("BaseResponse.Ret")
+	retcode, err := jc.GetInt("BaseResponse.Ret")
+	if err != nil {
+		return err
+	}
 	if retcode != 0 {
 		return fmt.Errorf("BaseResponse.Ret %d", retcode)
 	}

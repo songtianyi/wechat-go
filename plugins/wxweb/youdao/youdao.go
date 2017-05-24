@@ -32,6 +32,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	//"fmt"
 )
 
 // Register plugin
@@ -57,9 +58,20 @@ func youdao(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 		logs.Error(err)
 		return
 	}
+	defer response.Body.Close()
 	body, _ := ioutil.ReadAll(response.Body)
-	jc, _ := rrconfig.LoadJsonConfigFromBytes(body)
-	errorCode, _ := jc.GetInt("errorCode")
+	logs.Debug("body", string(body))
+	jc, err := rrconfig.LoadJsonConfigFromBytes(body)
+	if err  != nil {
+		logs.Error(err)
+		return
+	}
+	logs.Debug("jc", jc)
+	errorCode, err := jc.GetInt("errorCode")
+	if err  != nil {
+		logs.Error(err)
+		return
+	}
 	if errorCode != 0 {
 		logs.Error("youdao API", errorCode)
 		return

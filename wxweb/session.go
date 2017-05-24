@@ -222,7 +222,7 @@ func (s *Session) serve() error {
 		case m := <-msg:
 			go s.consumer(m)
 		case err := <-errChan:
-			// all received message have been consumed
+			// all received messages have been consumed
 			return err
 		}
 	}
@@ -306,16 +306,22 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 			rmsg.Who = s.Bot.UserName
 			rmsg.Content = rmsg.OriginContent
 		}
+	}else{
+		// no group message
+		rmsg.Who = rmsg.FromUserName
+		rmsg.Content = rmsg.OriginContent
 	}
 	if rmsg.MsgType == MSG_TEXT &&
 		len(rmsg.Content) > 1 &&
 		strings.HasPrefix(rmsg.Content, "@") {
+		// @someone
 		ss := strings.Split(rmsg.Content, "\u2005")
 		if len(ss) == 2 {
 			rmsg.At = ss[0] + "\u2005"
 			rmsg.Content = ss[1]
 		}
 	}
+	fmt.Println(rmsg)
 	return rmsg
 
 }

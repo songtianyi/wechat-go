@@ -10,12 +10,12 @@ go version wechat web api
 
 * 支持多用户(多开)
 * 支持掉线后免扫码重登
-* 功能以插件的形式提供，可以根据用户(比如付费情况）选择加载或者不加载某插件
+* 功能以插件的形式提供，可以根据用户(比如付费情况）选择加载或者不加载某插件, 可定制性强
 * 对于加载的插件, 使用机器人的用户可以通过微信聊天界面动态开启/关闭.
 * 目前已提供头像(性别／年龄)识别, gif搜索, 笑话大全, "阅后即焚", 消息跨群转发, 中英互译等多个有趣插件
 * 插件编写简单, 二次开发极为方便
 * 可以发送图片/文字/gif/视频/表情等多种消息
-* 树莓派也支持
+* 支持linux/mac/windows, 树莓派也可以:)
 
 
 ## 获取源码并运行
@@ -26,8 +26,8 @@ go version wechat web api
 	go get -u -v github.com/songtianyi/wechat-go
 	cd $GOPATH/src/github.com/songtianyi/wechat-go
 	go get ./...
-	go build travis/bot.go
-	./bot
+	go build travis/terminal_bot.go
+	./terminal_bot
 
 ## 示例项目
 [go-aida](https://www.github.com/songtianyi/go-aida)
