@@ -34,9 +34,10 @@ go build travis/terminal_bot.go
 ./terminal_bot
 ```
 #### windows
+windows版本需要在非windows系统使用交叉编译来生成, 生成之后在windows下运行
 ```
-#在非windows系统交叉编译windows版本
 GOOS=windows GOARCH=amd64 go build travis/windows/windows_bot.go
+./windows_bot.exe
 ```
 
 ## 示例项目
