@@ -321,9 +321,7 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 			rmsg.Content = ss[1]
 		}
 	}
-	fmt.Println(rmsg)
 	return rmsg
-
 }
 
 // SendText: send text msg type 1

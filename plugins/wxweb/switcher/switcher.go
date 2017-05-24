@@ -47,8 +47,6 @@ func switcher(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	if strings.ToLower(msg.Content) == "dump" {
 		session.SendText(session.HandlerRegister.Dump(), session.Bot.UserName, wxweb.RealTargetUserName(session, msg))
 		return
-	}else{
-		logs.Debug(msg)
 	}
 
 	if !strings.Contains(strings.ToLower(msg.Content), "enable") &&
