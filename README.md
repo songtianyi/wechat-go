@@ -10,24 +10,35 @@ go version wechat web api
 
 * 支持多用户(多开)
 * 支持掉线后免扫码重登
-* 功能以插件的形式提供，可以根据用户(比如付费情况）选择加载或者不加载某插件, 可定制性强
-* 对于加载的插件, 使用机器人的用户可以通过微信聊天界面动态开启/关闭.
+* 功能以插件的形式提供，可以根据用户(比如付费情况）选择加载或者不加载某插件
+* 插件编写简单, 可定制性强, 二次开发极为方便
+* 对于加载的插件, 使用机器人的终端用户可以通过微信聊天界面动态开启/关闭.
 * 目前已提供头像(性别／年龄)识别, gif搜索, 笑话大全, "阅后即焚", 消息跨群转发, 中英互译等多个有趣插件
-* 插件编写简单, 二次开发极为方便
 * 可以发送图片/文字/gif/视频/表情等多种消息
 * 支持Linux/MacOSX/Windows, 树莓派也可以:)
 
 
-## 获取源码并运行
-	mkdir $GOPATH/src/golang.org/x
+## 获取源码
+	mkdir -p $GOPATH/src/golang.org/x
 	cd $GOPATH/src/golang.org/x
 	git clone https://github.com/golang/net.git
 
 	go get -u -v github.com/songtianyi/wechat-go
 	cd $GOPATH/src/github.com/songtianyi/wechat-go
 	go get ./...
-	go build travis/terminal_bot.go
-	./terminal_bot
+
+## 编译并运行
+#### linux/mac
+```
+go build travis/terminal_bot.go
+./terminal_bot
+```
+#### windows
+windows版本需要在非windows系统使用交叉编译来生成, 生成之后在windows下运行
+```
+GOOS=windows GOARCH=amd64 go build travis/windows/windows_bot.go
+./windows_bot.exe
+```
 
 ## 示例项目
 [go-aida](https://www.github.com/songtianyi/go-aida)
