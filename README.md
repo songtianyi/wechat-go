@@ -43,7 +43,8 @@ GOOS=windows GOARCH=amd64 go build travis/windows/windows_bot.go
 ## 示例项目
 [go-aida](https://www.github.com/songtianyi/go-aida)
 ```
-wechat-go只是微信的API和消息框架, 并不是可运行程序，但只需少量代码即可基于wechat-go创建一个属于自己的个性化机器人，对于更复杂的需求(扫码页面等)可以使用[go-aida](https://www.github.com/songtianyi/go-aida)
+wechat-go只是微信的API和消息框架, 并不是可运行程序，但只需少量代码即可基于wechat-go创建一个属于自己的个性化机器人，
+对于更复杂的需求(扫码页面等)可以使用go-aida.
 wechat-go会专注在API的稳定性/框架的易用性/通用插件这三方面，go-aida专注在机器人的个性化定制上.
 ```
 ## 示例代码
