@@ -108,10 +108,10 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 			return nil, err
 		}
 		ls := rrstorage.CreateLocalDiskStorage("../public/qrcode/")
-		if err := ls.Save(qrcb, "qrcode.jpg"); err != nil {
+		if err := ls.Save(qrcb, uuid + ".jpg"); err != nil {
 			return nil, err
 		}
-		session.QrcodePath = "/public/qrcode/" + uuid + ".jpg"
+		session.QrcodePath = "../public/qrcode/" + uuid + ".jpg"
 	}
 	return session, nil
 }
