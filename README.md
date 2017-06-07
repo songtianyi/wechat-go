@@ -150,6 +150,7 @@ func Register(session *wxweb.Session) {
 func demo(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 
 	// 可选: 可以用contact manager来过滤, 比如过滤掉没有保存到通讯录的群
+	// 注意，contact manager只存储了已保存到通讯录的群组
 	contact := session.Cm.GetContactByUserName(msg.FromUserName)
 	if contact == nil {
 		logs.Error("ignore the messages from", msg.FromUserName)
