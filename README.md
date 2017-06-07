@@ -45,7 +45,7 @@ GOOS=windows GOARCH=amd64 go build travis/windows/windows_bot.go
 
 #### 区别
 * go-aida是拥有扫码页面的功能性机器人
-* wechat-gos实现了微信的API, 并提供了易用的消息框架, 但并不是可运行程序
+* wechat-go实现了微信的API, 并提供了易用的消息框架, 但并不是可运行程序
 * 只需少量代码即可基于wechat-go创建一个属于自己的个性化机器人，对于更复杂的需求(扫码页面等)可以使用go-aida
 * wechat-go专注在API的稳定性/框架的易用性/通用插件这三方面
 * go-aida专注在机器人的个性化定制上
@@ -66,6 +66,7 @@ import (
 
 func main() {
 	// 创建session, 一个session对应一个机器人
+	// 二维码显示在终端上
 	session, err := wxweb.CreateSession(nil, nil, wxweb.TERMINAL_MODE)
 	if err != nil {
 		logs.Error(err)
