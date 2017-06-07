@@ -193,7 +193,7 @@ func SyncCheck(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	jar, _ := cookiejar.New(nil)
 	u, _ := url.Parse(uri)
 	jar.SetCookies(u, cookies)
-	client := &http.Client{Jar: jar}
+	client := &http.Client{Jar: jar, Timeout: time.Duration(5) * time.Second}
 	req, err := http.NewRequest("GET", uri, bytes.NewReader(b))
 	if err != nil {
 		return 0, 0, err
@@ -246,7 +246,7 @@ func WebWxSync(common *Common,
 	jar, _ := cookiejar.New(nil)
 	u, _ := url.Parse(uri)
 	jar.SetCookies(u, cookies)
-	client := &http.Client{Jar: jar}
+	client := &http.Client{Jar: jar, Timeout: time.Duration(3) * time.Second}
 	req, err := http.NewRequest("POST", uri, bytes.NewReader(b))
 	req.Header.Add("Content-Type", "application/json; charset=UTF-8")
 	req.Header.Add("User-Agent", common.UserAgent)
