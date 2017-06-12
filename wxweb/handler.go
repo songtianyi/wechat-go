@@ -51,6 +51,16 @@ func (s *HandlerWrapper) getName() string {
 	return s.name
 }
 
+// GetName: export name for external projects
+func (s *HandlerWrapper) GetName() string {
+	return s.name
+}
+
+// GetEnabled: export enabled for external projects
+func (s *HandlerWrapper) GetEnabled() bool {
+	return s.enabled
+}
+
 func (s *HandlerWrapper) enableHandle() {
 	s.enabled = true
 	return
@@ -97,6 +107,17 @@ func (hr *HandlerRegister) Get(key int) (error, []*HandlerWrapper) {
 		return nil, v
 	}
 	return fmt.Errorf("handlers for key [%d] not registered", key), nil
+}
+
+// GetAll: get all message handler
+func (hr *HandlerRegister) GetAll() []*HandlerWrapper {
+	hr.mu.RLock()
+	defer hr.mu.RUnlock()
+	result := make([]*HandlerWrapper, 0)
+	for _, v := range hr.hmap {
+		result = append(result, v...)
+	}
+	return result
 }
 
 // EnableByType: enable handler by message type

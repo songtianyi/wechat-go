@@ -70,6 +70,7 @@ type Session struct {
 	QrcodePath      string //qrcode path
 	QrcodeUUID      string //uuid
 	HandlerRegister *HandlerRegister
+	CreateTime      int64
 }
 
 // CreateSession: create wechat bot session
@@ -92,6 +93,7 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 		WxWebCommon: common,
 		WxWebXcg:    wxWebXcg,
 		QrcodeUUID:  uuid,
+		CreateTime:  time.Now().Unix(),
 	}
 
 	if handlerRegister != nil {
@@ -108,7 +110,7 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 			return nil, err
 		}
 		ls := rrstorage.CreateLocalDiskStorage("../public/qrcode/")
-		if err := ls.Save(qrcb, uuid + ".jpg"); err != nil {
+		if err := ls.Save(qrcb, uuid+".jpg"); err != nil {
 			return nil, err
 		}
 		session.QrcodePath = "../public/qrcode/" + uuid + ".jpg"
@@ -306,7 +308,7 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 			rmsg.Who = s.Bot.UserName
 			rmsg.Content = rmsg.OriginContent
 		}
-	}else{
+	} else {
 		// no group message
 		rmsg.Who = rmsg.FromUserName
 		rmsg.Content = rmsg.OriginContent
