@@ -48,6 +48,6 @@ func share(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	// 取text
 	if strings.Contains(msg.Content, "纸牌屋") {
 		text := "https://pan.baidu.com/s/1sl4S0nr#list/path=%2F"
-		session.SendText("纸牌屋第五季分享\n" + text, session.Bot.UserName, wxweb.RealTargetUserName(session, msg))
+		session.SendText("纸牌屋第五季在线观看 无毒无广\n" + text, session.Bot.UserName, wxweb.RealTargetUserName(session, msg))
 	}
 }
