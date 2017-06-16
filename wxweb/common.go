@@ -251,6 +251,14 @@ type VerifyUser struct {
 	VerifyUserTicket string
 }
 
+type RecommendInfo struct {
+	Ticket   string
+	UserName string
+	NickName string
+	Content  string
+	Sex      int
+}
+
 // ReceivedMessage: for received message
 type ReceivedMessage struct {
 	IsGroup       bool
@@ -262,4 +270,6 @@ type ReceivedMessage struct {
 	MsgType       int
 	OriginContent string
 	At            string
+
+	RecommendInfo *RecommendInfo
 }

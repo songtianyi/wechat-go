@@ -735,7 +735,7 @@ func WebWxBatchGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 }
 
 // WebWxVerifyUser: webwxverifyuser api
-func WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*http.Cookie, verifyContent string, vul []*VerifyUser) ([]byte, error) {
+func WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*http.Cookie, opcode int, verifyContent string, vul []*VerifyUser) ([]byte, error) {
 	km := url.Values{}
 	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
 	km.Add("pass_ticket", ce.PassTicket)
@@ -748,7 +748,7 @@ func WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*http.Cookie, veri
 			ce.Skey,
 			common.DeviceID,
 		},
-		Opcode:             2,
+		Opcode:             opcode,
 		SceneList:          []int{33},
 		SceneListCount:     1,
 		VerifyContent:      verifyContent,

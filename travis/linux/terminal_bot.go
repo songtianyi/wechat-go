@@ -13,6 +13,7 @@ import (
 	"github.com/songtianyi/wechat-go/plugins/wxweb/revoker"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/switcher"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/system"
+	"github.com/songtianyi/wechat-go/plugins/wxweb/verify"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/youdao"
 	"github.com/songtianyi/wechat-go/wxweb"
 	"time"
@@ -38,6 +39,7 @@ func main() {
 	forwarder.Register(session)
 	system.Register(session)
 	youdao.Register(session)
+	verify.Register(session)
 
 	// enable plugin
 	session.HandlerRegister.EnableByName("switcher")
@@ -47,6 +49,7 @@ func main() {
 	session.HandlerRegister.EnableByName("joker")
 	session.HandlerRegister.EnableByName("system-withdraw")
 	session.HandlerRegister.EnableByName("youdao")
+	session.HandlerRegister.EnableByName("verify")
 
 	// enable by type example
 	if err := session.HandlerRegister.EnableByType(wxweb.MSG_SYS); err != nil {

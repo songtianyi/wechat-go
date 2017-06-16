@@ -163,10 +163,15 @@ func (s *Session) LoginAndServe(useCache bool) error {
 	)
 
 	if !useCache {
+		if s.Cookies != nil {
+			// confirmWaiter
+		}
+
 		if err := s.scanWaiter(); err != nil {
 			return err
 		}
 
+		// update cookies
 		if s.Cookies, err = WebNewLoginPage(s.WxWebCommon, s.WxWebXcg, s.WxWebCommon.RedirectUri); err != nil {
 			return err
 		}
@@ -296,6 +301,17 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 		MsgType:       int(msg["MsgType"].(float64)),
 	}
 
+	if rmsg.MsgType == MSG_FV {
+		riif := msg["RecommendInfo"].(map[string]interface{})
+		rmsg.RecommendInfo = &RecommendInfo{
+			Ticket:   riif["Ticket"].(string),
+			UserName: riif["UserName"].(string),
+			NickName: riif["NickName"].(string),
+			Content:  riif["Content"].(string),
+			Sex:      int(riif["Sex"].(float64)),
+		}
+	}
+
 	if strings.Contains(rmsg.FromUserName, "@@") ||
 		strings.Contains(rmsg.ToUserName, "@@") {
 		rmsg.IsGroup = true
@@ -326,6 +342,7 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 	return rmsg
 }
 
+// message funcs
 // SendText: send text msg type 1
 func (s *Session) SendText(msg, from, to string) (string, string, error) {
 	b, err := WebWxSendMsg(s.WxWebCommon, s.WxWebXcg, s.Cookies, from, to, msg)
@@ -424,8 +441,27 @@ func (s *Session) RevokeMsg(clientMsgId, svrMsgId, toUserName string) {
 	}
 }
 
+// user funcs
 // Logout: logout web wechat
-
 func (s *Session) Logout() error {
 	return WebWxLogout(s.WxWebCommon, s.WxWebXcg, s.Cookies)
+}
+
+func (s *Session) AcceptFriend(verifyContent string, vul []*VerifyUser) error {
+	b, err := WebWxVerifyUser(s.WxWebCommon, s.WxWebXcg, s.Cookies, 3, verifyContent, vul)
+	if err != nil {
+		return err
+	}
+	jc, err := rrconfig.LoadJsonConfigFromBytes(b)
+	if err != nil {
+		return err
+	}
+	retcode, err := jc.GetInt("BaseResponse.Ret")
+	if err != nil {
+		return err
+	}
+	if retcode != 0 {
+		return fmt.Errorf("BaseResponse.Ret %d", retcode)
+	}
+	return nil
 }
