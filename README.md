@@ -80,6 +80,7 @@ func main() {
 	gifer.Register(session)
 
 	// 开启一些常用插件
+	// 你也可以在插件注册函数里开启插件
 	session.HandlerRegister.EnableByName("switcher")
 	session.HandlerRegister.EnableByName("faceplusplus")
 
@@ -130,6 +131,9 @@ dump
 
 ###### verify
 自动接受好友请求, 可以按条件过滤
+
+###### share
+资源(纸牌屋)自动分发示例
 
 ## 制作自己的插件
 ```go

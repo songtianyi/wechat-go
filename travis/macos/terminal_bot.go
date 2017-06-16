@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/songtianyi/rrframework/logs"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/cleaner"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/demo"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/faceplusplus"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/forwarder"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/gifer"
@@ -32,7 +31,6 @@ func main() {
 	gifer.Register(session)
 	cleaner.Register(session)
 	laosj.Register(session)
-	demo.Register(session)
 	joker.Register(session)
 	revoker.Register(session)
 	forwarder.Register(session)

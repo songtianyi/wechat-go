@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/songtianyi/rrframework/logs"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/cleaner"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/demo"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/faceplusplus"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/forwarder"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/gifer"
@@ -15,6 +14,7 @@ import (
 	"github.com/songtianyi/wechat-go/plugins/wxweb/system"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/verify"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/youdao"
+	"github.com/songtianyi/wechat-go/plugins/wxweb/share"
 	"github.com/songtianyi/wechat-go/wxweb"
 	"time"
 )
@@ -33,13 +33,13 @@ func main() {
 	gifer.Register(session)
 	cleaner.Register(session)
 	laosj.Register(session)
-	demo.Register(session)
 	joker.Register(session)
 	revoker.Register(session)
 	forwarder.Register(session)
 	system.Register(session)
 	youdao.Register(session)
 	verify.Register(session)
+	share.Register(session)
 
 	// enable plugin
 	session.HandlerRegister.EnableByName("switcher")
@@ -50,6 +50,7 @@ func main() {
 	session.HandlerRegister.EnableByName("system-withdraw")
 	session.HandlerRegister.EnableByName("youdao")
 	session.HandlerRegister.EnableByName("verify")
+	session.HandlerRegister.EnableByName("share")
 
 	// enable by type example
 	if err := session.HandlerRegister.EnableByType(wxweb.MSG_SYS); err != nil {
