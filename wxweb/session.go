@@ -211,7 +211,8 @@ func (s *Session) LoginAndServe(useCache bool) error {
 		return err
 	}
 
-	s.Cm.AddContactFromUser(s.Bot)
+	// for v2
+	s.Cm.AddUser(s.Bot)
 
 	if err := s.serve(); err != nil {
 		return err
@@ -229,7 +230,7 @@ func (s *Session) serve() error {
 		case m := <-msg:
 			go s.consumer(m)
 		case err := <-errChan:
-			// all received messages have been consumed
+			// TODO maybe not all consumed messages have not return yet
 			return err
 		}
 	}
@@ -275,7 +276,7 @@ func (s *Session) consumer(msg []byte) {
 	jc, _ := rrconfig.LoadJsonConfigFromBytes(msg)
 	msgCount, _ := jc.GetInt("AddMsgCount")
 	if msgCount < 1 {
-		// no msg
+		// no msg details
 		return
 	}
 	msgis, _ := jc.GetInterfaceSlice("AddMsgList")
@@ -301,6 +302,7 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 		MsgType:       int(msg["MsgType"].(float64)),
 	}
 
+	// friend verify message
 	if rmsg.MsgType == MSG_FV {
 		riif := msg["RecommendInfo"].(map[string]interface{})
 		rmsg.RecommendInfo = &RecommendInfo{
@@ -325,10 +327,11 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 			rmsg.Content = rmsg.OriginContent
 		}
 	} else {
-		// no group message
+		// none group message
 		rmsg.Who = rmsg.FromUserName
 		rmsg.Content = rmsg.OriginContent
 	}
+
 	if rmsg.MsgType == MSG_TEXT &&
 		len(rmsg.Content) > 1 &&
 		strings.HasPrefix(rmsg.Content, "@") {

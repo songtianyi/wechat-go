@@ -69,9 +69,10 @@ type ContactManager struct {
 	cl []*User //contact list
 }
 
+// create
 // CreateContactManagerFromBytes: create contact maanger from bytes
 func CreateContactManagerFromBytes(cb []byte) (*ContactManager, error) {
-	var cr ContactResponse
+	var cr WxWebGetContactResponse
 	if err := json.Unmarshal(cb, &cr); err != nil {
 		return nil, err
 	}
@@ -81,10 +82,10 @@ func CreateContactManagerFromBytes(cb []byte) (*ContactManager, error) {
 	return cm, nil
 }
 
-// AddContactFromBytes
-// upate contact manager from bytes
-func (s *ContactManager) AddContactFromBytes(cb []byte) error {
-	var cr ContactResponse
+// update
+// AddContactFromBytes: upate contact manager from wxwebgetcontact response
+func (s *ContactManager) AddUserFromBytes(cb []byte) error {
+	var cr WxWebGetContactResponse
 	if err := json.Unmarshal(cb, &cr); err != nil {
 		return err
 	}
@@ -92,17 +93,16 @@ func (s *ContactManager) AddContactFromBytes(cb []byte) error {
 	return nil
 }
 
-// AddContactFromUser
-// add a new user contact to contact manager
-func (s *ContactManager) AddContactFromUser(user *User) {
+// AddContactFromUser: add a new user to contact manager
+func (s *ContactManager) AddUser(user *User) {
 	if user == nil {
 		return
 	}
 	s.cl = append(s.cl, user)
 }
 
-// GetContactByUserName
-// get contact by UserName
+// get
+// GetContactByUserName: get contact by UserName
 func (s *ContactManager) GetContactByUserName(un string) *User {
 	for _, v := range s.cl {
 		if v.UserName == un {
@@ -112,7 +112,7 @@ func (s *ContactManager) GetContactByUserName(un string) *User {
 	return nil
 }
 
-// GetGroupContacts: get group contacts
+// GetGroupContacts: get all group contacts
 func (s *ContactManager) GetGroupContacts() []*User {
 	clarray := make([]*User, 0)
 	for _, v := range s.cl {
@@ -123,7 +123,7 @@ func (s *ContactManager) GetGroupContacts() []*User {
 	return clarray
 }
 
-// GetStrangers: not group and not StarFriend
+// GetStrangers: not group contact and not StarFriend and not special contact
 func (s *ContactManager) GetStrangers() []*User {
 	clarray := make([]*User, 0)
 	for _, v := range s.cl {
@@ -137,18 +137,18 @@ func (s *ContactManager) GetStrangers() []*User {
 	return clarray
 }
 
-// GetContactByName: get contacts by name
-func (s *ContactManager) GetContactByName(sig string) []*User {
+// GetContactByName: get contacts by User.NickName | User.RemarkName | User.DisplayName
+func (s *ContactManager) GetContactsByName(sig string) []*User {
 	clarray := make([]*User, 0)
 	for _, v := range s.cl {
-		if v.NickName == sig || v.RemarkName == sig {
+		if v.NickName == sig || v.RemarkName == sig || v.DisplayName == sig {
 			clarray = append(clarray, v)
 		}
 	}
 	return clarray
 }
 
-// GetContactByPYQuanPin: get contact by User.PYQuanPin
+// GetContactByPYQuanPin: get contact by User.PYQuanPin | User.RemarkPYQuanPin
 func (s *ContactManager) GetContactByPYQuanPin(sig string) *User {
 	for _, v := range s.cl {
 		if v.PYQuanPin == sig || v.RemarkPYQuanPin == sig {

@@ -10,11 +10,11 @@ import (
 	"github.com/songtianyi/wechat-go/plugins/wxweb/laosj"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/replier"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/revoker"
+	"github.com/songtianyi/wechat-go/plugins/wxweb/share"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/switcher"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/system"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/verify"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/youdao"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/share"
 	"github.com/songtianyi/wechat-go/wxweb"
 	"time"
 )

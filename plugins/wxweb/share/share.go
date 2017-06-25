@@ -26,7 +26,8 @@ SOFTWARE.
 package share // 以插件名命令包名
 
 import (
-	"github.com/songtianyi/wechat-go/wxweb"  // 导入协议包
+	"github.com/songtianyi/rrframework/logs"
+	"github.com/songtianyi/wechat-go/wxweb" // 导入协议包
 	"strings"
 )
 
@@ -48,6 +49,19 @@ func share(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	// 取text
 	if strings.Contains(msg.Content, "纸牌屋") {
 		text := "https://pan.baidu.com/s/1sl4S0nr#list/path=%2F"
-		session.SendText("纸牌屋第五季在线观看 无毒无广\n" + text, session.Bot.UserName, wxweb.RealTargetUserName(session, msg))
+		session.SendText("纸牌屋第五季在线观看 无毒无广\n"+text, session.Bot.UserName, wxweb.RealTargetUserName(session, msg))
 	}
+
+	// for issue#13 debug
+	//who := session.Cm.GetContactByUserName(msg.FromUserName)
+	//logs.Debug("who send", who)
+	//if msg.IsGroup {
+	//	mm, err := wxweb.CreateMemberManagerFromGroupContact(session, who)
+	//	if err != nil {
+	//		logs.Error(err)
+	//		return
+	//	}
+	//	info := mm.GetContactByUserName(msg.Who)
+	//	logs.Debug(info)
+	//}
 }

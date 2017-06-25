@@ -230,16 +230,16 @@ type BaseResponse struct {
 	ErrMsg string
 }
 
-// ContactResponse: get contact response struct
-type ContactResponse struct {
+// WxWebGetContactResponse: get contact response struct
+type WxWebGetContactResponse struct {
 	BaseResponse *BaseResponse
 	MemberCount  int
 	MemberList   []*User
 	Seq          int
 }
 
-// GroupContactResponse: get batch contact response struct
-type GroupContactResponse struct {
+// WxWebBatchGetContactResponse: batch get contact response struct
+type WxWebBatchGetContactResponse struct {
 	BaseResponse *BaseResponse
 	Count        int
 	ContactList  []*User

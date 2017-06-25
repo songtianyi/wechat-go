@@ -60,12 +60,12 @@ func youdao(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	defer response.Body.Close()
 	body, _ := ioutil.ReadAll(response.Body)
 	jc, err := rrconfig.LoadJsonConfigFromBytes(body)
-	if err  != nil {
+	if err != nil {
 		logs.Error(err)
 		return
 	}
 	errorCode, err := jc.GetInt("errorCode")
-	if err  != nil {
+	if err != nil {
 		logs.Error(err)
 		return
 	}

@@ -30,37 +30,50 @@ import (
 	"fmt"
 )
 
+// MemberManager: group contact member manager
 type MemberManager struct {
 	Group *User
 }
 
+// CreateMemberManagerFromGroupContact: create member manager by group contact info
 func CreateMemberManagerFromGroupContact(session *Session, user *User) (*MemberManager, error) {
-	b, err := WebWxBatchGetContact(session.WxWebCommon, session.WxWebXcg, session.Cookies, []*User{user})
+	b, err := WebWxBatchGetContact(session.WxWebCommon, session.WxWebXcg, session.Cookies, []*User{{
+		EncryChatRoomId: user.EncryChatRoomId,
+		UserName:        user.UserName,
+	}})
 	if err != nil {
 		return nil, err
 	}
-	return CreateMemberManagerFromBytes(b)
+	return CreateMemberManagerFromBytes(session, b)
 }
 
-func CreateMemberManagerFromBytes(b []byte) (*MemberManager, error) {
-	var gcr GroupContactResponse
+// CreateMemberManagerFromBytes: create memeber manager by WxWebBatchGetContactResponse
+func CreateMemberManagerFromBytes(session *Session, b []byte) (*MemberManager, error) {
+	var gcr WxWebBatchGetContactResponse
 	if err := json.Unmarshal(b, &gcr); err != nil {
 		return nil, err
 	}
+	fmt.Println(gcr)
 	if gcr.BaseResponse.Ret != 0 {
 		return nil, fmt.Errorf("WebWxBatchGetContact ret=%d", gcr.BaseResponse.Ret)
 	}
+	fmt.Println(gcr.BaseResponse.Ret)
+	for _, v := range gcr.ContactList {
+		fmt.Println(v.MemberList)
+	}
 
-	if gcr.ContactList == nil || len(gcr.ContactList) < 1 {
+	if gcr.ContactList == nil || gcr.Count < 1 || len(gcr.ContactList) < 1 {
 		return nil, fmt.Errorf("ContactList empty")
 	}
 
 	mm := &MemberManager{
 		Group: gcr.ContactList[0],
 	}
+
 	return mm, nil
 }
 
+// Update: get User details of group members
 func (s *MemberManager) Update(session *Session) error {
 	members := make([]*User, len(s.Group.MemberList))
 	for i, v := range s.Group.MemberList {
@@ -74,7 +87,7 @@ func (s *MemberManager) Update(session *Session) error {
 		return err
 	}
 
-	var gcr GroupContactResponse
+	var gcr WxWebBatchGetContactResponse
 	if err := json.Unmarshal(b, &gcr); err != nil {
 		return err
 	}
@@ -82,7 +95,8 @@ func (s *MemberManager) Update(session *Session) error {
 	return nil
 }
 
-func (s *MemberManager) GetHeadImgUrlByGender(sex int) []string {
+// GetHeadImgUrlByGender: get head img url detail by gender
+func (s *MemberManager) GetHeadImgUrlsByGender(sex int) []string {
 	uris := make([]string, 0)
 	for _, v := range s.Group.MemberList {
 		if v.Sex == sex {
@@ -92,6 +106,7 @@ func (s *MemberManager) GetHeadImgUrlByGender(sex int) []string {
 	return uris
 }
 
+// GetContactsByGender: get contacts by gender
 func (s *MemberManager) GetContactsByGender(sex int) []*User {
 	contacts := make([]*User, 0)
 	for _, v := range s.Group.MemberList {
@@ -102,6 +117,7 @@ func (s *MemberManager) GetContactsByGender(sex int) []*User {
 	return contacts
 }
 
+// GetContactByUserName: get a certain member by username
 func (s *MemberManager) GetContactByUserName(username string) *User {
 	for _, v := range s.Group.MemberList {
 		if v.UserName == username {
