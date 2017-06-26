@@ -53,13 +53,9 @@ func CreateMemberManagerFromBytes(session *Session, b []byte) (*MemberManager, e
 	if err := json.Unmarshal(b, &gcr); err != nil {
 		return nil, err
 	}
-	fmt.Println(gcr)
+
 	if gcr.BaseResponse.Ret != 0 {
 		return nil, fmt.Errorf("WebWxBatchGetContact ret=%d", gcr.BaseResponse.Ret)
-	}
-	fmt.Println(gcr.BaseResponse.Ret)
-	for _, v := range gcr.ContactList {
-		fmt.Println(v.MemberList)
 	}
 
 	if gcr.ContactList == nil || gcr.Count < 1 || len(gcr.ContactList) < 1 {
