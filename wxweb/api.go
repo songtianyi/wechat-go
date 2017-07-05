@@ -419,30 +419,30 @@ func WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	suffix := ss[1]
 
 	fw, _ = w.CreateFormField("id")
-	_, _ = fw.Write([]byte("WU_FILE_" + strconv.Itoa(int(common.MediaCount))))
+	fw.Write([]byte("WU_FILE_" + strconv.Itoa(int(common.MediaCount))))
 	common.MediaCount = atomic.AddUint32(&common.MediaCount, 1)
 
 	fw, _ = w.CreateFormField("name")
-	_, _ = fw.Write([]byte(filename))
+	fw.Write([]byte(filename))
 
 	fw, _ = w.CreateFormField("type")
 	if suffix == "gif" {
-		_, _ = fw.Write([]byte("image/gif"))
+		fw.Write([]byte("image/gif"))
 	} else {
-		_, _ = fw.Write([]byte("image/jpeg"))
+		fw.Write([]byte("image/jpeg"))
 	}
 
 	fw, _ = w.CreateFormField("lastModifieDate")
-	_, _ = fw.Write([]byte("Mon Feb 13 2017 17:27:23 GMT+0800 (CST)"))
+	fw.Write([]byte("Mon Feb 13 2017 17:27:23 GMT+0800 (CST)"))
 
 	fw, _ = w.CreateFormField("size")
-	_, _ = fw.Write([]byte(strconv.Itoa(len(content))))
+	fw.Write([]byte(strconv.Itoa(len(content))))
 
 	fw, _ = w.CreateFormField("mediatype")
 	if suffix == "gif" {
-		_, _ = fw.Write([]byte("doc"))
+		fw.Write([]byte("doc"))
 	} else {
-		_, _ = fw.Write([]byte("pic"))
+		fw.Write([]byte("pic"))
 	}
 
 	js := InitReqBody{
@@ -462,18 +462,18 @@ func WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	jb, _ := json.Marshal(js)
 
 	fw, _ = w.CreateFormField("uploadmediarequest")
-	_, _ = fw.Write(jb)
+	fw.Write(jb)
 
 	fw, _ = w.CreateFormField("webwx_data_ticket")
 	for _, v := range cookies {
 		if strings.Contains(v.String(), "webwx_data_ticket") {
-			_, _ = fw.Write([]byte(strings.Split(v.String(), "=")[1]))
+			fw.Write([]byte(strings.Split(v.String(), "=")[1]))
 			break
 		}
 	}
 
 	fw, _ = w.CreateFormField("pass_ticket")
-	_, _ = fw.Write([]byte(ce.PassTicket))
+	fw.Write([]byte(ce.PassTicket))
 	w.Close()
 
 	req, err := http.NewRequest("POST", common.UploadUrl, &b)
