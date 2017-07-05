@@ -109,7 +109,7 @@ func Login(common *Common, uuid, tip string) (string, error) {
 		}
 		return ss[1], nil
 	} else {
-		return "", fmt.Errorf("invalid response, %s", strb)
+		return "", fmt.Errorf("login response, %s", strb)
 	}
 }
 

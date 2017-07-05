@@ -109,7 +109,7 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 		if err != nil {
 			return nil, err
 		}
-		ls := rrstorage.CreateLocalDiskStorage("../web/public/qrcode/")
+		ls := rrstorage.CreateLocalDiskStorage("../public/qrcode/")
 		if err := ls.Save(qrcb, uuid+".jpg"); err != nil {
 			return nil, err
 		}
@@ -141,7 +141,7 @@ loop1:
 		case <-time.After(3 * time.Second):
 			redirectUri, err := Login(s.WxWebCommon, s.QrcodeUUID, "0")
 			if err != nil {
-				logs.Error(err)
+				logs.Warn(err)
 				if strings.Contains(err.Error(), "window.code=408") {
 					return err
 				}
@@ -284,7 +284,7 @@ func (s *Session) consumer(msg []byte) {
 		rmsg := s.analize(v.(map[string]interface{}))
 		err, handles := s.HandlerRegister.Get(rmsg.MsgType)
 		if err != nil {
-			logs.Error(err)
+			logs.Warn(err)
 			continue
 		}
 		for _, v := range handles {
