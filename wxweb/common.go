@@ -69,6 +69,12 @@ type Common struct {
 	RedirectUri string
 }
 
+type UrlGroup struct {
+	IndexUrl  string
+	UploadUrl string
+	SyncUrl   string
+}
+
 // InitReqBody: common http request body struct
 type InitReqBody struct {
 	BaseRequest        *BaseRequest
