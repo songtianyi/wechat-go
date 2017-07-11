@@ -59,11 +59,11 @@ var (
 		MediaCount: 0,
 	}
 	URLPool = []UrlGroup{
-		UrlGroup{"wx2.qq.com", "file.wx2.qq.com", "webpush.wx2.qq.com"},
-		UrlGroup{"wx8.qq.com", "file.wx8.qq.com", "webpush.wx8.qq.com"},
-		UrlGroup{"qq.com", "file.wx.qq.com", "webpush.wx.qq.com"},
-		UrlGroup{"web2.wechat.com", "file.web2.wechat.com", "webpush.web2.wechat.com"},
-		UrlGroup{"wechat.com", "file.web.wechat.com", "webpush.web.wechat.com"},
+		{"wx2.qq.com", "file.wx2.qq.com", "webpush.wx2.qq.com"},
+		{"wx8.qq.com", "file.wx8.qq.com", "webpush.wx8.qq.com"},
+		{"qq.com", "file.wx.qq.com", "webpush.wx.qq.com"},
+		{"web2.wechat.com", "file.web2.wechat.com", "webpush.web2.wechat.com"},
+		{"wechat.com", "file.web.wechat.com", "webpush.web.wechat.com"},
 	}
 )
 
