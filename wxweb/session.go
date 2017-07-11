@@ -26,16 +26,17 @@ package wxweb
 
 import (
 	"fmt"
-	"github.com/mdp/qrterminal"
-	"github.com/songtianyi/rrframework/config"
-	"github.com/songtianyi/rrframework/logs"
-	"github.com/songtianyi/rrframework/storage"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/mdp/qrterminal"
+	"github.com/songtianyi/rrframework/config"
+	"github.com/songtianyi/rrframework/logs"
+	"github.com/songtianyi/rrframework/storage"
 )
 
 const (
@@ -56,6 +57,13 @@ var (
 		SyncSrv:    "webpush.wx.qq.com",
 		UploadUrl:  "https://file.wx.qq.com/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json",
 		MediaCount: 0,
+	}
+	URLPool = []UrlGroup{
+		UrlGroup{"wx2.qq.com", "file.wx2.qq.com", "webpush.wx2.qq.com"},
+		UrlGroup{"wx8.qq.com", "file.wx8.qq.com", "webpush.wx8.qq.com"},
+		UrlGroup{"qq.com", "file.wx.qq.com", "webpush.wx.qq.com"},
+		UrlGroup{"web2.wechat.com", "file.web2.wechat.com", "webpush.web2.wechat.com"},
+		UrlGroup{"wechat.com", "file.web.wechat.com", "webpush.web.wechat.com"},
 	}
 )
 
@@ -125,12 +133,12 @@ func (s *Session) analizeVersion(uri string) {
 	s.WxWebCommon.CgiDomain = u.Scheme + "://" + u.Host
 	s.WxWebCommon.CgiUrl = s.WxWebCommon.CgiDomain + "/cgi-bin/mmwebwx-bin"
 
-	if strings.Contains(u.Host, "wx2") {
-		// new version
-		s.WxWebCommon.SyncSrv = "webpush.wx2.qq.com"
-	} else {
-		// old version
-		s.WxWebCommon.SyncSrv = "webpush.wx.qq.com"
+	for _, urlGroup := range URLPool {
+		if strings.Contains(u.Host, urlGroup.IndexUrl) {
+			s.WxWebCommon.SyncSrv = urlGroup.SyncUrl
+			s.WxWebCommon.UploadUrl = fmt.Sprintf("https://%s/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json", urlGroup.UploadUrl)
+			return
+		}
 	}
 }
 
