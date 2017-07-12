@@ -40,6 +40,10 @@ func Register(session *wxweb.Session) {
 	// 第二个参数: 指定消息处理函数, 消息会进入此函数
 	// 第三个参数: 自定义插件名，不能重名，switcher插件会用到此名称
 	session.HandlerRegister.Add(wxweb.MSG_FV, wxweb.Handler(verify), "verify")
+
+	if err := session.HandlerRegister.EnableByName("verify"); err != nil {
+		logs.Error(err)
+	}
 }
 
 // 消息处理函数

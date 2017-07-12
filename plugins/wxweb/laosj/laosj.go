@@ -39,6 +39,9 @@ import (
 // register plugin
 func Register(session *wxweb.Session) {
 	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(listenCmd), "laosj")
+	if err := session.HandlerRegister.EnableByName("laosj"); err != nil {
+		logs.Error(err)
+	}
 }
 
 func listenCmd(session *wxweb.Session, msg *wxweb.ReceivedMessage) {

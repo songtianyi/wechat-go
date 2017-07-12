@@ -39,6 +39,9 @@ import (
 func Register(session *wxweb.Session) {
 	// 将插件注册到session
 	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(youdao), "youdao")
+	if err := session.HandlerRegister.EnableByName("youdao"); err != nil {
+		logs.Error(err)
+	}
 }
 
 // 消息处理函数

@@ -36,6 +36,9 @@ import (
 // Register plugin
 func Register(session *wxweb.Session) {
 	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(listenCmd), "cleaner")
+	if err := session.HandlerRegister.EnableByName("cleaner"); err != nil {
+		logs.Error(err)
+	}
 }
 
 func listenCmd(session *wxweb.Session, msg *wxweb.ReceivedMessage) {

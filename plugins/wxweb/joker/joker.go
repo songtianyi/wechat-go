@@ -20,6 +20,10 @@ var (
 // Register plugin
 func Register(session *wxweb.Session) {
 	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(listenCmd), "joker")
+	if err := session.HandlerRegister.EnableByName("joker"); err != nil {
+		logs.Error(err)
+		return
+	}
 	go fetchJokes()
 
 }

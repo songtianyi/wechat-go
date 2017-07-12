@@ -40,6 +40,14 @@ func Register(session *wxweb.Session) {
 	// 第三个参数: 自定义插件名，不能重名，switcher插件会用到此名称
 	session.HandlerRegister.Add(wxweb.MSG_SYS, wxweb.Handler(system), "system-sys")
 	session.HandlerRegister.Add(wxweb.MSG_WITHDRAW, wxweb.Handler(system), "system-withdraw")
+
+	if err := session.HandlerRegister.EnableByName("system-sys"); err != nil {
+		logs.Error(err)
+	}
+
+	if err := session.HandlerRegister.EnableByName("system-withdraw"); err != nil {
+		logs.Error(err)
+	}
 }
 
 // 消息处理函数

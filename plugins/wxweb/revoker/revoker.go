@@ -26,6 +26,7 @@ SOFTWARE.
 package revoker // 以插件名命令包名
 
 import (
+	"github.com/songtianyi/rrframework/logs"
 	"github.com/songtianyi/wechat-go/wxweb" // 导入协议包
 	//"strings"
 	"time"
@@ -40,6 +41,10 @@ func Register(session *wxweb.Session) {
 	// 第二个参数: 指定消息处理函数, 消息会进入此函数
 	// 第三个参数: 自定义插件名，不能重名，switcher插件会用到此名称
 	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(revoker), "revoker")
+
+	if err := session.HandlerRegister.EnableByName("revoker"); err != nil {
+		logs.Error(err)
+	}
 }
 
 func revoker(session *wxweb.Session, msg *wxweb.ReceivedMessage) {

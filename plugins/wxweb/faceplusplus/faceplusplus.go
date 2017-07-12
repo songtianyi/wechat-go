@@ -47,7 +47,9 @@ const (
 // Register 注册函数
 func Register(session *wxweb.Session) {
 	session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(faceDetectHandle), "faceplusplus")
-
+	if err := session.HandlerRegister.EnableByName("faceplusplus"); err != nil {
+		logs.Error(err)
+	}
 }
 
 func faceDetectHandle(session *wxweb.Session, msg *wxweb.ReceivedMessage) {

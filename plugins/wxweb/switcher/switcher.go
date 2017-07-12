@@ -34,6 +34,9 @@ import (
 // Register plugin
 func Register(session *wxweb.Session) {
 	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(switcher), "switcher")
+	if err := session.HandlerRegister.EnableByName("switcher"); err != nil {
+		logs.Error(err)
+	}
 }
 
 func switcher(session *wxweb.Session, msg *wxweb.ReceivedMessage) {

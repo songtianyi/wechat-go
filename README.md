@@ -73,16 +73,14 @@ func main() {
 		return
 	}
 
-	// 注册插件, 所有插件默认是关闭的
+	// 注册插件, 所有插件默认是开启的
 	faceplusplus.Register(session)
 	replier.Register(session)
 	switcher.Register(session)
 	gifer.Register(session)
 
-	// 开启一些常用插件
-	// 你也可以在插件注册函数里开启插件
-	session.HandlerRegister.EnableByName("switcher")
-	session.HandlerRegister.EnableByName("faceplusplus")
+	// 你也可以自己选择关闭插件
+	session.HandlerRegister.DisableByName("faceplusplus")
 
 	// 登录并接收消息
 	if err := session.LoginAndServe(false); err != nil {
@@ -136,6 +134,10 @@ dump
 资源(纸牌屋)自动分发示例
 
 ## 制作自己的插件
+自定义插件的两个原则
+	一个插件只完成一个功能，不在一个插件里加入多个handler
+	插件默认开启
+
 ```go
 package demo // 以插件名命令包名
 
@@ -153,8 +155,10 @@ func Register(session *wxweb.Session) {
 	// 第三个参数: 自定义插件名，不能重名，switcher插件会用到此名称
 	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(demo), "textdemo")
 
-	// 可以多个消息类型使用同一个处理函数，也可以分开
-	session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(demo), "imgdemo")
+	// 开启插件
+	if err := session.HandlerRegister.EnableByName("textdemo"); err != nil {
+		logs.Error(err)
+	}
 }
 
 // 消息处理函数

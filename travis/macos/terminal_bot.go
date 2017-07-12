@@ -37,15 +37,6 @@ func main() {
 	system.Register(session)
 	youdao.Register(session)
 
-	// enable plugin
-	session.HandlerRegister.EnableByName("switcher")
-	session.HandlerRegister.EnableByName("faceplusplus")
-	session.HandlerRegister.EnableByName("cleaner")
-	session.HandlerRegister.EnableByName("laosj")
-	session.HandlerRegister.EnableByName("joker")
-	session.HandlerRegister.EnableByName("system-withdraw")
-	session.HandlerRegister.EnableByName("youdao")
-
 	// enable by type example
 	if err := session.HandlerRegister.EnableByType(wxweb.MSG_SYS); err != nil {
 		logs.Error(err)

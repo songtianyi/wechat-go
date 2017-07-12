@@ -37,6 +37,14 @@ func Register(session *wxweb.Session) {
 		logs.Error(err)
 	}
 
+	if err := session.HandlerRegister.EnableByName("text-replier"); err != nil {
+		logs.Error(err)
+	}
+
+	if err := session.HandlerRegister.EnableByName("img-replier"); err != nil {
+		logs.Error(err)
+	}
+
 }
 func autoReply(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	if !msg.IsGroup {

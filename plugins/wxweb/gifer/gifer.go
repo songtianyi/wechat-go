@@ -39,6 +39,9 @@ import (
 // Register plugin
 func Register(session *wxweb.Session) {
 	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(gifer), "gifer")
+	if err := session.HandlerRegister.EnableByName("gifer"); err != nil {
+		logs.Error(err)
+	}
 }
 
 func gifer(session *wxweb.Session, msg *wxweb.ReceivedMessage) {

@@ -41,6 +41,14 @@ var (
 func Register(session *wxweb.Session) {
 	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(forward), "text-forwarder")
 	session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(forward), "img-forwarder")
+
+	if err := session.HandlerRegister.EnableByName("text-forwarder"); err != nil {
+		logs.Error(err)
+	}
+
+	if err := session.HandlerRegister.EnableByName("img-forwarder"); err != nil {
+		logs.Error(err)
+	}
 }
 
 func forward(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
