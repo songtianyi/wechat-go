@@ -79,7 +79,7 @@ func main() {
 	switcher.Register(session)
 	gifer.Register(session)
 
-	// 你也可以自己选择关闭插件
+	// 你也可以自己选择关闭插件里的handler(消息处理器)
 	session.HandlerRegister.DisableByName("faceplusplus")
 
 	// 登录并接收消息
