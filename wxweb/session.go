@@ -117,7 +117,7 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 		if err != nil {
 			return nil, err
 		}
-		ls := rrstorage.CreateLocalDiskStorage("../public/qrcode/")
+		ls := rrstorage.CreateLocalDiskStorage("../web/public/qrcode/")
 		if err := ls.Save(qrcb, uuid+".jpg"); err != nil {
 			return nil, err
 		}
