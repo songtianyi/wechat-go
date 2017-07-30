@@ -1,0 +1,83 @@
+<component name="libraryTable">
+  <library name="GOPATH &lt;wechat-go&gt;">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../ants-go" />
+      <root url="file://$USER_HOME$/workspace/go/src/yyk" />
+      <root url="file://$PROJECT_DIR$/../yacc" />
+      <root url="file://$PROJECT_DIR$/../gopkg.in" />
+      <root url="file://$PROJECT_DIR$/../github.com" />
+      <root url="file://$PROJECT_DIR$/../s8e" />
+      <root url="file://$PROJECT_DIR$/../Mephisto" />
+      <root url="file://$PROJECT_DIR$/../qiancunApiGo" />
+      <root url="file://$PROJECT_DIR$/../golang.org" />
+      <root url="file://$PROJECT_DIR$/../gistar-server" />
+      <root url="file://$PROJECT_DIR$/../pholcus" />
+      <root url="file://$USER_HOME$/workspace/go/src/learing" />
+      <root url="file://$PROJECT_DIR$/../negroni" />
+      <root url="file://$USER_HOME$/workspace/go/src/timer" />
+      <root url="file://$PROJECT_DIR$/../wechat-monitor" />
+      <root url="file://$PROJECT_DIR$/../topicManage" />
+      <root url="file://$USER_HOME$/workspace/go/src/Maccary" />
+      <root url="file://$PROJECT_DIR$/../hypercube" />
+      <root url="file://$PROJECT_DIR$/../metalApi" />
+      <root url="file://$PROJECT_DIR$/../goim" />
+      <root url="file://$PROJECT_DIR$/../wechat.v2" />
+      <root url="file://$PROJECT_DIR$/../gosnippet" />
+      <root url="file://$PROJECT_DIR$/../go.uber.org" />
+      <root url="file://$PROJECT_DIR$/../gemstone" />
+      <root url="file://$USER_HOME$/workspace/go/src/GitHook" />
+      <root url="file://$USER_HOME$/workspace/go/src/chat" />
+      <root url="file://$USER_HOME$/workspace/go/src/creck" />
+      <root url="file://$USER_HOME$/workspace/go/src/giit" />
+      <root url="file://$PROJECT_DIR$/../Hanzo" />
+      <root url="file://$USER_HOME$/workspace/go/src/Mouse" />
+      <root url="file://$PROJECT_DIR$/../Andariel" />
+      <root url="file://$PROJECT_DIR$/../ShopApi" />
+      <root url="file://$PROJECT_DIR$/../OfficeSuiteServer" />
+      <root url="file://$PROJECT_DIR$/../workflow" />
+      <root url="file://$USER_HOME$/workspace/go/src/topicManage" />
+      <root url="file://$PROJECT_DIR$/../sourcegraph.com" />
+    </CLASSES>
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../ants-go" />
+      <root url="file://$USER_HOME$/workspace/go/src/yyk" />
+      <root url="file://$PROJECT_DIR$/../yacc" />
+      <root url="file://$PROJECT_DIR$/../gopkg.in" />
+      <root url="file://$PROJECT_DIR$/../github.com" />
+      <root url="file://$PROJECT_DIR$/../s8e" />
+      <root url="file://$PROJECT_DIR$/../Mephisto" />
+      <root url="file://$PROJECT_DIR$/../qiancunApiGo" />
+      <root url="file://$PROJECT_DIR$/../golang.org" />
+      <root url="file://$PROJECT_DIR$/../gistar-server" />
+      <root url="file://$PROJECT_DIR$/../pholcus" />
+      <root url="file://$USER_HOME$/workspace/go/src/learing" />
+      <root url="file://$PROJECT_DIR$/../negroni" />
+      <root url="file://$USER_HOME$/workspace/go/src/timer" />
+      <root url="file://$PROJECT_DIR$/../wechat-monitor" />
+      <root url="file://$PROJECT_DIR$/../topicManage" />
+      <root url="file://$USER_HOME$/workspace/go/src/Maccary" />
+      <root url="file://$PROJECT_DIR$/../hypercube" />
+      <root url="file://$PROJECT_DIR$/../metalApi" />
+      <root url="file://$PROJECT_DIR$/../goim" />
+      <root url="file://$PROJECT_DIR$/../wechat.v2" />
+      <root url="file://$PROJECT_DIR$/../gosnippet" />
+      <root url="file://$PROJECT_DIR$/../go.uber.org" />
+      <root url="file://$PROJECT_DIR$/../gemstone" />
+      <root url="file://$USER_HOME$/workspace/go/src/GitHook" />
+      <root url="file://$USER_HOME$/workspace/go/src/chat" />
+      <root url="file://$USER_HOME$/workspace/go/src/creck" />
+      <root url="file://$USER_HOME$/workspace/go/src/giit" />
+      <root url="file://$PROJECT_DIR$/../Hanzo" />
+      <root url="file://$USER_HOME$/workspace/go/src/Mouse" />
+      <root url="file://$PROJECT_DIR$/../Andariel" />
+      <root url="file://$PROJECT_DIR$/../ShopApi" />
+      <root url="file://$PROJECT_DIR$/../OfficeSuiteServer" />
+      <root url="file://$PROJECT_DIR$/../workflow" />
+      <root url="file://$USER_HOME$/workspace/go/src/topicManage" />
+      <root url="file://$PROJECT_DIR$/../sourcegraph.com" />
+    </SOURCES>
+    <excluded>
+      <root url="file://$PROJECT_DIR$" />
+    </excluded>
+  </library>
+</component>

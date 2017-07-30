@@ -308,6 +308,8 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 		FromUserName:  msg["FromUserName"].(string),
 		ToUserName:    msg["ToUserName"].(string),
 		MsgType:       int(msg["MsgType"].(float64)),
+		SubType: 	   int(msg["SubType"].(float64)),
+		Url: 		   msg["Url"].(string),
 	}
 
 	// friend verify message
