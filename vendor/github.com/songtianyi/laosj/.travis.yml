@@ -1,0 +1,34 @@
+language: go
+
+go:
+    - 1.5
+    - tip
+
+env:
+    - GOBIN=$TRAVIS_BUILD_DIR/bin
+
+install:
+    # dep for rrframework
+    - go get gopkg.in/redis.v5
+    - go get github.com/golang/protobuf/proto
+    - go get github.com/samuel/go-zookeeper/zk
+    - go get github.com/cheggaaa/pb
+    # dep for laosj
+    - go get github.com/PuerkitoBio/goquery
+    - go get github.com/songtianyi/rrframework
+
+
+script:
+    - go install mzitu.go
+    - go install mzituzp.go
+    - go install jav.go
+
+deploy:
+  provider: releases
+  api_key: "dca88040497c2367dc3c859f7e5bea92264527a7"
+  file:
+    - "bin/mzitu"
+    - "bin/mzituzp"
+  skip_cleanup: true
+  on:
+    tags: true
