@@ -30,13 +30,13 @@
 ## 编译并运行
 #### linux/mac
 ```
-go build travis/terminal_bot.go
+go build examples/linux/terminal_bot.go
 ./terminal_bot
 ```
 #### windows
 windows版本需要在非windows系统使用交叉编译来生成, 生成之后在windows下运行
 ```
-GOOS=windows GOARCH=amd64 go build travis/windows/windows_bot.go
+GOOS=windows GOARCH=amd64 go build examples/windows/windows_bot.go
 ./windows_bot.exe
 扫码图片需要用软件打开，路径在输出日志内.
 ```
