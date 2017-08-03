@@ -28,8 +28,7 @@
 [[projects]]
   name = "github.com/mattn/go-isatty"
   packages = ["."]
-  revision = "3a115632dcd687f9c8cd01679c83a06a0e21c1f3"
-  version = "v0.0.1"
+  revision = "2c84d1a24228fa4786c0c3d19a507e8cb0fb91d7"
 
 [[projects]]
   name = "github.com/mdp/qrterminal"
@@ -112,6 +111,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "51256e147db7de4efcf1fa72b1897a97af513ceb0848208aac66d648dc78692e"
+  inputs-digest = "9ab08b4203e576cb8f66e17ea776dde97ed78a9e81596528d7632d0e40108f07"
   solver-name = "gps-cdcl"
   solver-version = 1
