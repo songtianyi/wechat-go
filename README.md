@@ -1,4 +1,4 @@
-## wechat-go
+# wechat-go
 
 [![Build Status](https://travis-ci.org/songtianyi/wechat-go.svg?branch=master)](https://travis-ci.org/songtianyi/wechat-go)
 [![Join the chat at https://gitter.im/wechat-go/Lobby](https://badges.gitter.im/wechat-go/Lobby.svg)](https://gitter.im/wechat-go/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
