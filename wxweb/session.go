@@ -122,6 +122,7 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 			return nil, err
 		}
 		session.QrcodePath = "../web/public/qrcode/" + uuid + ".jpg"
+		logs.Info("QrcodePath: %s", session.QrcodePath)
 	}
 	return session, nil
 }
