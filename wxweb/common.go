@@ -274,8 +274,10 @@ type ReceivedMessage struct {
 	ToUserName    string
 	Who           string
 	MsgType       int
+	SubType       int
 	OriginContent string
 	At            string
+	Url 		  string
 
 	RecommendInfo *RecommendInfo
 }
