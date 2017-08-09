@@ -26,10 +26,11 @@ SOFTWARE.
 package wxweb
 
 import (
-	"github.com/songtianyi/rrframework/config"
 	"math/rand"
 	"reflect"
 	"time"
+
+	"github.com/songtianyi/rrframework/config"
 )
 
 func GetRandomStringFromNum(length int) string {
@@ -81,7 +82,6 @@ func GetUserInfoFromJc(jc *rrconfig.JsonConfig) (*User, error) {
 func RealTargetUserName(session *Session, msg *ReceivedMessage) string {
 	if session.Bot.UserName == msg.FromUserName {
 		return msg.ToUserName
-	} else {
-		return msg.FromUserName
 	}
+	return msg.FromUserName
 }

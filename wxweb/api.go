@@ -30,7 +30,6 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"github.com/songtianyi/rrframework/config"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -42,6 +41,8 @@ import (
 	"strings"
 	"sync/atomic"
 	"time"
+
+	"github.com/songtianyi/rrframework/config"
 )
 
 // JsLogin: jslogin api
@@ -108,9 +109,9 @@ func Login(common *Common, uuid, tip string) (string, error) {
 			return "", fmt.Errorf("parse redirect_uri fail, %s", strb)
 		}
 		return ss[1], nil
-	} else {
-		return "", fmt.Errorf("login response, %s", strb)
 	}
+
+	return "", fmt.Errorf("login response, %s", strb)
 }
 
 // WebNewLoginPage: webwxnewloginpage api
