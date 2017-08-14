@@ -309,8 +309,8 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 		FromUserName:  msg["FromUserName"].(string),
 		ToUserName:    msg["ToUserName"].(string),
 		MsgType:       int(msg["MsgType"].(float64)),
-		SubType: 	   int(msg["SubMsgType"].(float64)),
-		Url: 		   msg["Url"].(string),
+		SubType:       int(msg["SubMsgType"].(float64)),
+		Url:           msg["Url"].(string),
 	}
 
 	// friend verify message
@@ -357,6 +357,13 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 }
 
 // message funcs
+func (s *Session) After(duration time.Duration) *Session {
+	select {
+	case <-time.After(duration):
+		return s
+	}
+}
+
 // SendText: send text msg type 1
 func (s *Session) SendText(msg, from, to string) (string, string, error) {
 	b, err := WebWxSendMsg(s.WxWebCommon, s.WxWebXcg, s.Cookies, from, to, msg)

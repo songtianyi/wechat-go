@@ -277,7 +277,7 @@ type ReceivedMessage struct {
 	SubType       int
 	OriginContent string
 	At            string
-	Url 		  string
+	Url           string
 
 	RecommendInfo *RecommendInfo
 }
