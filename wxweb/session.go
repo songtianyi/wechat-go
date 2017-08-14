@@ -364,6 +364,10 @@ func (s *Session) After(duration time.Duration) *Session {
 	}
 }
 
+func (s *Session) At(d time.Time) *Session {
+	return s.After(d.Sub(time.Now()))
+}
+
 // SendText: send text msg type 1
 func (s *Session) SendText(msg, from, to string) (string, string, error) {
 	b, err := WebWxSendMsg(s.WxWebCommon, s.WxWebXcg, s.Cookies, from, to, msg)
