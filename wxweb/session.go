@@ -127,6 +127,45 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 	return session, nil
 }
 
+func CreateWebSessionWithPath(common *Common, handlerRegister *HandlerRegister, qrcode_path string) (*Session, error) {
+	if common == nil {
+		common = DefaultCommon
+	}
+
+	wxWebXcg := &XmlConfig{}
+
+	// get qrcode
+	uuid, err := JsLogin(common)
+	if err != nil {
+		return nil, err
+	}
+	logs.Info(uuid)
+	session := &Session{
+		WxWebCommon: common,
+		WxWebXcg:    wxWebXcg,
+		QrcodeUUID:  uuid,
+		CreateTime:  time.Now().Unix(),
+	}
+
+	if handlerRegister != nil {
+		session.HandlerRegister = handlerRegister
+	} else {
+		session.HandlerRegister = CreateHandlerRegister()
+	}
+
+	qrcb, err := QrCode(common, uuid)
+	if err != nil {
+		return nil, err
+	}
+	ls := rrstorage.CreateLocalDiskStorage(qrcode_path)
+	if err := ls.Save(qrcb, uuid+".jpg"); err != nil {
+		return nil, err
+	}
+	session.QrcodePath = uuid + ".jpg"
+	logs.Info("QrcodePath: %s", session.QrcodePath)
+	return session, nil
+}
+
 func (s *Session) analizeVersion(uri string) {
 	u, _ := url.Parse(uri)
 
