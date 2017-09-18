@@ -49,7 +49,7 @@ func main() {
 			for i := 0; i < 3; i++ {
 				logs.Info("trying re-login with cache")
 				if err := session.LoginAndServe(true); err != nil {
-					logs.Error("re-login error, %s", err)
+					logs.Error("re-login error or session down, %s", err)
 				}
 				time.Sleep(3 * time.Second)
 			}
