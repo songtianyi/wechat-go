@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/songtianyi/rrframework/logs"
+	"github.com/songtianyi/wechat-go/wxweb"
 	"net/http"
 	"os"
 	"path/filepath"
-	"github.com/songtianyi/wechat-go/wxweb"
-	"github.com/songtianyi/rrframework/logs"
 )
 
 func main() {
