@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-
-	"./../../wxweb"
+	"github.com/songtianyi/wechat-go/wxweb"
+	"github.com/songtianyi/rrframework/logs"
 )
 
 func main() {
