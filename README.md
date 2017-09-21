@@ -212,5 +212,5 @@ func demo(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 ## 展示
 <img src="http://p1.bpimg.com/567571/374325070b2a9042.jpg" width="480" height="480"/>
 
-## 交流群
+## 微信交流群
 <img src="http://owm6k6w0y.bkt.clouddn.com/17-9-21/70665214.jpg" width="480" height="480"/>
