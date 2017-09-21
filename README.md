@@ -210,7 +210,7 @@ func demo(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 }
 ```
 ## 展示
-![example](http://p1.bpimg.com/567571/374325070b2a9042.jpg =480x480)
+<img src="http://p1.bpimg.com/567571/374325070b2a9042.jpg" width="480" height="480"/>
 
 ## 交流群
-![交流群](http://owm6k6w0y.bkt.clouddn.com/17-9-21/19500066.jpg =480x480)
+<img src="http://owm6k6w0y.bkt.clouddn.com/17-9-21/19500066.jpg" width="480" height="480"/>
