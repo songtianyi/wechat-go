@@ -19,13 +19,11 @@
 
 
 ## 获取源码
-	mkdir -p $GOPATH/src/golang.org/x
-	cd $GOPATH/src/golang.org/x
-	git clone https://github.com/golang/net.git
+> 请确保Go开发环境正常.
 
+```shell
 	go get -u -v github.com/songtianyi/wechat-go
-	cd $GOPATH/src/github.com/songtianyi/wechat-go
-	go get ./...
+```
 
 ## 编译并运行
 #### linux/mac
