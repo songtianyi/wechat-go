@@ -41,7 +41,7 @@ func main() {
 	verify.Register(session)
 	share.Register(session)
 
-	// enable by type example
+	// disable by type example
 	if err := session.HandlerRegister.DisableByType(wxweb.MSG_SYS); err != nil {
 		logs.Error(err)
 		return
