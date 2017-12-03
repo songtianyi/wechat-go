@@ -145,7 +145,7 @@ set config key value
 get config key
 ```
 在代码中使用配置
-```
+```go
 import "github.com/songtianyi/wechat-go/kv"
 func demo() {
 	kv.KVStorageInstance.Set("key", "value")
