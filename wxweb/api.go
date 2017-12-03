@@ -248,7 +248,7 @@ func WebWxSync(common *Common,
 	u, _ := url.Parse(uri)
 	jar.SetCookies(u, cookies)
 	//client := &http.Client{Jar: jar, Timeout: time.Duration(10) * time.Second}
-	client := &http.Client{Jar: jar}// 防止synccheck 产生 0 3错误
+	client := &http.Client{Jar: jar} // 防止synccheck 产生 0 3错误
 	req, err := http.NewRequest("POST", uri, bytes.NewReader(b))
 	req.Header.Add("Content-Type", "application/json; charset=UTF-8")
 	req.Header.Add("User-Agent", common.UserAgent)

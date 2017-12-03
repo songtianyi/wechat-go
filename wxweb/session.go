@@ -288,24 +288,24 @@ func (s *Session) producer(msg chan []byte, errChan chan error) {
 loop1:
 	for {
 		ret, sel, err := SyncCheck(s.WxWebCommon, s.WxWebXcg, s.Cookies, s.WxWebCommon.SyncSrv, s.SynKeyList)
-		logs.Info(s.WxWebCommon.SyncSrv, ret, sel)//检查状态返回的值
+		logs.Info(s.WxWebCommon.SyncSrv, ret, sel) //检查状态返回的值
 		if err != nil {
 			logs.Error(err)
 			continue
 		}
-		if ret == 0 {//0 正常
+		if ret == 0 { //0 正常
 			// check success
-			if sel == 2 {//2 新的消息
+			if sel == 2 { //2 新的消息
 				// new message
 				err := WebWxSync(s.WxWebCommon, s.WxWebXcg, s.Cookies, msg, s.SynKeyList)
 				if err != nil {
 					logs.Error(err)
 				}
-			} else if sel != 0 && sel != 7 && sel !=4 {//0 正常 7 进入/离开聊天界面 4 点击保存群聊到通讯录或者改群聊名字
+			} else if sel != 0 && sel != 7 && sel != 4 { //0 正常 7 进入/离开聊天界面 4 点击保存群聊到通讯录或者改群聊名字
 				errChan <- fmt.Errorf("session down, sel %d", sel)
 				break loop1
 			}
-		} else if ret == 1101 {//1100 失败/登出微信
+		} else if ret == 1101 { //1100 失败/登出微信
 			errChan <- nil
 			break loop1
 		} else if ret == 1205 {

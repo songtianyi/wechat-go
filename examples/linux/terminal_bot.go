@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/songtianyi/rrframework/logs"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/cleaner"
+	"github.com/songtianyi/wechat-go/plugins/wxweb/config"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/faceplusplus"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/forwarder"
 	"github.com/songtianyi/wechat-go/plugins/wxweb/gifer"
@@ -40,12 +41,22 @@ func main() {
 	youdao.Register(session)
 	verify.Register(session)
 	share.Register(session)
+	config.Register(session)
 
 	// disable by type example
 	if err := session.HandlerRegister.DisableByType(wxweb.MSG_SYS); err != nil {
 		logs.Error(err)
 		return
 	}
+	if err := session.HandlerRegister.DisableByType(wxweb.MSG_TEXT); err != nil {
+		logs.Error(err)
+		return
+	}
+	if err := session.HandlerRegister.DisableByType(wxweb.MSG_IMG); err != nil {
+		logs.Error(err)
+		return
+	}
+	session.HandlerRegister.EnableByName("switcher")
 
 	for {
 		if err := session.LoginAndServe(false); err != nil {

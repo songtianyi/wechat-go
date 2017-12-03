@@ -134,6 +134,29 @@ dump
 ###### share
 资源(纸牌屋)自动分发示例
 
+###### config
+配置管理插件
+设置配置, 在聊天窗口输入
+```
+set config key value
+```
+查看配置，在聊天窗口输入
+```
+get config key
+```
+在代码中使用配置
+```
+import "github.com/songtianyi/wechat-go/kv"
+func demo() {
+	kv.KVStorageInstance.Set("key", "value")
+	v := kv.KVStorageInstance.Get("key")
+	if v == nil {
+		return
+	}
+	// v.(string) etc.
+}
+```
+
 ## 制作自己的插件
 自定义插件的两个原则
 * 一个插件只完成一个功能，不在一个插件里加入多个handler
