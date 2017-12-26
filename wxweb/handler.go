@@ -40,7 +40,7 @@ type HandlerWrapper struct {
 	name    string
 }
 
-// Run: message handler callback
+// Run: run message handler
 func (s *HandlerWrapper) Run(session *Session, msg *ReceivedMessage) {
 	if s.enabled {
 		s.handle(session, msg)
@@ -84,7 +84,7 @@ func CreateHandlerRegister() *HandlerRegister {
 	}
 }
 
-// Add: add message callback handle to handler register
+// Add: add message handler to handler register
 func (hr *HandlerRegister) Add(key int, h Handler, name string) error {
 	hr.mu.Lock()
 	defer hr.mu.Unlock()
@@ -109,7 +109,7 @@ func (hr *HandlerRegister) Get(key int) (error, []*HandlerWrapper) {
 	return fmt.Errorf("no handlers for key [%d]", key), nil
 }
 
-// GetAll: get all message handler
+// GetAll: get all message handlers
 func (hr *HandlerRegister) GetAll() []*HandlerWrapper {
 	hr.mu.RLock()
 	defer hr.mu.RUnlock()
