@@ -278,7 +278,7 @@ func (s *Session) serve() error {
 		case m := <-msg:
 			go s.consumer(m)
 		case err := <-errChan:
-			// TODO maybe not all consumed messages have not return yet
+			// TODO maybe not all consumed messages ended
 			return err
 		}
 	}
