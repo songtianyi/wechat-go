@@ -301,7 +301,7 @@ loop1:
 				if err != nil {
 					logs.Error(err)
 				}
-			} else if sel != 0 && sel != 7 && sel != 4 { //0 正常 7 进入/离开聊天界面 4 点击保存群聊到通讯录或者改群聊名字
+			} else if sel != 0 && sel != 7 && sel != 4 && sel != 6 { //0 正常 7 进入/离开聊天界面 4 点击保存群聊到通讯录或者改群聊名字 6  删除时发现和对方通过好友验证
 				errChan <- fmt.Errorf("session down, sel %d", sel)
 				break loop1
 			}
