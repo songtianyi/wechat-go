@@ -65,7 +65,15 @@ var (
 		{"web2.wechat.com", "file.web2.wechat.com", "webpush.web2.wechat.com"},
 		{"wechat.com", "file.web.wechat.com", "webpush.web.wechat.com"},
 	}
+	LogoutSign = make(map[int]int)
 )
+
+func init() {
+	LogoutSign[1100] = 1
+	LogoutSign[1101] = 1
+	LogoutSign[1102] = 1
+	LogoutSign[1205] = 1
+}
 
 // Session: wechat bot session
 type Session struct {
@@ -189,8 +197,14 @@ loop1:
 		case <-time.After(3 * time.Second):
 			redirectUri, err := Login(s.WxWebCommon, s.QrcodeUUID, "0")
 			if err != nil {
-				logs.Warn(err)
-				if strings.Contains(err.Error(), "window.code=408") {
+				logs.Info(err)
+				if strings.Contains(err.Error(), "window.code=400") {
+					return err
+				}
+				if strings.Contains(err.Error(), "window.code=500") {
+					return err
+				}
+				if strings.Contains(err.Error(), "window.code=0") {
 					return err
 				}
 			} else {
@@ -295,20 +309,13 @@ loop1:
 		}
 		if ret == 0 { //0 正常
 			// check success
-			if sel == 2 { //2 新的消息
-				// new message
-				err := WebWxSync(s.WxWebCommon, s.WxWebXcg, s.Cookies, msg, s.SynKeyList)
-				if err != nil {
-					logs.Error(err)
-				}
-			} else if sel != 0 && sel != 7 && sel != 4 && sel != 6 { //0 正常 7 进入/离开聊天界面 4 点击保存群聊到通讯录或者改群聊名字 6  删除时发现和对方通过好友验证
-				errChan <- fmt.Errorf("session down, sel %d", sel)
-				break loop1
+			// new message
+			err := WebWxSync(s.WxWebCommon, s.WxWebXcg, s.Cookies, msg, s.SynKeyList)
+			if err != nil {
+				logs.Error(err)
 			}
-		} else if ret == 1101 { //1100 失败/登出微信
-			errChan <- nil
-			break loop1
-		} else if ret == 1205 {
+		} else if s.isLogout(ret) { //1100 失败/登出微信
+
 			errChan <- fmt.Errorf("api blocked, ret:%d", 1205)
 			break loop1
 		} else {
@@ -317,6 +324,10 @@ loop1:
 		}
 	}
 
+}
+func (s *Session) isLogout(code int) bool {
+	_, has := LogoutSign[code]
+	return has
 }
 
 func (s *Session) consumer(msg []byte) {
