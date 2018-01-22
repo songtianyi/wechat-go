@@ -315,8 +315,7 @@ loop1:
 				logs.Error(err)
 			}
 		} else if s.isLogout(ret) { //1100 失败/登出微信
-
-			errChan <- fmt.Errorf("api blocked, ret:%d", 1205)
+			errChan <- fmt.Errorf("api blocked, ret:%d", ret)
 			break loop1
 		} else {
 			errChan <- fmt.Errorf("unhandled exception ret %d", ret)
