@@ -44,6 +44,8 @@ const (
 	WEB_MODE = iota + 1
 	// MINAL_MODE:  CreateSession will output qrcode in terminal
 	TERMINAL_MODE
+
+	BACKGROUND_MODE
 )
 
 var (
@@ -117,8 +119,9 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 	} else {
 		session.HandlerRegister = CreateHandlerRegister()
 	}
-
-	if qrmode == TERMINAL_MODE {
+	if qrmode == BACKGROUND_MODE {
+		logs.Info("https://login.weixin.qq.com/l/"+uuid);
+	} else if qrmode == TERMINAL_MODE {
 		qrterminal.Generate("https://login.weixin.qq.com/l/"+uuid, qrterminal.L, os.Stdout)
 	} else if qrmode == WEB_MODE {
 		qrcb, err := QrCode(common, uuid)
@@ -302,7 +305,7 @@ func (s *Session) producer(msg chan []byte, errChan chan error) {
 loop1:
 	for {
 		ret, sel, err := SyncCheck(s.WxWebCommon, s.WxWebXcg, s.Cookies, s.WxWebCommon.SyncSrv, s.SynKeyList)
-		logs.Info(s.WxWebCommon.SyncSrv, ret, sel) //检查状态返回的值
+		logs.Info(s.WxWebCommon.SyncSrv, ret, sel, s.Bot.Uin) //检查状态返回的值
 		if err != nil {
 			logs.Error(err)
 			continue
@@ -315,6 +318,7 @@ loop1:
 				logs.Error(err)
 			}
 		} else if s.isLogout(ret) { //1100 失败/登出微信
+
 			errChan <- fmt.Errorf("api blocked, ret:%d", ret)
 			break loop1
 		} else {
