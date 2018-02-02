@@ -242,12 +242,13 @@ func (s *Session) LoginAndServe(useCache bool) error {
 		if err := s.scanWaiter(); err != nil {
 			return err
 		}
-
+		var cookies []*http.Cookie
 		// update cookies
-		if cookies, err := WebNewLoginPage(s.WxWebCommon, s.WxWebXcg, s.WxWebCommon.RedirectUri); err != nil {
-			s.SetCookies(cookies)
+		if cookies, err = WebNewLoginPage(s.WxWebCommon, s.WxWebXcg, s.WxWebCommon.RedirectUri); err != nil {
 			return err
 		}
+		s.SetCookies(cookies)
+
 	}
 
 	jb, err := WebWxInit(s.WxWebCommon, s.WxWebXcg)
