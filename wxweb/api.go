@@ -219,10 +219,7 @@ func SyncCheck(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 }
 
 // WebWxSync: webwxsync api
-func WebWxSync(common *Common,
-	ce *XmlConfig,
-	cookies []*http.Cookie,
-	msg chan []byte, skl *SyncKeyList) error {
+func WebWxSync(common *Common, ce *XmlConfig, cookies []*http.Cookie, msg chan []byte, skl *SyncKeyList) ([]*http.Cookie , error) {
 
 	km := url.Values{}
 	km.Add("skey", ce.Skey)
@@ -255,21 +252,22 @@ func WebWxSync(common *Common,
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return nil,err
 	}
 	defer resp.Body.Close()
+
 	body, _ := ioutil.ReadAll(resp.Body)
 
 	jc, err := rrconfig.LoadJsonConfigFromBytes(body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	retcode, err := jc.GetInt("BaseResponse.Ret")
 	if err != nil {
-		return err
+		return nil,err
 	}
 	if retcode != 0 {
-		return fmt.Errorf("BaseResponse.Ret %d", retcode)
+		return nil,fmt.Errorf("BaseResponse.Ret %d", retcode)
 	}
 
 	msg <- body
@@ -278,7 +276,65 @@ func WebWxSync(common *Common,
 	skl1, _ := GetSyncKeyListFromJc(jc)
 	skl.Count = skl1.Count
 	skl.List = append(skl.List, skl1.List...)
-	return nil
+	return 	resp.Cookies(),nil
+}
+func WebWxSyncFlushCookie(common *Common, ce *XmlConfig, cookies []*http.Cookie, skl *SyncKeyList) ([]*http.Cookie , error) {
+
+	km := url.Values{}
+	km.Add("skey", ce.Skey)
+	km.Add("sid", ce.Wxsid)
+	km.Add("lang", common.Lang)
+	km.Add("pass_ticket", ce.PassTicket)
+
+	uri := common.CgiUrl + "/webwxsync?" + km.Encode()
+
+	js := InitReqBody{
+		BaseRequest: &BaseRequest{
+			ce.Wxuin,
+			ce.Wxsid,
+			ce.Skey,
+			common.DeviceID,
+		},
+		SyncKey: skl,
+		rr:      ^int(time.Now().Unix()) + 1,
+	}
+
+	b, _ := json.Marshal(js)
+	jar, _ := cookiejar.New(nil)
+	u, _ := url.Parse(uri)
+	jar.SetCookies(u, cookies)
+	//client := &http.Client{Jar: jar, Timeout: time.Duration(10) * time.Second}
+	client := &http.Client{Jar: jar} // 防止synccheck 产生 0 3错误
+	req, err := http.NewRequest("POST", uri, bytes.NewReader(b))
+	req.Header.Add("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Add("User-Agent", common.UserAgent)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil,err
+	}
+	defer resp.Body.Close()
+
+	body, _ := ioutil.ReadAll(resp.Body)
+
+	jc, err := rrconfig.LoadJsonConfigFromBytes(body)
+	if err != nil {
+		return nil, err
+	}
+	retcode, err := jc.GetInt("BaseResponse.Ret")
+	if err != nil {
+		return nil,err
+	}
+	if retcode != 0 {
+		return nil,fmt.Errorf("BaseResponse.Ret %d", retcode)
+	}
+
+
+	skl.List = skl.List[:0]
+	skl1, _ := GetSyncKeyListFromJc(jc)
+	skl.Count = skl1.Count
+	skl.List = append(skl.List, skl1.List...)
+	return 	resp.Cookies(),nil
 }
 
 // WebWxStatusNotify: webwxstatusnotify api

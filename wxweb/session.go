@@ -91,6 +91,7 @@ type Session struct {
 	QrcodeUUID      string //uuid
 	HandlerRegister *HandlerRegister
 	CreateTime      int64
+	LastMsgID string
 }
 
 // CreateSession: create wechat bot session
@@ -322,9 +323,13 @@ loop1:
 		if ret == 0 { //0 正常
 			// check success
 			// new message
-			err := WebWxSync(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), msg, s.SynKeyList)
+			cookies , err := WebWxSync(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), msg, s.SynKeyList)
 			if err != nil {
 				logs.Error(err)
+			}else{
+				if cookies != nil {
+					s.SetCookies(cookies)
+				}
 			}
 		} else if s.isLogout(ret) { //1100 失败/登出微信
 
