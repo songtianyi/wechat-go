@@ -152,7 +152,7 @@ func CreateWebSessionWithPath(common *Common, handlerRegister *HandlerRegister, 
 	api :=  NewApiV2()
 
 	// get qrcode
-	uuid, err := JsLogin(common)
+	uuid, err := api.JsLogin(common)
 	if err != nil {
 		return nil, err
 	}
