@@ -46,7 +46,7 @@ import (
 )
 
 type ApiV2 struct {
-	httpClient Client
+	httpClient *Client
 }
 
 // JsLogin: jslogin api
@@ -839,5 +839,5 @@ func (api *ApiV2)  WebWxLogout(common *Common, ce *XmlConfig, cookies []*http.Co
 	return nil
 }
 func  NewApiV2() *ApiV2 {
-	return &ApiV2{}
+	return &ApiV2{httpClient:NewClient()}
 }
