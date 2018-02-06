@@ -92,6 +92,7 @@ type Session struct {
 	HandlerRegister *HandlerRegister
 	CreateTime      int64
 	LastMsgID string
+	api *ApiV2
 }
 
 // CreateSession: create wechat bot session
@@ -105,7 +106,8 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 	wxWebXcg := &XmlConfig{}
 
 	// get qrcode
-	uuid, err := JsLogin(common)
+	api :=  NewApiV2()
+	uuid, err := api.JsLogin(common)
 	if err != nil {
 		return nil, err
 	}
@@ -114,6 +116,7 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 		WxWebCommon: common,
 		WxWebXcg:    wxWebXcg,
 		QrcodeUUID:  uuid,
+		api: api,
 		CreateTime:  time.Now().Unix(),
 	}
 
@@ -127,7 +130,7 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 	} else if qrmode == TERMINAL_MODE {
 		qrterminal.Generate("https://login.weixin.qq.com/l/"+uuid, qrterminal.L, os.Stdout)
 	} else if qrmode == WEB_MODE {
-		qrcb, err := QrCode(common, uuid)
+		qrcb, err := api.QrCode(common, uuid)
 		if err != nil {
 			return nil, err
 		}
@@ -140,13 +143,13 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 	}
 	return session, nil
 }
-
 func CreateWebSessionWithPath(common *Common, handlerRegister *HandlerRegister, qrcode_path string) (*Session, error) {
 	if common == nil {
 		common = DefaultCommon
 	}
 
 	wxWebXcg := &XmlConfig{}
+	api :=  NewApiV2()
 
 	// get qrcode
 	uuid, err := JsLogin(common)
@@ -159,6 +162,7 @@ func CreateWebSessionWithPath(common *Common, handlerRegister *HandlerRegister, 
 		WxWebXcg:    wxWebXcg,
 		QrcodeUUID:  uuid,
 		CreateTime:  time.Now().Unix(),
+		api: api,
 	}
 
 	if handlerRegister != nil {
@@ -167,7 +171,7 @@ func CreateWebSessionWithPath(common *Common, handlerRegister *HandlerRegister, 
 		session.HandlerRegister = CreateHandlerRegister()
 	}
 
-	qrcb, err := QrCode(common, uuid)
+	qrcb, err := api.QrCode(common, uuid)
 	if err != nil {
 		return nil, err
 	}
@@ -201,7 +205,7 @@ loop1:
 	for {
 		select {
 		case <-time.After(3 * time.Second):
-			redirectUri, err := Login(s.WxWebCommon, s.QrcodeUUID, "0")
+			redirectUri, err := s.api.Login(s.WxWebCommon, s.QrcodeUUID, "0")
 			if err != nil {
 				logs.Info(err)
 				if strings.Contains(err.Error(), "window.code=400") {
@@ -245,14 +249,14 @@ func (s *Session) LoginAndServe(useCache bool) error {
 		}
 		var cookies []*http.Cookie
 		// update cookies
-		if cookies, err = WebNewLoginPage(s.WxWebCommon, s.WxWebXcg, s.WxWebCommon.RedirectUri); err != nil {
+		if cookies, err = s.api.WebNewLoginPage(s.WxWebCommon, s.WxWebXcg, s.WxWebCommon.RedirectUri); err != nil {
 			return err
 		}
 		s.SetCookies(cookies)
 
 	}
 
-	jb, err := WebWxInit(s.WxWebCommon, s.WxWebXcg)
+	jb, err := s.api.WebWxInit(s.WxWebCommon, s.WxWebXcg)
 	if err != nil {
 		return err
 	}
@@ -268,7 +272,7 @@ func (s *Session) LoginAndServe(useCache bool) error {
 	}
 	s.Bot, _ = GetUserInfoFromJc(jc)
 	logs.Info(s.Bot)
-	ret, err := WebWxStatusNotify(s.WxWebCommon, s.WxWebXcg, s.Bot)
+	ret, err := s.api.WebWxStatusNotify(s.WxWebCommon, s.WxWebXcg, s.Bot)
 	if err != nil {
 		return err
 	}
@@ -276,7 +280,7 @@ func (s *Session) LoginAndServe(useCache bool) error {
 		return fmt.Errorf("WebWxStatusNotify fail, %d", ret)
 	}
 
-	cb, err := WebWxGetContact(s.WxWebCommon, s.WxWebXcg, s.GetCookies())
+	cb, err := s.api.WebWxGetContact(s.WxWebCommon, s.WxWebXcg, s.GetCookies())
 	if err != nil {
 		return err
 	}
@@ -314,7 +318,7 @@ func (s *Session) producer(msg chan []byte, errChan chan error) {
 	logs.Info("entering synccheck loop")
 loop1:
 	for {
-		ret, sel, err := SyncCheck(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), s.WxWebCommon.SyncSrv, s.SynKeyList)
+		ret, sel, err := s.api.SyncCheck(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), s.WxWebCommon.SyncSrv, s.SynKeyList)
 		logs.Info(s.WxWebCommon.SyncSrv, ret, sel, s.Bot.Uin) //检查状态返回的值
 		if err != nil {
 			logs.Error(err)
@@ -323,7 +327,7 @@ loop1:
 		if ret == 0 { //0 正常
 			// check success
 			// new message
-			cookies , err := WebWxSync(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), msg, s.SynKeyList)
+			cookies , err := s.api.WebWxSync(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), msg, s.SynKeyList)
 			if err != nil {
 				logs.Error(err)
 			}else{
@@ -437,7 +441,7 @@ func (s *Session) At(d time.Time) *Session {
 
 // SendText: send text msg type 1
 func (s *Session) SendText(msg, from, to string) (string, string, error) {
-	b, err := WebWxSendMsg(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), from, to, msg)
+	b, err := s.api.WebWxSendMsg(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), from, to, msg)
 	if err != nil {
 		return "", "", err
 	}
@@ -460,12 +464,12 @@ func (s *Session) SendImg(path, from, to string) {
 		logs.Error(err)
 		return
 	}
-	mediaId, err := WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), ss[len(ss)-1], b)
+	mediaId, err := s.api.WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), ss[len(ss)-1], b)
 	if err != nil {
 		logs.Error(err)
 		return
 	}
-	ret, err := WebWxSendMsgImg(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), from, to, mediaId)
+	ret, err := s.api.WebWxSendMsgImg(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), from, to, mediaId)
 	if err != nil || ret != 0 {
 		logs.Error(ret, err)
 		return
@@ -475,12 +479,12 @@ func (s *Session) SendImg(path, from, to string) {
 // SendImgFromBytes: send image from mem
 func (s *Session) SendImgFromBytes(b []byte, path, from, to string) {
 	ss := strings.Split(path, "/")
-	mediaId, err := WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), ss[len(ss)-1], b)
+	mediaId, err := s.api.WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), ss[len(ss)-1], b)
 	if err != nil {
 		logs.Error(err)
 		return
 	}
-	ret, err := WebWxSendMsgImg(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), from, to, mediaId)
+	ret, err := s.api.WebWxSendMsgImg(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), from, to, mediaId)
 	if err != nil || ret != 0 {
 		logs.Error(ret, err)
 		return
@@ -489,7 +493,7 @@ func (s *Session) SendImgFromBytes(b []byte, path, from, to string) {
 
 // GetImg: get img by MsgId
 func (s *Session) GetImg(msgId string) ([]byte, error) {
-	return WebWxGetMsgImg(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), msgId)
+	return s.api.WebWxGetMsgImg(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), msgId)
 }
 
 // SendEmotionFromPath: send gif, upload then send
@@ -500,12 +504,12 @@ func (s *Session) SendEmotionFromPath(path, from, to string) {
 		logs.Error(err)
 		return
 	}
-	mediaId, err := WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), ss[len(ss)-1], b)
+	mediaId, err := s.api.WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), ss[len(ss)-1], b)
 	if err != nil {
 		logs.Error(err)
 		return
 	}
-	ret, err := WebWxSendEmoticon(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), from, to, mediaId)
+	ret, err := s.api.WebWxSendEmoticon(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), from, to, mediaId)
 	if err != nil || ret != 0 {
 		logs.Error(ret, err)
 	}
@@ -513,12 +517,12 @@ func (s *Session) SendEmotionFromPath(path, from, to string) {
 
 // SendEmotionFromBytes: send gif/emoji from mem
 func (s *Session) SendEmotionFromBytes(b []byte, from, to string) {
-	mediaId, err := WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), from+".gif", b)
+	mediaId, err := s.api.WebWxUploadMedia(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), from+".gif", b)
 	if err != nil {
 		logs.Error(err)
 		return
 	}
-	ret, err := WebWxSendEmoticon(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), from, to, mediaId)
+	ret, err := s.api.WebWxSendEmoticon(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), from, to, mediaId)
 	if err != nil || ret != 0 {
 		logs.Error(ret, err)
 	}
@@ -526,7 +530,7 @@ func (s *Session) SendEmotionFromBytes(b []byte, from, to string) {
 
 // RevokeMsg: revoke message
 func (s *Session) RevokeMsg(clientMsgId, svrMsgId, toUserName string) {
-	err := WebWxRevokeMsg(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), clientMsgId, svrMsgId, toUserName)
+	err := s.api.WebWxRevokeMsg(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), clientMsgId, svrMsgId, toUserName)
 	if err != nil {
 		logs.Error("revoke msg %s failed, %s", clientMsgId+":"+svrMsgId, err)
 		return
@@ -540,11 +544,11 @@ func (s *Session) GetCookies() []*http.Cookie {
 // user funcs
 // Logout: logout web wechat
 func (s *Session) Logout() error {
-	return WebWxLogout(s.WxWebCommon, s.WxWebXcg, s.GetCookies())
+	return s.api.WebWxLogout(s.WxWebCommon, s.WxWebXcg, s.GetCookies())
 }
 
 func (s *Session) AcceptFriend(verifyContent string, vul []*VerifyUser) error {
-	b, err := WebWxVerifyUser(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), 3, verifyContent, vul)
+	b, err := s.api.WebWxVerifyUser(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), 3, verifyContent, vul)
 	if err != nil {
 		return err
 	}
