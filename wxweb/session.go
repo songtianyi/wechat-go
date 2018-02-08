@@ -152,7 +152,7 @@ func CreateWebSessionWithPath(common *Common, handlerRegister *HandlerRegister, 
 	api :=  NewApiV2()
 
 	// get qrcode
-	uuid, err := api.JsLogin(common)
+	uuid, err := JsLogin(common)
 	if err != nil {
 		return nil, err
 	}
@@ -318,23 +318,42 @@ func (s *Session) producer(msg chan []byte, errChan chan error) {
 	logs.Info("entering synccheck loop")
 loop1:
 	for {
-		ret, sel, err := s.Api.SyncCheck(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), s.WxWebCommon.SyncSrv, s.SynKeyList)
-		logs.Info(s.WxWebCommon.SyncSrv, ret, sel, s.Bot.Uin) //检查状态返回的值
-		if err != nil {
-			logs.Error(err)
-			continue
+		var ret, sel int
+		var err error
+		for i:=0;  i<=10; i++{
+			ret, sel, err = s.Api.SyncCheck(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), s.WxWebCommon.SyncSrv, s.SynKeyList)
+			if err != nil {
+				if i >= 10 {
+					logs.Error("Err SyncCheck  %s try %d" ,err.Error(), i)
+				}else{
+					logs.Info("SyncCheck uin %d tiem %d", s.Bot.Uin, i)
+				}
+			}else{
+				break;
+			}
 		}
+
+		logs.Info(s.WxWebCommon.SyncSrv, ret, sel, s.Bot.Uin) //检查状态返回的值
+
 		if ret == 0 { //0 正常
 			// check success
 			// new message
-			cookies , err := s.Api.WebWxSync(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), msg, s.SynKeyList)
-			if err != nil {
-				logs.Error(err)
-			}else{
-				if cookies != nil {
-					s.SetCookies(cookies)
+			for i:=0;  i<=10; i++{
+				cookies , err := s.Api.WebWxSync(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), msg, s.SynKeyList)
+				if err != nil {
+					if i >= 10 {
+						logs.Error("Err WebWxSync try  %s try %d" ,err.Error(), i)
+					}else{
+						logs.Info("WebWxSync uin %d tiem %d", s.Bot.Uin, i)
+					}
+				}else{
+					if cookies != nil {
+						s.SetCookies(cookies)
+					}
+					break;
 				}
 			}
+
 		} else if s.isLogout(ret) { //1100 失败/登出微信
 
 			errChan <- fmt.Errorf("api blocked, ret:%d", ret)
