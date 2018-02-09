@@ -145,7 +145,7 @@ func (api *ApiV2) WebWxInit(common *Common, ce *XmlConfig) ([]byte, error) {
 
 // SyncCheck: synccheck api
 func (api *ApiV2) SyncCheck(common *Common, ce *XmlConfig, cookies []*http.Cookie,
-	server string, skl *SyncKeyList) (int, int, error) {
+	server string, skl *SyncKeyList) (retcode  int, selector int, err error) {
 	km := url.Values{}
 	km.Add("r", strconv.FormatInt(time.Now().Unix()*1000, 10))
 	km.Add("sid", ce.Wxsid)
@@ -177,8 +177,13 @@ func (api *ApiV2) SyncCheck(common *Common, ce *XmlConfig, cookies []*http.Cooki
 	strb := string(body)
 	reg := regexp.MustCompile("window.synccheck={retcode:\"(\\d+)\",selector:\"(\\d+)\"}")
 	sub := reg.FindStringSubmatch(strb)
-	retcode, _ := strconv.Atoi(sub[1])
-	selector, _ := strconv.Atoi(sub[2])
+	retcode = 0
+	selector = 0
+	if len(sub) >= 2 {
+		retcode, _ = strconv.Atoi(sub[1])
+		selector, _ = strconv.Atoi(sub[2])
+	}
+
 	return retcode, selector, nil
 }
 
