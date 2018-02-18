@@ -1,15 +1,15 @@
 package wxweb
 
 import (
-"bytes"
-"encoding/json"
-"io/ioutil"
-"net"
-"net/http"
-"net/http/cookiejar"
-"net/url"
-"time"
+	"bytes"
+	"encoding/json"
 	"io"
+	"io/ioutil"
+	"net"
+	"net/http"
+	"net/http/cookiejar"
+	"net/url"
+	"time"
 )
 
 type Client struct {
@@ -39,7 +39,7 @@ func NewClient() *Client {
 		userAgent: "ApiV2 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.98 Safari/537.36 ",
 	}
 }
-func (c *Client) SetJar(jar http.CookieJar){
+func (c *Client) SetJar(jar http.CookieJar) {
 	c.client.Jar = jar
 }
 func (c *Client) Get(url string, data *url.Values) ([]byte, error) {
@@ -88,7 +88,7 @@ func (c *Client) fetchReponse(method string, uri string, body []byte, headers ma
 }
 
 func (c *Client) fetchReponseWithReader(method string, uri string, body io.Reader, headers map[string]string) (*http.Response, error) {
-	req, err := http.NewRequest(method, uri,body )
+	req, err := http.NewRequest(method, uri, body)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +126,7 @@ func (c *Client) fetch(method string, uri string, body []byte, headers Header) (
 	return b, nil
 }
 
-func (c *Client) fetchResp(method string, uri string, body []byte, headers Header) (resp *http.Response, b []byte,err error) {
+func (c *Client) fetchResp(method string, uri string, body []byte, headers Header) (resp *http.Response, b []byte, err error) {
 	resp, err = c.fetchReponse(method, uri, body, headers)
 	if err != nil {
 		return nil, nil, err

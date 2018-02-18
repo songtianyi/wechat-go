@@ -82,7 +82,7 @@ func init() {
 type Session struct {
 	WxWebCommon     *Common
 	WxWebXcg        *XmlConfig
-	muCookie sync.RWMutex
+	muCookie        sync.RWMutex
 	Cookies         []*http.Cookie
 	SynKeyList      *SyncKeyList
 	Bot             *User
@@ -91,8 +91,8 @@ type Session struct {
 	QrcodeUUID      string //uuid
 	HandlerRegister *HandlerRegister
 	CreateTime      int64
-	LastMsgID string
-	Api *ApiV2
+	LastMsgID       string
+	Api             *ApiV2
 }
 
 // CreateSession: create wechat bot session
@@ -106,7 +106,7 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 	wxWebXcg := &XmlConfig{}
 
 	// get qrcode
-	api :=  NewApiV2()
+	api := NewApiV2()
 	uuid, err := api.JsLogin(common)
 	if err != nil {
 		return nil, err
@@ -116,7 +116,7 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 		WxWebCommon: common,
 		WxWebXcg:    wxWebXcg,
 		QrcodeUUID:  uuid,
-		Api: api,
+		Api:         api,
 		CreateTime:  time.Now().Unix(),
 	}
 
@@ -126,7 +126,7 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 		session.HandlerRegister = CreateHandlerRegister()
 	}
 	if qrmode == BACKGROUND_MODE {
-		logs.Info("https://login.weixin.qq.com/l/"+uuid);
+		logs.Info("https://login.weixin.qq.com/l/" + uuid)
 	} else if qrmode == TERMINAL_MODE {
 		qrterminal.Generate("https://login.weixin.qq.com/l/"+uuid, qrterminal.L, os.Stdout)
 	} else if qrmode == WEB_MODE {
@@ -149,7 +149,7 @@ func CreateWebSessionWithPath(common *Common, handlerRegister *HandlerRegister, 
 	}
 
 	wxWebXcg := &XmlConfig{}
-	api :=  NewApiV2()
+	api := NewApiV2()
 
 	// get qrcode
 	uuid, err := JsLogin(common)
@@ -162,7 +162,7 @@ func CreateWebSessionWithPath(common *Common, handlerRegister *HandlerRegister, 
 		WxWebXcg:    wxWebXcg,
 		QrcodeUUID:  uuid,
 		CreateTime:  time.Now().Unix(),
-		Api: api,
+		Api:         api,
 	}
 
 	if handlerRegister != nil {
@@ -226,7 +226,7 @@ loop1:
 	}
 	return nil
 }
-func (s *Session) SetCookies(cookies []*http.Cookie)  {
+func (s *Session) SetCookies(cookies []*http.Cookie) {
 	s.muCookie.Lock()
 	defer s.muCookie.Unlock()
 	s.Cookies = cookies
@@ -320,16 +320,16 @@ loop1:
 	for {
 		var ret, sel int
 		var err error
-		for i:=0;  i<=10; i++{
+		for i := 0; i <= 10; i++ {
 			ret, sel, err = s.Api.SyncCheck(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), s.WxWebCommon.SyncSrv, s.SynKeyList)
 			if err != nil {
 				if i >= 10 {
-					logs.Error("Err SyncCheck  %s try %d" ,err.Error(), i)
-				}else{
+					logs.Error("Err SyncCheck  %s try %d", err.Error(), i)
+				} else {
 					logs.Info("SyncCheck uin %d tiem %d", s.Bot.Uin, i)
 				}
-			}else{
-				break;
+			} else {
+				break
 			}
 		}
 
@@ -338,19 +338,19 @@ loop1:
 		if ret == 0 { //0 正常
 			// check success
 			// new message
-			for i:=0;  i<=10; i++{
-				cookies , err := s.Api.WebWxSync(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), msg, s.SynKeyList)
+			for i := 0; i <= 10; i++ {
+				cookies, err := s.Api.WebWxSync(s.WxWebCommon, s.WxWebXcg, s.GetCookies(), msg, s.SynKeyList)
 				if err != nil {
 					if i >= 10 {
-						logs.Error("Err WebWxSync try  %s try %d" ,err.Error(), i)
-					}else{
+						logs.Error("Err WebWxSync try  %s try %d", err.Error(), i)
+					} else {
 						logs.Info("WebWxSync uin %d tiem %d", s.Bot.Uin, i)
 					}
-				}else{
+				} else {
 					if cookies != nil {
 						s.SetCookies(cookies)
 					}
-					break;
+					break
 				}
 			}
 
@@ -560,6 +560,7 @@ func (s *Session) GetCookies() []*http.Cookie {
 	defer s.muCookie.RUnlock()
 	return s.Cookies
 }
+
 // user funcs
 // Logout: logout web wechat
 func (s *Session) Logout() error {

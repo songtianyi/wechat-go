@@ -1,26 +1,25 @@
 package wxweb
 
 import (
-	"github.com/songtianyi/wechat-go/wxweb"
-	"net/http"
 	"encoding/json"
 	"github.com/songtianyi/rrframework/logs"
 	"io/ioutil"
+	"net/http"
 	"os"
 )
 
 type PSession struct {
 	WxName      string
-	WxWebCommon wxweb.Common    `json:"common"`
-	WxWebXcg    wxweb.XmlConfig `json:"config"`
-	Cookies     []http.Cookie   `json:"cookies,omitempty"`
-	Bot wxweb.User `json:"bot,omitempty"`
-	QrcodePath string `json:"qrcode,omitempty"`
-	QrcodeUUID string `json:"uuid,omitempty"`
-	CreateTime int64  `json:"time,omitempty"`
+	WxWebCommon Common        `json:"common"`
+	WxWebXcg    XmlConfig     `json:"config"`
+	Cookies     []http.Cookie `json:"cookies,omitempty"`
+	Bot         User          `json:"bot,omitempty"`
+	QrcodePath  string        `json:"qrcode,omitempty"`
+	QrcodeUUID  string        `json:"uuid,omitempty"`
+	CreateTime  int64         `json:"time,omitempty"`
 }
 
-func WriteSessionData(multiSession map[string]*wxweb.Session, path string) {
+func WriteSessionData(multiSession map[string]*Session, path string) {
 	dataStruct := make(map[string]PSession)
 
 	for k, v := range multiSession {
@@ -60,10 +59,10 @@ func WriteSessionData(multiSession map[string]*wxweb.Session, path string) {
 		ioutil.WriteFile(path, data, 0666)
 	}
 }
-func ReadSessionData(path string) map[string]*wxweb.Session {
+func ReadSessionData(path string) map[string]*Session {
 	_, err := os.Stat(path)
 	dataStruct := make(map[string]PSession)
-	multiSession := make(map[string]*wxweb.Session)
+	multiSession := make(map[string]*Session)
 	if err == nil {
 		data, error := ioutil.ReadFile(path)
 		if error == nil && len(data) > 0 {
@@ -79,15 +78,15 @@ func ReadSessionData(path string) map[string]*wxweb.Session {
 							cookies = append(cookies, &session.Cookies[k])
 						}
 					}
-					var xml wxweb.XmlConfig
+					var xml XmlConfig
 					xml = session.WxWebXcg
 					common := session.WxWebCommon
-					wechatSession := &wxweb.Session{
-						WxWebCommon: &common,
-						WxWebXcg:    &xml,
-						Cookies:     cookies,
-						Bot: &session.Bot,
-						HandlerRegister: wxweb.CreateHandlerRegister(),
+					wechatSession := &Session{
+						WxWebCommon:     &common,
+						WxWebXcg:        &xml,
+						Cookies:         cookies,
+						Bot:             &session.Bot,
+						HandlerRegister: CreateHandlerRegister(),
 						QrcodePath:      session.QrcodePath, //qrcode path
 						QrcodeUUID:      session.QrcodeUUID, //uuid
 						CreateTime:      session.CreateTime,

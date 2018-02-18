@@ -145,7 +145,7 @@ func (api *ApiV2) WebWxInit(common *Common, ce *XmlConfig) ([]byte, error) {
 
 // SyncCheck: synccheck api
 func (api *ApiV2) SyncCheck(common *Common, ce *XmlConfig, cookies []*http.Cookie,
-	server string, skl *SyncKeyList) (retcode  int, selector int, err error) {
+	server string, skl *SyncKeyList) (retcode int, selector int, err error) {
 	km := url.Values{}
 	km.Add("r", strconv.FormatInt(time.Now().Unix()*1000, 10))
 	km.Add("sid", ce.Wxsid)
@@ -307,7 +307,7 @@ func (api *ApiV2) WebWxStatusNotify(common *Common, ce *XmlConfig, bot *User) (i
 
 	b, _ := json.Marshal(js)
 
-	body, _ := api.httpClient.PostJsonByte(uri,b)
+	body, _ := api.httpClient.PostJsonByte(uri, b)
 	jc, _ := rrconfig.LoadJsonConfigFromBytes(body)
 	ret, _ := jc.GetInt("BaseResponse.Ret")
 	return ret, nil
@@ -341,7 +341,7 @@ func (api *ApiV2) WebWxGetContact(common *Common, ce *XmlConfig, cookies []*http
 }
 
 // WebWxSendMsg: webwxsendmsg api
-func (api *ApiV2)  WebWxSendMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
+func (api *ApiV2) WebWxSendMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	from, to string, msg string) ([]byte, error) {
 
 	km := url.Values{}
@@ -451,13 +451,12 @@ func (api *ApiV2) WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*htt
 	fw.Write([]byte(ce.PassTicket))
 	w.Close()
 
-
 	jar, _ := cookiejar.New(nil)
 	u, _ := url.Parse(common.UploadUrl)
 	jar.SetCookies(u, cookies)
 	api.httpClient.SetJar(jar)
 
-	body, _ := api.httpClient.fetchWithReader("POST", common.UploadUrl,&b, Header{})
+	body, _ := api.httpClient.fetchWithReader("POST", common.UploadUrl, &b, Header{})
 
 	jc, err := rrconfig.LoadJsonConfigFromBytes(body)
 	if err != nil {
@@ -472,7 +471,7 @@ func (api *ApiV2) WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*htt
 }
 
 // WebWxSendMsgImg: webwxsendmsgimg api
-func (api *ApiV2)  WebWxSendMsgImg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
+func (api *ApiV2) WebWxSendMsgImg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	from, to, media string) (int, error) {
 
 	km := url.Values{}
@@ -515,7 +514,7 @@ func (api *ApiV2)  WebWxSendMsgImg(common *Common, ce *XmlConfig, cookies []*htt
 }
 
 // WebWxGetMsgImg: webwxgetmsgimg api
-func (api *ApiV2)  WebWxGetMsgImg(common *Common, ce *XmlConfig, cookies []*http.Cookie, msgId string) ([]byte, error) {
+func (api *ApiV2) WebWxGetMsgImg(common *Common, ce *XmlConfig, cookies []*http.Cookie, msgId string) ([]byte, error) {
 	km := url.Values{}
 	km.Add("MsgID", msgId)
 	km.Add("skey", ce.Skey)
@@ -527,16 +526,14 @@ func (api *ApiV2)  WebWxGetMsgImg(common *Common, ce *XmlConfig, cookies []*http
 	u, _ := url.Parse(uri)
 	jar.SetCookies(u, cookies)
 
-
 	api.httpClient.SetJar(jar)
-	body, _ := api.httpClient.GetWithHeader(uri, Header{"Content-Type":"image/jpeg"})
-
+	body, _ := api.httpClient.GetWithHeader(uri, Header{"Content-Type": "image/jpeg"})
 
 	return body, nil
 }
 
 // WebWxSendEmoticon: webwxsendemoticon api
-func (api *ApiV2)  WebWxSendEmoticon(common *Common, ce *XmlConfig, cookies []*http.Cookie,
+func (api *ApiV2) WebWxSendEmoticon(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	from, to, media string) (int, error) {
 
 	km := url.Values{}
@@ -588,7 +585,7 @@ func (api *ApiV2)  WebWxSendEmoticon(common *Common, ce *XmlConfig, cookies []*h
 }
 
 // WebWxGetIcon: webwxgeticon api
-func (api *ApiV2)  WebWxGetIcon(common *Common, ce *XmlConfig, cookies []*http.Cookie,
+func (api *ApiV2) WebWxGetIcon(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	username, chatroomid string) ([]byte, error) {
 	km := url.Values{}
 	km.Add("seq", "0")
@@ -620,7 +617,7 @@ func (api *ApiV2)  WebWxGetIcon(common *Common, ce *XmlConfig, cookies []*http.C
 }
 
 // WebWxGetIconByHeadImgUrl: get head img
-func (api *ApiV2)  WebWxGetIconByHeadImgUrl(common *Common, ce *XmlConfig, cookies []*http.Cookie, headImgUrl string) ([]byte, error) {
+func (api *ApiV2) WebWxGetIconByHeadImgUrl(common *Common, ce *XmlConfig, cookies []*http.Cookie, headImgUrl string) ([]byte, error) {
 	uri := common.CgiDomain + headImgUrl
 
 	req, err := http.NewRequest("GET", uri, nil)
@@ -683,7 +680,7 @@ func (api *ApiV2) WebWxBatchGetContact(common *Common, ce *XmlConfig, cookies []
 }
 
 // WebWxVerifyUser: webwxverifyuser api
-func (api *ApiV2)  WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*http.Cookie, opcode int, verifyContent string, vul []*VerifyUser) ([]byte, error) {
+func (api *ApiV2) WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*http.Cookie, opcode int, verifyContent string, vul []*VerifyUser) ([]byte, error) {
 	var body []byte
 	i := 0
 	for i++; i <= 10; {
@@ -729,7 +726,7 @@ func (api *ApiV2)  WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*htt
 }
 
 // WebWxCreateChatroom: webwxcreatechatroom api
-func (api *ApiV2)  WebWxCreateChatroom(common *Common, ce *XmlConfig, cookies []*http.Cookie, users []*User, topic string) (interface{}, error) {
+func (api *ApiV2) WebWxCreateChatroom(common *Common, ce *XmlConfig, cookies []*http.Cookie, users []*User, topic string) (interface{}, error) {
 	km := url.Values{}
 	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
 	km.Add("pass_ticket", ce.PassTicket)
@@ -768,7 +765,7 @@ func (api *ApiV2)  WebWxCreateChatroom(common *Common, ce *XmlConfig, cookies []
 }
 
 // WebWxRevokeMsg: webwxrevokemsg api
-func (api *ApiV2)  WebWxRevokeMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie, clientMsgId, svrMsgId, toUserName string) error {
+func (api *ApiV2) WebWxRevokeMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie, clientMsgId, svrMsgId, toUserName string) error {
 	km := url.Values{}
 	km.Add("lang", common.Lang)
 
@@ -814,7 +811,7 @@ func (api *ApiV2)  WebWxRevokeMsg(common *Common, ce *XmlConfig, cookies []*http
 }
 
 // WebWxlogout: webwxlogout api
-func (api *ApiV2)  WebWxLogout(common *Common, ce *XmlConfig, cookies []*http.Cookie) error {
+func (api *ApiV2) WebWxLogout(common *Common, ce *XmlConfig, cookies []*http.Cookie) error {
 	km := url.Values{}
 	km.Add("redirect", "1")
 	km.Add("type", "1")
@@ -843,6 +840,6 @@ func (api *ApiV2)  WebWxLogout(common *Common, ce *XmlConfig, cookies []*http.Co
 	}
 	return nil
 }
-func  NewApiV2() *ApiV2 {
-	return &ApiV2{httpClient:NewClient()}
+func NewApiV2() *ApiV2 {
+	return &ApiV2{httpClient: NewClient()}
 }

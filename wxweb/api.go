@@ -43,12 +43,7 @@ import (
 	"time"
 
 	"github.com/songtianyi/rrframework/config"
-
 )
-
-
-
-
 
 // JsLogin: jslogin api
 func JsLogin(common *Common) (string, error) {
@@ -202,7 +197,7 @@ func SyncCheck(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	var client *http.Client
 	var req *http.Request
 	var err error
-	for i:=0; i <= 10 ;{
+	for i := 0; i <= 10; {
 		client = &http.Client{Jar: jar, Timeout: time.Duration(30) * time.Second}
 		req, err = http.NewRequest("GET", uri, bytes.NewReader(b))
 		if err == nil {
@@ -214,11 +209,10 @@ func SyncCheck(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 		i++
 	}
 
-
 	req.Header.Add("Content-Type", "application/json; charset=UTF-8")
 	req.Header.Add("User-Agent", common.UserAgent)
 	var resp *http.Response
-	for i:=0; i <= 10 ;{
+	for i := 0; i <= 10; {
 		i++
 		resp, err = client.Do(req)
 		if err != nil && i >= 10 {
@@ -228,7 +222,6 @@ func SyncCheck(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 			break
 		}
 	}
-
 
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
@@ -241,7 +234,7 @@ func SyncCheck(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 }
 
 // WebWxSync: webwxsync api
-func WebWxSync(common *Common, ce *XmlConfig, cookies []*http.Cookie, msg chan []byte, skl *SyncKeyList) ([]*http.Cookie , error) {
+func WebWxSync(common *Common, ce *XmlConfig, cookies []*http.Cookie, msg chan []byte, skl *SyncKeyList) ([]*http.Cookie, error) {
 
 	km := url.Values{}
 	km.Add("skey", ce.Skey)
@@ -272,17 +265,16 @@ func WebWxSync(common *Common, ce *XmlConfig, cookies []*http.Cookie, msg chan [
 	req.Header.Add("Content-Type", "application/json; charset=UTF-8")
 	req.Header.Add("User-Agent", common.UserAgent)
 	var resp *http.Response
-	for i:=0; i <= 10 ;{
+	for i := 0; i <= 10; {
 		i++
 		resp, err = client.Do(req)
 		if err != nil && i >= 10 {
-			return nil,err
+			return nil, err
 		}
 		if err == nil {
 			break
 		}
 	}
-
 
 	defer resp.Body.Close()
 
@@ -294,10 +286,10 @@ func WebWxSync(common *Common, ce *XmlConfig, cookies []*http.Cookie, msg chan [
 	}
 	retcode, err := jc.GetInt("BaseResponse.Ret")
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	if retcode != 0 {
-		return nil,fmt.Errorf("BaseResponse.Ret %d", retcode)
+		return nil, fmt.Errorf("BaseResponse.Ret %d", retcode)
 	}
 
 	msg <- body
@@ -306,9 +298,9 @@ func WebWxSync(common *Common, ce *XmlConfig, cookies []*http.Cookie, msg chan [
 	skl1, _ := GetSyncKeyListFromJc(jc)
 	skl.Count = skl1.Count
 	skl.List = append(skl.List, skl1.List...)
-	return 	resp.Cookies(),nil
+	return resp.Cookies(), nil
 }
-func WebWxSyncFlushCookie(common *Common, ce *XmlConfig, cookies []*http.Cookie, skl *SyncKeyList) ([]*http.Cookie , error) {
+func WebWxSyncFlushCookie(common *Common, ce *XmlConfig, cookies []*http.Cookie, skl *SyncKeyList) ([]*http.Cookie, error) {
 
 	km := url.Values{}
 	km.Add("skey", ce.Skey)
@@ -341,7 +333,7 @@ func WebWxSyncFlushCookie(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
@@ -353,18 +345,17 @@ func WebWxSyncFlushCookie(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	}
 	retcode, err := jc.GetInt("BaseResponse.Ret")
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	if retcode != 0 {
-		return nil,fmt.Errorf("BaseResponse.Ret %d", retcode)
+		return nil, fmt.Errorf("BaseResponse.Ret %d", retcode)
 	}
-
 
 	skl.List = skl.List[:0]
 	skl1, _ := GetSyncKeyListFromJc(jc)
 	skl.Count = skl1.Count
 	skl.List = append(skl.List, skl1.List...)
-	return 	resp.Cookies(),nil
+	return resp.Cookies(), nil
 }
 
 // WebWxStatusNotify: webwxstatusnotify api
@@ -824,9 +815,9 @@ func WebWxBatchGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 
 // WebWxVerifyUser: webwxverifyuser api
 func WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*http.Cookie, opcode int, verifyContent string, vul []*VerifyUser) ([]byte, error) {
-	var body[]byte
+	var body []byte
 	i := 0
-	for i++; i<=10; {
+	for i++; i <= 10; {
 		km := url.Values{}
 		km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
 		km.Add("pass_ticket", ce.PassTicket)
@@ -852,7 +843,7 @@ func WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*http.Cookie, opco
 		if err != nil {
 			if i >= 10 {
 				return nil, err
-			}else{
+			} else {
 				continue
 			}
 		}
@@ -867,7 +858,7 @@ func WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*http.Cookie, opco
 		if err != nil {
 			if i >= 10 {
 				return nil, err
-			}else{
+			} else {
 				continue
 			}
 		}
