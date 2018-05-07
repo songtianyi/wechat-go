@@ -93,6 +93,7 @@ type Session struct {
 	CreateTime      int64
 	LastMsgID       string
 	Api             *ApiV2
+	AfterLogin      func() error
 }
 
 // CreateSession: create wechat bot session
@@ -118,6 +119,9 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 		QrcodeUUID:  uuid,
 		Api:         api,
 		CreateTime:  time.Now().Unix(),
+		AfterLogin: func() error {
+			return nil
+		},
 	}
 
 	if handlerRegister != nil {
@@ -292,6 +296,7 @@ func (s *Session) LoginAndServe(useCache bool) error {
 
 	// for v2
 	s.Cm.AddUser(s.Bot)
+	s.AfterLogin()
 
 	if err := s.serve(); err != nil {
 		return err
