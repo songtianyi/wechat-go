@@ -304,6 +304,10 @@ func (s *Session) LoginAndServe(useCache bool) error {
 	return nil
 }
 
+func (s *Session) SetAfterLogin(f func() error) {
+	s.AfterLogin = f
+}
+
 func (s *Session) serve() error {
 	msg := make(chan []byte, 1000)
 	// syncheck
