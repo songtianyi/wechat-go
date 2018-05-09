@@ -271,6 +271,7 @@ type RecommendInfo struct {
 	Scene      int
 	Sex        int
 	Signature  string
+	WxTicket   string `json:"Ticket"`
 	VerifyFlag int
 }
 
