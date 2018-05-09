@@ -263,15 +263,14 @@ type RecommendInfo struct {
 	NickName   string
 	Content    string
 	Alias      string
-	AttrStatus int
+	AttrStatus uint32
 	City       string
-	OpCode     string
+	OpCode     int
 	Province   string
 	QQNum      int
 	Scene      int
 	Sex        int
 	Signature  string
-	WxTicket   string `json:"Ticket"`
 	VerifyFlag int
 }
 
