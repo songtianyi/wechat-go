@@ -271,7 +271,6 @@ type RecommendInfo struct {
 	Scene      int
 	Sex        int
 	Signature  string
-	Ticket     string
 	VerifyFlag int
 }
 
