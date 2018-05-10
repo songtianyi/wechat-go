@@ -416,11 +416,20 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 	if rmsg.MsgType == MSG_FV {
 		riif := msg["RecommendInfo"].(map[string]interface{})
 		rmsg.RecommendInfo = &RecommendInfo{
-			Ticket:   riif["Ticket"].(string),
-			UserName: riif["UserName"].(string),
-			NickName: riif["NickName"].(string),
-			Content:  riif["Content"].(string),
-			Sex:      int(riif["Sex"].(float64)),
+			Ticket:     riif["Ticket"].(string),
+			UserName:   riif["UserName"].(string),
+			NickName:   riif["NickName"].(string),
+			Content:    riif["Content"].(string),
+			Sex:        int(riif["Sex"].(float64)),
+			Alias:      riif["Alias"].(string),
+			AttrStatus: uint32(riif["AttrStatus"].(float64)),
+			City:       riif["City"].(string),
+			OpCode:     int(riif["OpCode"].(float64)),
+			Province:   riif["Province"].(string),
+			QQNum:      int(riif["QQNum"].(float64)),
+			Scene:      int(riif["Scene"].(float64)),
+			Signature:  riif["Signature"].(string),
+			VerifyFlag: int(riif["VerifyFlag"].(float64)),
 		}
 	}
 

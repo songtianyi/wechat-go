@@ -258,11 +258,20 @@ type VerifyUser struct {
 }
 
 type RecommendInfo struct {
-	Ticket   string
-	UserName string
-	NickName string
-	Content  string
-	Sex      int
+	Ticket     string
+	UserName   string
+	NickName   string
+	Content    string
+	Alias      string
+	AttrStatus uint32
+	City       string
+	OpCode     int
+	Province   string
+	QQNum      int
+	Scene      int
+	Sex        int
+	Signature  string
+	VerifyFlag int
 }
 
 // ReceivedMessage: for received message
