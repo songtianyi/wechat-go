@@ -456,7 +456,9 @@ func (api *ApiV2) WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*htt
 	jar.SetCookies(u, cookies)
 	api.httpClient.SetJar(jar)
 
-	body, _ := api.httpClient.fetchWithReader("POST", common.UploadUrl, &b, Header{})
+	headers := make(map[string]string)
+	headers["Content-Type"] = w.FormDataContentType()
+	body, _ := api.httpClient.fetchWithReader("POST", common.UploadUrl, &b, headers)
 
 	jc, err := rrconfig.LoadJsonConfigFromBytes(body)
 	if err != nil {
