@@ -284,12 +284,7 @@ func (s *Session) LoginAndServe(useCache bool) error {
 		return fmt.Errorf("WebWxStatusNotify fail, %d", ret)
 	}
 
-	cb, err := s.Api.WebWxGetContact(s.WxWebCommon, s.WxWebXcg, s.GetCookies())
-	if err != nil {
-		return err
-	}
-
-	s.Cm, err = CreateContactManagerFromBytes(cb)
+	s.Cm, err = CreateContactManagerFromBatchBytes(jb)
 	if err != nil {
 		return err
 	}

@@ -82,6 +82,19 @@ func CreateContactManagerFromBytes(cb []byte) (*ContactManager, error) {
 	return cm, nil
 }
 
+// create
+// CreateContactManagerFromBytes: create contact maanger from bytes
+func CreateContactManagerFromBatchBytes(cb []byte) (*ContactManager, error) {
+	var cr WxWebBatchGetContactResponse
+	if err := json.Unmarshal(cb, &cr); err != nil {
+		return nil, err
+	}
+	cm := &ContactManager{
+		cl: cr.ContactList,
+	}
+	return cm, nil
+}
+
 // update
 // AddContactFromBytes: upate contact manager from wxwebgetcontact response
 func (s *ContactManager) AddUserFromBytes(cb []byte) error {
