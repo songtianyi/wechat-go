@@ -456,7 +456,7 @@ func (api *ApiV2) WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*htt
 	jar.SetCookies(u, cookies)
 	api.httpClient.SetJar(jar)
 
-	body, _ := api.httpClient.fetchWithReader("POST", common.UploadUrl, &b, Header{})
+	body, _ := api.httpClient.fetchWithReader("POST", common.UploadUrl, &b, Header{"Content-Type": w.FormDataContentType()})
 
 	jc, err := rrconfig.LoadJsonConfigFromBytes(body)
 	if err != nil {
@@ -677,6 +677,41 @@ func (api *ApiV2) WebWxBatchGetContact(common *Common, ce *XmlConfig, cookies []
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 	return body, nil
+}
+
+type ChatroomReqBody struct {
+	BaseRequest      *BaseRequest
+	ChatRoomName     string
+	InviteMemberList string
+}
+
+//WxUpdateChatroom
+func (a *ApiV2) WxUpdateChatroom(common *Common, ce *XmlConfig, cookies []*http.Cookie, ChatRoomName, InviteMemberList string) {
+	km := url.Values{}
+	km.Add("fun", "invitemember")
+	km.Add("lang", common.Lang)
+	km.Add("pass_ticket", ce.PassTicket)
+
+	uri := common.CgiUrl + "/webwxupdatechatroom?" + km.Encode()
+	js := ChatroomReqBody{
+		BaseRequest: &BaseRequest{
+			ce.Wxuin,
+			ce.Wxsid,
+			ce.Skey,
+			common.DeviceID,
+		},
+		ChatRoomName:     ChatRoomName,
+		InviteMemberList: InviteMemberList,
+	}
+
+	b, _ := json.Marshal(js)
+
+	jar, _ := cookiejar.New(nil)
+	u, _ := url.Parse(uri)
+	jar.SetCookies(u, cookies)
+	a.httpClient.SetJar(jar)
+
+	a.httpClient.PostJsonByteForResp(uri, b)
 }
 
 // WebWxVerifyUser: webwxverifyuser api

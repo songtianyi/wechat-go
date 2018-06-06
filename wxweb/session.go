@@ -93,6 +93,7 @@ type Session struct {
 	CreateTime      int64
 	LastMsgID       string
 	Api             *ApiV2
+	AfterLogin      func() error
 }
 
 // CreateSession: create wechat bot session
@@ -118,6 +119,9 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 		QrcodeUUID:  uuid,
 		Api:         api,
 		CreateTime:  time.Now().Unix(),
+		AfterLogin: func() error {
+			return nil
+		},
 	}
 
 	if handlerRegister != nil {
@@ -292,11 +296,16 @@ func (s *Session) LoginAndServe(useCache bool) error {
 
 	// for v2
 	s.Cm.AddUser(s.Bot)
+	s.AfterLogin()
 
 	if err := s.serve(); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (s *Session) SetAfterLogin(f func() error) {
+	s.AfterLogin = f
 }
 
 func (s *Session) serve() error {
@@ -407,11 +416,20 @@ func (s *Session) analize(msg map[string]interface{}) *ReceivedMessage {
 	if rmsg.MsgType == MSG_FV {
 		riif := msg["RecommendInfo"].(map[string]interface{})
 		rmsg.RecommendInfo = &RecommendInfo{
-			Ticket:   riif["Ticket"].(string),
-			UserName: riif["UserName"].(string),
-			NickName: riif["NickName"].(string),
-			Content:  riif["Content"].(string),
-			Sex:      int(riif["Sex"].(float64)),
+			Ticket:     riif["Ticket"].(string),
+			UserName:   riif["UserName"].(string),
+			NickName:   riif["NickName"].(string),
+			Content:    riif["Content"].(string),
+			Sex:        int(riif["Sex"].(float64)),
+			Alias:      riif["Alias"].(string),
+			AttrStatus: uint32(riif["AttrStatus"].(float64)),
+			City:       riif["City"].(string),
+			OpCode:     int(riif["OpCode"].(float64)),
+			Province:   riif["Province"].(string),
+			QQNum:      int(riif["QQNum"].(float64)),
+			Scene:      int(riif["Scene"].(float64)),
+			Signature:  riif["Signature"].(string),
+			VerifyFlag: int(riif["VerifyFlag"].(float64)),
 		}
 	}
 
