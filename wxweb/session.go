@@ -32,12 +32,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mdp/qrterminal"
 	"github.com/songtianyi/rrframework/config"
 	"github.com/songtianyi/rrframework/logs"
 	"github.com/songtianyi/rrframework/storage"
-	"sync"
-	"github.com/mdp/qrterminal"
 	"os"
+	"sync"
 )
 
 const (
@@ -138,11 +138,11 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 	} else if qrmode == TERMINAL_MODE_GOLAND {
 
 		config := qrterminal.Config{
-		Level: qrterminal.L,
-		Writer: os.Stdout,
-		BlackChar: qrterminal.WHITE,
-		WhiteChar: qrterminal.BLACK,
-		QuietZone: 1,
+			Level:     qrterminal.L,
+			Writer:    os.Stdout,
+			BlackChar: qrterminal.WHITE,
+			WhiteChar: qrterminal.BLACK,
+			QuietZone: 1,
 		}
 
 		qrterminal.GenerateWithConfig("https://login.weixin.qq.com/l/"+uuid, config)
