@@ -29,15 +29,15 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 
-	"github.com/mdp/qrterminal"
 	"github.com/songtianyi/rrframework/config"
 	"github.com/songtianyi/rrframework/logs"
 	"github.com/songtianyi/rrframework/storage"
 	"sync"
+	"github.com/mdp/qrterminal"
+	"os"
 )
 
 const (
@@ -47,6 +47,7 @@ const (
 	TERMINAL_MODE
 
 	BACKGROUND_MODE
+	TERMINAL_MODE_GOLAND
 )
 
 var (
@@ -133,6 +134,18 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 		logs.Info("https://login.weixin.qq.com/l/" + uuid)
 	} else if qrmode == TERMINAL_MODE {
 		qrterminal.Generate("https://login.weixin.qq.com/l/"+uuid, qrterminal.L, os.Stdout)
+
+	} else if qrmode == TERMINAL_MODE_GOLAND {
+
+		config := qrterminal.Config{
+		Level: qrterminal.L,
+		Writer: os.Stdout,
+		BlackChar: qrterminal.WHITE,
+		WhiteChar: qrterminal.BLACK,
+		QuietZone: 1,
+		}
+
+		qrterminal.GenerateWithConfig("https://login.weixin.qq.com/l/"+uuid, config)
 	} else if qrmode == WEB_MODE {
 		qrcb, err := api.QrCode(common, uuid)
 		if err != nil {
