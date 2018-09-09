@@ -17,21 +17,20 @@ func init() {
 type KVStorage struct {
 	meta map[string]interface{}
 
-	rLock sync.RWMutex
-	wLock sync.RWMutex
+	rwLock sync.RWMutex
 }
 
 func (s *KVStorage) Put(key string, value interface{}) {
-	s.wLock.Lock()
+	s.rwLock.Lock()
 	s.meta[key] = value
-	s.wLock.Unlock()
+	s.rwLock.Unlock()
 }
 
 func (s *KVStorage) Get(key string) interface{} {
-	s.rLock.RLock()
+	s.rwLock.RLock()
 	if v, ok := s.meta[key]; ok {
 		return v
 	}
-	s.rLock.RUnlock()
+	s.rwLock.RUnlock()
 	return nil
 }
