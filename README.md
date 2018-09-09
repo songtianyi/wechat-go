@@ -232,5 +232,3 @@ func demo(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 
 }
 ```
-## 微信交流群
-<img src="http://owm6k6w0y.bkt.clouddn.com/17-9-21/70665214.jpg" width="480" height="480"/>
