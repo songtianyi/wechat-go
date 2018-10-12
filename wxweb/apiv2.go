@@ -86,6 +86,7 @@ func (api *ApiV2) Login(common *Common, uuid, tip string) (string, error) {
 	km.Add("uuid", uuid)
 	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
 	km.Add("_", strconv.FormatInt(time.Now().Unix(), 10))
+	km.Add("loginicon", "true")
 	uri := common.LoginUrl + "/cgi-bin/mmwebwx-bin/login?" + km.Encode()
 	body, _ := api.httpClient.Get(uri, nil)
 	strb := string(body)
