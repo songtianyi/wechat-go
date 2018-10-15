@@ -222,32 +222,30 @@ func (s *Session) analizeVersion(uri string) {
 }
 
 func (s *Session) scanWaiter(onAvatar func(string) error) error {
-loop1:
-	for {
-		select {
-		case <-time.After(3 * time.Second):
-			redirectUri, err := s.Api.Login(s.WxWebCommon, s.QrcodeUUID, "0")
-			if err != nil {
-				logs.Info(err)
-				switch {
-				case strings.Contains(err.Error(), "window.code=400"),
-					strings.Contains(err.Error(), "window.code=500"),
-					strings.Contains(err.Error(), "window.code=0"):
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+	for range ticker.C {
+		redirectUri, err := s.Api.Login(s.WxWebCommon, s.QrcodeUUID, "0")
+		if err != nil {
+			logs.Info(err)
+			switch {
+			case strings.Contains(err.Error(), "window.code=400"),
+				strings.Contains(err.Error(), "window.code=500"),
+				strings.Contains(err.Error(), "window.code=0"):
+				return err
+			case strings.Contains(err.Error(), "window.code=201"):
+				avatar, err := GetLoginAvatar(err.Error())
+				if err != nil {
 					return err
-				case strings.Contains(err.Error(), "window.code=201"):
-					avatar, err := GetLoginAvatar(err.Error())
-					if err != nil {
-						return err
-					}
-					if err := onAvatar(avatar); err != nil {
-						return err
-					}
 				}
-			} else {
-				s.WxWebCommon.RedirectUri = redirectUri
-				s.analizeVersion(s.WxWebCommon.RedirectUri)
-				break loop1
+				if err := onAvatar(avatar); err != nil {
+					return err
+				}
 			}
+		} else {
+			s.WxWebCommon.RedirectUri = redirectUri
+			s.analizeVersion(s.WxWebCommon.RedirectUri)
+			break
 		}
 	}
 	return nil
