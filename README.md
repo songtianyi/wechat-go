@@ -6,9 +6,9 @@
 [![codebeat badge](https://codebeat.co/badges/4f78bcb2-bf75-477d-a8f4-b09fde3dae80)](https://codebeat.co/projects/github-com-songtianyi-wechat-go-master)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
-### 说明：
-  - ##### 17年6月下旬前登陆过web网页版的微信可以使用此框架，验证微信是否支持web版本API，请点击https://wx.qq.com/ ，扫码验证即可，假如出现无法登陆，则不适用于此框架
-  - ##### github目前开源的大部分框架都是基于web API，假如无法登陆网页版，则其他框架也无法使用。
+### 使用前阅读：
+  - #### 17年6月下旬前登陆过web网页版的微信可以使用此框架，验证微信是否支持web版本API，请点击https://wx.qq.com/ ，扫码验证即可，假如出现无法登陆，则不适用于此框架
+  - #### Github目前开源的大部分框架都是基于Web Api，假如无法登陆网页版，则其他框架也无法使用。
   - #### 如业务需求紧急且重要，建议您用此API：https://wkteam.gitbook.io/api/ （PS：自备VPN访问，否则会很慢，添加微信验证信息请填入“go”，否则不同意添加），基于微信MAC/iPAD协议的开发，适用场景：商用、系统、机器人，对微信号要求低（好像注册三月以上就行了），大家可以去放心对接。
 
 ### 介绍 
