@@ -5,8 +5,11 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/songtianyi/wechat-go)](https://goreportcard.com/report/github.com/songtianyi/wechat-go)
 [![codebeat badge](https://codebeat.co/badges/4f78bcb2-bf75-477d-a8f4-b09fde3dae80)](https://codebeat.co/projects/github-com-songtianyi-wechat-go-master)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
+### 说明：
+ 17年6月下旬前登陆过web网页版的微信可以使用此框架，验证微信是否支持web版本API，请点击https://wx.qq.com/, 扫码验证即可，假如出现无法登陆，则不适用于此框架，github目前开源的大部分框架都是基于web API，如业务需求紧急且重要，建议您看此API：https://wkteam.gitbook.io/api/（PS：自备VPN访问，否则会很慢，添加微信验证信息请填入“go”，否则不同意添加）
 
-微信web版API的go实现，模拟微信网页版的登录／联系人／消息收发等功能，可以完全接管微信收到的消息, 并定制自己的发送内容
+
+### 微信web版API的go实现，模拟微信网页版的登录／联系人／消息收发等功能，可以完全接管微信收到的消息, 并定制自己的发送内容
 
 * 支持多用户(多开)
 * 支持掉线后免扫码重登
