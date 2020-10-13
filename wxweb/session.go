@@ -29,15 +29,15 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/mdp/qrterminal"
 	"github.com/songtianyi/rrframework/config"
 	"github.com/songtianyi/rrframework/logs"
 	"github.com/songtianyi/rrframework/storage"
-	"os"
-	"sync"
 )
 
 const (
@@ -94,6 +94,7 @@ type Session struct {
 	CreateTime      int64
 	LastMsgID       string
 	Api             *ApiV2
+	OnLoginAvatar   func(string) error
 	AfterLogin      func() error
 }
 
@@ -120,6 +121,9 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 		QrcodeUUID:  uuid,
 		Api:         api,
 		CreateTime:  time.Now().Unix(),
+		OnLoginAvatar: func(string) error {
+			return nil
+		},
 		AfterLogin: func() error {
 			return nil
 		},
@@ -217,28 +221,31 @@ func (s *Session) analizeVersion(uri string) {
 	}
 }
 
-func (s *Session) scanWaiter() error {
-loop1:
-	for {
-		select {
-		case <-time.After(3 * time.Second):
-			redirectUri, err := s.Api.Login(s.WxWebCommon, s.QrcodeUUID, "0")
-			if err != nil {
-				logs.Info(err)
-				if strings.Contains(err.Error(), "window.code=400") {
+func (s *Session) scanWaiter(onAvatar func(string) error) error {
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+	for range ticker.C {
+		redirectUri, err := s.Api.Login(s.WxWebCommon, s.QrcodeUUID, "0")
+		if err != nil {
+			logs.Info(err)
+			switch {
+			case strings.Contains(err.Error(), "window.code=400"),
+				strings.Contains(err.Error(), "window.code=500"),
+				strings.Contains(err.Error(), "window.code=0"):
+				return err
+			case strings.Contains(err.Error(), "window.code=201"):
+				avatar, err := GetLoginAvatar(err.Error())
+				if err != nil {
 					return err
 				}
-				if strings.Contains(err.Error(), "window.code=500") {
+				if err := onAvatar(avatar); err != nil {
 					return err
 				}
-				if strings.Contains(err.Error(), "window.code=0") {
-					return err
-				}
-			} else {
-				s.WxWebCommon.RedirectUri = redirectUri
-				s.analizeVersion(s.WxWebCommon.RedirectUri)
-				break loop1
 			}
+		} else {
+			s.WxWebCommon.RedirectUri = redirectUri
+			s.analizeVersion(s.WxWebCommon.RedirectUri)
+			break
 		}
 	}
 	return nil
@@ -261,7 +268,7 @@ func (s *Session) LoginAndServe(useCache bool) error {
 			// confirmWaiter
 		}
 
-		if err := s.scanWaiter(); err != nil {
+		if err := s.scanWaiter(s.OnLoginAvatar); err != nil {
 			return err
 		}
 		var cookies []*http.Cookie
@@ -319,6 +326,10 @@ func (s *Session) LoginAndServe(useCache bool) error {
 
 func (s *Session) SetAfterLogin(f func() error) {
 	s.AfterLogin = f
+}
+
+func (s *Session) SetOnLoginAvatar(f func(avatar string) error) {
+	s.OnLoginAvatar = f
 }
 
 func (s *Session) serve() error {

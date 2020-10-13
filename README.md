@@ -6,7 +6,13 @@
 [![codebeat badge](https://codebeat.co/badges/4f78bcb2-bf75-477d-a8f4-b09fde3dae80)](https://codebeat.co/projects/github-com-songtianyi-wechat-go-master)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
-微信web版API的go实现，模拟微信网页版的登录／联系人／消息收发等功能，可以完全接管微信收到的消息, 并定制自己的发送内容
+### 使用前阅读：
+  - #### 17年6月下旬前登陆过web网页版的微信可以使用此框架，验证微信是否支持web版本API，请点击https://wx.qq.com/ ，扫码验证即可，假如出现无法登陆，则不适用于此框架
+  - #### Github目前开源的大部分框架都是基于Web Api，假如无法登陆网页版，则其他框架也无法使用。
+  - #### 如业务紧急且需要企业级稳定，并且不断保持更新可使用的话，建议您用此API：https://www.wkteam.cn/ （PS：基于微信MAC/iPAD协议的开发，和本项目的方案技术不同，适用场景：商用、系统、机器人，对微信号要求低（普通微信注册满三月以上就行了），大家可以去放心对接。
+
+### 介绍 
+ 微信web版API的go实现，模拟微信网页版的登录／联系人／消息收发等功能，可以完全接管微信收到的消息, 并定制自己的发送内容
 
 * 支持多用户(多开)
 * 支持掉线后免扫码重登

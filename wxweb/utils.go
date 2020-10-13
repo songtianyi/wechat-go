@@ -26,8 +26,10 @@ SOFTWARE.
 package wxweb
 
 import (
+	"errors"
 	"math/rand"
 	"reflect"
+	"regexp"
 	"time"
 
 	"github.com/songtianyi/rrframework/config"
@@ -84,4 +86,13 @@ func RealTargetUserName(session *Session, msg *ReceivedMessage) string {
 		return msg.ToUserName
 	}
 	return msg.FromUserName
+}
+
+func GetLoginAvatar(resp string) (string, error) {
+	match := regexp.MustCompile(`window.userAvatar = '(.+)'`).
+		FindStringSubmatch(resp)
+	if len(match) < 2 {
+		return "", errors.New("login avatar not found")
+	}
+	return match[1], nil
 }
