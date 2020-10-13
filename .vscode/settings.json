@@ -1,0 +1,6 @@
+{
+    "go.formatTool": "gofmt",
+    "go.gocodeAutoBuild": true,
+    "go.gotoSymbol.includeGoroot": true,
+    "go.gotoSymbol.includeImports": true
+}
